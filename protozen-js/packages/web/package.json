@@ -1,0 +1,41 @@
+{
+  "name": "@protozen/web",
+  "description": "Web front end for protozen",
+  "version": "0.1.5",
+  "license": "BSD-3-Clause",
+  "homepage": "https://https://github.com/reebalazs/protozen",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:reebalazs/protozen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/reebalazs/protozen/issues"
+  },
+  "author": "Balazs Ree <ree@greenfinity.hu>",
+  "engines": {
+    "node": ">=12.12.0",
+    "yarn": ">=1.17.3"
+  },
+  "devDependencies": {
+    "babel-loader": "^8.0.6",
+    "enzyme": "^3.10.0",
+    "jest": "^24.8.0",
+    "jest-cucumber": "^2.0.11",
+    "jest-environment-node": "^24.5.0",
+    "react-hot-loader": "^4.11.0",
+    "react-test-renderer": "^16.9.0",
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.3",
+    "webpack-dev-server": "^3.7.1",
+    "webpack-stream": "^5.2.1"
+  },
+  "dependencies": {
+    "@protozen/service": "^0.1.5",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-redux": "^7.1.1",
+    "redux": "^4.0.4",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0"
+  }
+}

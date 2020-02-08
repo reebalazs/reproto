@@ -1,0 +1,24 @@
+{
+  "version": "0.1.5",
+  "npmClient": "yarn",
+  "useWorkspaces": true,
+  "command": {
+    "publish": {
+      "ignoreChanges": [
+        "ignored-file",
+        "*.md"
+      ],
+      "tagVersionPrefix": "frontend-v",
+      "message": "frontend chore(release): publish"
+    },
+    "bootstrap": {
+      "ignore": "component-*",
+      "npmClientArgs": [
+        "--no-package-lock"
+      ]
+    }
+  },
+  "packages": [
+    "packages/*"
+  ]
+}
