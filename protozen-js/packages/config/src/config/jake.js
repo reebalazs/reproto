@@ -61,7 +61,7 @@ jake command        print help about the command namespace
 task('install', async () => {
   await exec(
     `cd ${ rootD };
-    yarn install`, { printStdout: true });
+    yarn install`);
 });
 
 task('eslint', async () => {

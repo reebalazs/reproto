@@ -125,7 +125,7 @@ source protozen-js/def-jake-helper.zsh
 ```
 
 Following that, you can execute the `jake` command from anywhere inside the working directory. You are allowed
-to be in any sub directory, or inside the `protozen-service` structure as well.
+to be in any sub directory, even outside the `protozen-js` structure.
 
 The `jake` command is the Javascript equivalent of the GNU Make utility and has similar features. It can be
 used to:
@@ -265,8 +265,8 @@ While you can also use packages directly as described above, in development mode
 as Jake tasks.
 This provides some advantages:
 
-- Can be executed from anywhere in the soucre tree, even from inside `protozen-services`. The execution is agnostic to the
-  current directory.
+- Can be executed from anywhere in the soucre tree, even from outside `protozen-js`. The execution is agnostic
+  to the current directory.
 
 - Can be combined with other jake tasks.
 

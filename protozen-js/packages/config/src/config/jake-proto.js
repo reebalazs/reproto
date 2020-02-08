@@ -13,8 +13,7 @@ const rootD = path.resolve(__dirname, '..', '..');
 const packageD = path.resolve(rootD, '..');
 const serviceD = path.resolve(packageD, 'service');
 const protoDistD = path.join(serviceD, 'dist');
-const rootServD = path.join(packageD, '..', '..', 'protozen-service');
-const protoSrcD = path.join(rootServD, 'apps', 'protozen_model', 'proto');
+const protoSrcD = path.join(packageD, '..', '..', 'protozen-proto');
 const protoServicesD = path.join(protoSrcD, 'services');
 const protoPublicD = path.join(protoSrcD, 'public');
 

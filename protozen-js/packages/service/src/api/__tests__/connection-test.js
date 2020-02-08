@@ -2,7 +2,7 @@
 /* global test, expect */
 
 import Debug from 'debug';
-import { Connection, AccountService } from '@protozen/service';
+import { Connection, HelloService } from '@protozen/service';
 import { create, put } from 'axios';
 
 const info = Debug('protozen:info:connection-test');
@@ -14,7 +14,7 @@ test('setup parameters', async () => {
     apitoken: 'NDIwaEpYZmZ1NkMveFROZnF4T1h6cFJCK3VROFpRbC9oODZ2eW5qeTNoaGxWamJnV1MrRm90Y1JHcmRRWlhDc2daT250cWF4NXVvPQ--',
     timeout: 5000
   });
-  connection.createService(AccountService);
+  connection.createService(HelloService);
   expect(create).toHaveBeenCalledWith({
     baseURL: "http://127.0.0.1:7070",
     headers: {
@@ -32,12 +32,8 @@ test('service methods', async () => {
     apikey: 'APIKEY',
     apitoken: 'APITOKEN'
   });
-  const accountService = connection.createService(AccountService);
-  expect(typeof accountService.create).toEqual('function');
-  expect(typeof accountService.list).toEqual('function');
-  expect(typeof accountService.lookup).toEqual('function');
-  expect(typeof accountService.get).toEqual('function');
-  expect(typeof accountService.listTasks).toEqual('function');
+  const helloService = connection.createService(HelloService);
+  expect(typeof helloService.world).toEqual('function');
  });
 
 test('error response', async () => {
@@ -49,9 +45,9 @@ test('error response', async () => {
     apikey: 'APIKEY',
     apitoken: 'APITOKEN'
   });
-  const accountService = connection.createService(AccountService);
+  const helloService = connection.createService(HelloService);
   const message = {};
-  await expect(accountService.create(message)).rejects.toThrow('Request failed with 500: ERROR');
+  await expect(helloService.world(message)).rejects.toThrow('Request failed with 500: ERROR');
   expect(create).toHaveBeenCalledWith({
     baseURL: 'http://127.0.0.1:8080',
     headers: {
@@ -62,7 +58,7 @@ test('error response', async () => {
     responseType: 'arraybuffer',
     timeout: 1000
   });
-  expect(put).toHaveBeenCalledWith('/api/1.0/accounts/create', Buffer.from([]));
+  expect(put).toHaveBeenCalledWith('/api/1.0/hellos/world', Buffer.from([]));
 });
 
 test('empty response', async () => {
@@ -74,9 +70,9 @@ test('empty response', async () => {
     apikey: 'APIKEY',
     apitoken: 'APITOKEN'
   });
-  const accountService = connection.createService(AccountService);
+  const helloService = connection.createService(HelloService);
   const message = {};
-  const response = await accountService.create(message);
+  const response = await helloService.world(message);
   expect(response).toEqual({});
   expect(create).toHaveBeenCalledWith({
     baseURL: 'http://127.0.0.1:8080',
@@ -88,5 +84,5 @@ test('empty response', async () => {
     responseType: 'arraybuffer',
     timeout: 1000
   });
-  expect(put).toHaveBeenCalledWith('/api/1.0/accounts/create', Buffer.from([]));
+  expect(put).toHaveBeenCalledWith('/api/1.0/hellos/world', Buffer.from([]));
 });

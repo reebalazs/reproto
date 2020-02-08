@@ -4,7 +4,7 @@
 import path from 'path';
 import Debug from 'debug';
 import inspector from 'inspector';
-import { hello, createAccount, createUser } from '@protozen/command';
+import { hello } from '@protozen/command';
 import { exec } from '@protozen/config';
 
 const info = Debug('protozen:info:jake');
@@ -12,15 +12,12 @@ const info = Debug('protozen:info:jake');
 const rootD = path.resolve(__dirname, '..', '..');
 
 task('default', () => {
-  info('Command namespace: command:hello, command:create-account, command:create-user more help with command:help');
+  info('Command namespace: command:hello, more help with command:help');
 });
 
 task('help', () => {
   info(`\
 Command namespace:
-
-jake command:create-account          create account
-jake command:create-user             create user
 
 jake command:hello                   say hello (used for testing)
 jake command:help                    print this help
@@ -70,12 +67,4 @@ async function runCommand(commandName: string, commandFunc: function, args: Arra
 
 task('hello', (...args) => {
   runCommand('hello', hello, args);
-});
-
-task('create-account', async (...args) => {
-  await runCommand('create-account', createAccount, args);
-});
-
-task('create-user', async (...args) => {
-  await runCommand('create-user', createUser, args);
 });

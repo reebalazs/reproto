@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+package services;
+
+message Error {
+    optional int32 code = 1;
+    optional string message = 2;
+}
