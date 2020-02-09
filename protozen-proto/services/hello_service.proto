@@ -2,7 +2,7 @@ syntax = "proto2";
 
 package services;
 
-// hello/world
+// hellos/world
 message HelloWorldRequest {
     optional string world = 1;
 }
