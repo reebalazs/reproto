@@ -23,7 +23,7 @@ task('build', ['link'], async () => {
   await exec(
     `cd ${ rootD };
     \`yarn bin lerna\` \
-      build \
+      run build \
     `);
 });
 
