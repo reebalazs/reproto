@@ -1,4 +1,4 @@
-# from zsh:
+# from bash:
 #   source protozen-js/def-jake-helper.bash
 
 function jake() {
