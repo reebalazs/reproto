@@ -1,0 +1,61 @@
+{
+  "name": "@protozen/get-schwifty",
+  "description": "Get Schwifty example app for protozen",
+  "version": "0.1.5",
+  "license": "BSD-3-Clause",
+  "homepage": "https://https://github.com/reebalazs/protozen",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:reebalazs/protozen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/reebalazs/protozen/issues"
+  },
+  "author": "Balazs Ree <ree@greenfinity.hu>",
+  "engines": {
+    "node": ">=14.17.1",
+    "yarn": ">=1.17.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-proposal-export-default-from": "^7.5.2",
+    "@babel/plugin-transform-runtime": "^7.6.2",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.6.0",
+    "@protozen/service": "^0.1.5",
+    "@rescript/react": "^0.10.3",
+    "babel-eslint": "^10.0.3",
+    "babel-loader": "^8.2.2",
+    "bs-platform": "^9.0.2",
+    "debug": "^4.1.1",
+    "enzyme": "^3.11.0",
+    "eslint-plugin-flowtype": "^4.3.0",
+    "eslint-plugin-react": "^7.16.0",
+    "jest": "^27.0.4",
+    "jest-cucumber": "^3.0.1",
+    "jest-environment-node": "^27.0.3",
+    "react-hot-loader": "^4.13.0",
+    "react-test-renderer": "^17.0.2",
+    "webpack": "^5.39.1",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2",
+    "webpack-stream": "^6.1.2"
+  },
+  "dependencies": {
+    "@jsiebern/bs-material-ui": "^2.1.0",
+    "@material-ui/core": "^4.11.4",
+    "@material-ui/icons": "^4.11.2",
+    "@mscharley/bs-material-ui-icons": "^2.0.0",
+    "bs-platform": "^9.0.2",
+    "lerna": "^3.18.4",
+    "protobufjs": "^6.8.8",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-player": "^2.9.0",
+    "rescript": "^9.1.4",
+    "supports-color": "^7.0.0"
+  }
+}
