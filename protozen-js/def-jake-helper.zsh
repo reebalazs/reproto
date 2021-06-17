@@ -8,6 +8,7 @@ function jake_func() {
     cd ..
     if [[ "`pwd`" == '/' ]] then
       echo "Not in a jake working directory"
+      cd "$ORIG"
       return
     fi
   done

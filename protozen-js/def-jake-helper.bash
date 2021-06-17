@@ -8,7 +8,8 @@ function jake() {
     cd ..
     if [ "`pwd`" == '/' ];
      then
-      echo "Not in a protozen working directory"
+      echo "Not in a jake working directory"
+      cd "$ORIG"
       return
     fi
   done
