@@ -13,7 +13,7 @@
   },
   "author": "Balazs Ree <ree@greenfinity.hu>",
   "engines": {
-    "node": ">=12.12.0",
+    "node": ">=14.17.1",
     "yarn": ">=1.17.3"
   },
   "bin": {

@@ -4,7 +4,7 @@
     "packages/*"
   ],
   "engines": {
-    "node": ">=12.12.0",
+    "node": ">=14.15.0",
     "yarn": ">=1.17.3"
   },
   "devDependencies": {
@@ -26,7 +26,9 @@
     "jest-cli": "^24.9.0",
     "lerna": "^3.18.4",
     "protobufjs": "^6.8.8",
-    "supports-color": "^7.0.0"
+    "rescript": "^9.1.4",
+    "supports-color": "^7.0.0",
+    "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.6.2",
