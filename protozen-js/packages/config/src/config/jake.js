@@ -24,7 +24,7 @@ const rootD = path.resolve(__dirname, "..", "..", "..", "..");
 
 task("default", () => {
   info(
-    "Namespaces: web, get-schwifty, service, command. Targets: install, protoc, protodesc, lint, help"
+    "Namespaces: web, get-schwifty, leaderboard, service, command. Targets: install, protoc, protodesc, lint, help"
   );
 });
 
@@ -32,7 +32,9 @@ task("help", () => {
   info(`\
 Namespaces:
 
-web:                @protozen/web package
+web:                @protozen/web blank app
+get-schwifty:       @protozen/get-schwifty example app
+leaderboard:        @protozen/leaderboard app
 service:            @protozen/service package
 command:            @protozen/command package
 
@@ -46,7 +48,7 @@ jake test           test the code
 jake help           print this help
 
 jake protodesc      compile the proto descriptor (for debuggers)
-jake protomap       compile the proto view mappint (for Charles Proxy)
+jake protomap       compile the proto view mapping (for Charles Proxy)
 jake eslint         eslint, part of lint
 jake flow           flow, part of lint
 jake jest           same as test
@@ -55,6 +57,7 @@ Namespaces help:
 
 jake web            print help about the web namespace
 jake get-schwifty   print help about the get-schwifty namespace
+jake leaderboard    print help about the leaderboard namespace
 jake service        print help about the service namespace
 jake command        print help about the command namespace
 
@@ -149,6 +152,14 @@ namespace("get-schwifty", () => {
 
 task("get-schwifty", () => {
   jake.Task["get-schwifty:default"].invoke();
+});
+
+namespace("leaderboard", () => {
+  require("../../../leaderboard/src/config/jake.js");
+});
+
+task("leaderboard", () => {
+  jake.Task["leaderboard:default"].invoke();
 });
 
 namespace("service", () => {
