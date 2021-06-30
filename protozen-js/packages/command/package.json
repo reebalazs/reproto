@@ -3,7 +3,7 @@
   "description": "Command scripts for protozen",
   "version": "0.1.5",
   "license": "BSD-3-Clause",
-  "homepage": "https://https://github.com/reebalazs/protozen",
+  "homepage": "https://github.com/reebalazs/protozen",
   "repository": {
     "type": "git",
     "url": "git@github.com:reebalazs/protozen.git"
