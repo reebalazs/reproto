@@ -1,0 +1,33 @@
+{
+  "name": "@protozen/proto-demo",
+  "$schema": "https://raw.githubusercontent.com/rescript-lang/rescript-compiler/master/docs/docson/build-schema.json",
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    }
+  ],
+  "package-specs": [
+    {
+      "module": "es6",
+      "in-source": true
+    }
+  ],
+  "suffix": ".bs.js",
+  "namespace": true,
+  "bs-dependencies": [
+    "@protozen/service",
+    "@rescript/react",
+    "@ryyppy/rescript-promise",
+    "@jsiebern/bs-material-ui",
+    "@mscharley/bs-material-ui-icons",
+    "bs-css",
+    "bs-css-emotion"
+  ],
+  "ppx-flags": [],
+  "reason": { "react-jsx": 3 },
+  "warnings": {
+    "error": "+101"
+  },
+  "refmt": 3
+}

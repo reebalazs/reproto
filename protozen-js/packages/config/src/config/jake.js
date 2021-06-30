@@ -25,7 +25,7 @@ const rootD = path.resolve(__dirname, "..", "..", "..", "..");
 
 task("default", () => {
   info(
-    "Namespaces: web, get-schwifty, leaderboard, service, command. Targets: install, protoc, protodesc, lint, help"
+    "Namespaces: web, get-schwifty, leaderboard, proto-demo, service, command. Targets: install, protoc, protodesc, lint, help"
   );
 });
 
@@ -37,6 +37,7 @@ web:                @protozen/web blank app
 nextjs-web:         @protozen/nextjs-web blank app
 get-schwifty:       @protozen/get-schwifty example app
 leaderboard:        @protozen/leaderboard app
+proto-demo:         @protozen/proto-demo app
 service:            @protozen/service package
 command:            @protozen/command package
 
@@ -61,6 +62,7 @@ jake web            print help about the web namespace
 jake nextjs-web     print help about the nextjs-web namespace
 jake get-schwifty   print help about the get-schwifty namespace
 jake leaderboard    print help about the leaderboard namespace
+jake proto-demo     print help about the proto-demo namespace
 jake service        print help about the service namespace
 jake command        print help about the command namespace
 
@@ -197,6 +199,14 @@ task("leaderboard", () => {
   jake.Task["leaderboard:default"].invoke();
 });
 
+namespace("proto-demo", () => {
+  require("../../../proto-demo/src/config/jake.js");
+});
+
+task("proto-demo", () => {
+  jake.Task["proto-demo:default"].invoke();
+});
+
 namespace("service", () => {
   require("../../../service/src/config/jake.js");
 });
@@ -255,6 +265,7 @@ const executeWait = (t: Object) => {
 
 task("rescript", async () => {
   await invokeWait(jake.Task["service:rescript-this"]);
+  await invokeWait(jake.Task["proto-demo:rescript-this"]);
   await invokeWait(jake.Task["leaderboard:rescript-this"]);
   await invokeWait(jake.Task["get-schwifty:rescript-this"]);
   await invokeWait(jake.Task["nextjs-web:rescript-this"]);
