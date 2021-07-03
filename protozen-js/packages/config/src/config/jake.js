@@ -186,3 +186,58 @@ namespace("command", () => {
 task("command", () => {
   jake.Task["command:default"].invoke();
 });
+
+const invokeWait = (t: Object) => {
+  return new Promise((resolve, reject) => {
+    t.addListener("complete", () => {
+      resolve();
+    });
+    t.invoke();
+  });
+};
+
+const executeWait = (t: Object) => {
+  return new Promise((resolve, reject) => {
+    t.addListener("complete", () => {
+      resolve();
+    });
+    t.execute();
+  });
+};
+
+task("rescript", async () => {
+  await invokeWait(jake.Task["service:rescript"]);
+  await invokeWait(jake.Task["leaderboard:rescript"]);
+});
+
+const watch = (mutex: Object, waiting: Object, key: string, path, f) => {
+  waiting[key] = 0;
+  chokidar
+    .watch(path, {
+      cwd: rootD,
+    })
+    .on("all", async (event, path) => {
+      waiting[key]++;
+      if (waiting[key] === 1) {
+        await mutex.runExclusive(f);
+      }
+      waiting[key]--;
+    });
+};
+
+task("rescript-watch", () => {
+  return new Promise(() => {
+    const mutex = new Mutex();
+    const waiting = {};
+    watch(
+      mutex,
+      waiting,
+      "service",
+      ["packages/service/src/**/*.res", "packages/service/dest/**/*.res"],
+      async () => {
+        await executeWait(jake.Task["service:rescript"]);
+        await executeWait(jake.Task["proto-demo:rescript"]);
+      }
+    );
+  });
+});

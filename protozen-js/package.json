@@ -22,7 +22,7 @@
     "eslint-plugin-flowtype": "^4.3.0",
     "eslint-plugin-react": "^7.16.0",
     "flow-bin": "^0.108.0",
-    "jake": "^8.1.1",
+    "jake": "^10.8.2",
     "jest-cli": "^24.9.0",
     "lerna": "^3.18.4",
     "protobufjs": "^6.8.8",

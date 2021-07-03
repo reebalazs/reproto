@@ -25,6 +25,28 @@ jake leaderboard:help       print this help
   `);
 });
 
+task("rescript", async () => {
+  await exec(
+    `cd ${rootD};
+    \`yarn bin rescript\` \
+        build \
+        -with-deps \
+    `
+  );
+});
+
+task("rescript-watch", async () => {
+  console.log("exec leaderboard");
+  await exec(
+    `cd ${rootD};
+    \`yarn bin rescript\` \
+        build \
+        -w \
+        -with-deps \
+    `
+  );
+});
+
 task("dev", async () => {
   const configFile = path.join(rootD, "src", "config", "webpack.config.js");
   await exec(
