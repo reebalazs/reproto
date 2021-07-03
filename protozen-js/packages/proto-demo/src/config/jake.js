@@ -1,5 +1,5 @@
 // @flow
-/* global task, jake */
+/* global task jake */
 
 import path from "path";
 import Debug from "debug";
