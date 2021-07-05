@@ -1,5 +1,5 @@
 // @flow
-/* global task */
+/* global task, jake */
 
 import path from "path";
 import Debug from "debug";
@@ -35,26 +35,8 @@ task("rescript", async () => {
   );
 });
 
-task("rescript-watch", async () => {
-  console.log("exec leaderboard");
-  await exec(
-    `cd ${rootD};
-    \`yarn bin rescript\` \
-        build \
-        -w \
-        -with-deps \
-    `
-  );
-});
-
-task("dev", async () => {
+task("dev", "rescript", async () => {
   const configFile = path.join(rootD, "src", "config", "webpack.config.js");
-  await exec(
-    `cd ${rootD};
-    \`yarn bin rescript\` \
-        build \
-    `
-  );
   exec(
     `cd ${rootD};
     \`yarn bin webpack\` \
@@ -63,12 +45,5 @@ task("dev", async () => {
        --progress \
     `
   );
-  exec(
-    `cd ${rootD};
-    \`yarn bin rescript\` \
-        build \
-        -w \
-    `
-  );
-  await new Promise(() => {});
+  jake.Task["rescript-watch"].invoke();
 });

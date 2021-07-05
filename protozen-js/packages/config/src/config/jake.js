@@ -232,6 +232,24 @@ task("rescript-watch", () => {
     watch(
       mutex,
       waiting,
+      "leaderboard",
+      ["packages/leaderboard/src/**/*.res"],
+      async () => {
+        await executeWait(jake.Task["leaderboard:rescript"]);
+      }
+    );
+    watch(
+      mutex,
+      waiting,
+      "get-schwifty",
+      ["packages/get-schwifty/src/**/*.res"],
+      async () => {
+        await executeWait(jake.Task["get-schwifty:rescript"]);
+      }
+    );
+    watch(
+      mutex,
+      waiting,
       "service",
       ["packages/service/src/**/*.res", "packages/service/dest/**/*.res"],
       async () => {

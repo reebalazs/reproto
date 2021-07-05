@@ -1,5 +1,5 @@
 // @flow
-/* global task */
+/* global task, jake */
 
 import path from "path";
 import Debug from "debug";
@@ -25,14 +25,18 @@ jake get-schwifty:help       print this help
   `);
 });
 
-task("dev", async () => {
-  const configFile = path.join(rootD, "src", "config", "webpack.config.js");
+task("rescript", async () => {
   await exec(
     `cd ${rootD};
     \`yarn bin rescript\` \
         build \
+        -with-deps \
     `
   );
+});
+
+task("dev", "rescript", async () => {
+  const configFile = path.join(rootD, "src", "config", "webpack.config.js");
   exec(
     `cd ${rootD};
     \`yarn bin webpack\` \
@@ -41,12 +45,5 @@ task("dev", async () => {
        --progress \
     `
   );
-  exec(
-    `cd ${rootD};
-    \`yarn bin rescript\` \
-        build \
-        -w \
-    `
-  );
-  await new Promise(() => {});
+  jake.Task["rescript-watch"].invoke();
 });

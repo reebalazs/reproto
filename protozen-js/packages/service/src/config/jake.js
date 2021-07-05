@@ -32,14 +32,3 @@ task("rescript", async () => {
     `
   );
 });
-
-task("rescript-watch", async () => {
-  await exec(
-    `cd ${rootD};
-    \`yarn bin rescript\` \
-        build \
-        -w \
-        -with-deps \
-    `
-  );
-});
