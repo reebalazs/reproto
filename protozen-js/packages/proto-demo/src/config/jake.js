@@ -44,5 +44,5 @@ task("dev", ["rescript-all"], async () => {
        --progress \
     `
   );
-  jake.Task["rescript-watch"].invoke();
+  await jake.Task["rescript-watch"].invoke();
 });
