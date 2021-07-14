@@ -17,7 +17,8 @@
     "yarn": ">=1.17.3"
   },
   "bin": {
-    "hello": "src/script/hello-script.js"
+    "hello": "src/script/hello-script.js",
+    "promise-test": "src/script/promise-test.js"
   },
   "main": "src/index",
   "devDependencies": {
@@ -28,6 +29,7 @@
   },
   "dependencies": {
     "@protozen/service": "^0.1.5",
+    "@ryyppy/rescript-promise": "^2.1.0",
     "yargs": "^14.0.0"
   }
 }

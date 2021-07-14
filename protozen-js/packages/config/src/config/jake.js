@@ -358,5 +358,14 @@ task("rescript-watch", () => {
         await executeWait(jake.Task["command:rescript-this"]);
       }
     );
+    watch(
+      mutex,
+      waiting,
+      "command",
+      ["packages/command/src/**/*.res"],
+      async () => {
+        await executeWait(jake.Task["command:rescript"]);
+      }
+    );
   });
 });
