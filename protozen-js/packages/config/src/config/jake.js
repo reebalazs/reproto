@@ -269,6 +269,7 @@ task("rescript", async () => {
   await invokeWait(jake.Task["leaderboard:rescript-this"]);
   await invokeWait(jake.Task["get-schwifty:rescript-this"]);
   await invokeWait(jake.Task["nextjs-web:rescript-this"]);
+  await invokeWait(jake.Task["command:rescript-this"]);
 });
 
 task("rescript-build-all", ["rescript"]);
@@ -343,6 +344,18 @@ task("rescript-watch", () => {
       async () => {
         await executeWait(jake.Task["service:rescript-this"]);
         await executeWait(jake.Task["proto-demo:rescript-this"]);
+        await executeWait(jake.Task["service:rescript"]);
+        await executeWait(jake.Task["proto-demo:rescript"]);
+        await executeWait(jake.Task["command:rescript-this"]);
+      }
+    );
+    watch(
+      mutex,
+      waiting,
+      "command",
+      ["packages/service/src/**/*.res"],
+      async () => {
+        await executeWait(jake.Task["command:rescript-this"]);
       }
     );
   });
