@@ -187,27 +187,43 @@ task("command", () => {
   jake.Task["command:default"].invoke();
 });
 
+const addTaskPromiseListeners = (
+  t: Object,
+  resolve: Function,
+  reject: Function
+) => {
+  const onComplete = () => {
+    t.removeListener("complete", onComplete);
+    resolve();
+  };
+  t.addListener("complete", onComplete);
+  const onError = (error: Error) => {
+    t.removeListener("error", onError);
+    reject(error);
+  };
+  t.addListener("error", onError);
+};
+
 const invokeWait = (t: Object) => {
   return new Promise((resolve, reject) => {
-    t.addListener("complete", () => {
-      resolve();
-    });
+    addTaskPromiseListeners(t, resolve, reject);
     t.invoke();
   });
 };
 
 const executeWait = (t: Object) => {
   return new Promise((resolve, reject) => {
-    t.addListener("complete", () => {
-      resolve();
-    });
+    addTaskPromiseListeners(t, resolve, reject);
     t.execute();
   });
 };
 
 task("rescript", async () => {
-  await invokeWait(jake.Task["service:rescript"]);
-  await invokeWait(jake.Task["leaderboard:rescript"]);
+  try {
+    await invokeWait(jake.Task["service:rescript"]);
+    await invokeWait(jake.Task["leaderboard:rescript"]);
+    await invokeWait(jake.Task["command:rescript"]);
+  } catch (e) {}
 });
 
 const watch = (mutex: Object, waiting: Object, key: string, path, f) => {
@@ -219,7 +235,11 @@ const watch = (mutex: Object, waiting: Object, key: string, path, f) => {
     .on("all", async (event, path) => {
       waiting[key]++;
       if (waiting[key] === 1) {
-        await mutex.runExclusive(f);
+        await mutex.runExclusive(async () => {
+          try {
+            await f();
+          } catch (e) {}
+        });
       }
       waiting[key]--;
     });
