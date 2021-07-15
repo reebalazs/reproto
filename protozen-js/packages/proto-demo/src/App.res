@@ -17,7 +17,7 @@ let app = () => {
   let sendMessage = () => {
     connection
     ->HelloService.world({world: message})
-    ->then(({world}) => {
+    ->then(({v: {world}}) => {
       setResults(_ => list{world ++ " @ " ++ Js.Date.make()->Js.Date.toTimeString, ...results})
       resolve()
     })

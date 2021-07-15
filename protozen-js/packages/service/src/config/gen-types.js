@@ -91,17 +91,30 @@ ${" ".repeat(indent)}  @as("${decapitalize(fieldName)}") ${fieldName}: ${
 function emitService(stream: Object, name, data, packageName, indent) {
   stream.write(`\
 ${" ".repeat(indent)}module ${capitalize(name)} = {
+${" ".repeat(indent)}  module WrappedService = {
 `);
   for (const methodName in data.methods) {
     const method = data.methods[methodName];
+    const decapMethodName = decapitalize(methodName);
     stream.write(`\
-${" ".repeat(indent)}  @send external ${decapitalize(
-      methodName
-    )}: (ProtozenService.Connection.connection, ${decapitalize(
+${" ".repeat(
+  indent
+)}    @send external ${decapMethodName}: (ProtozenService.Connection.connection, ${decapitalize(
       method.requestType
     )}) => Promise.t<${decapitalize(method.responseType)}> = "${
       packageName ? packageName + "/" : ""
-    }${decapitalize(methodName)}"
+    }${decapMethodName}"
+`);
+  }
+  stream.write(`\
+${" ".repeat(indent)}  }
+`);
+  for (const methodName in data.methods) {
+    const decapMethodName = decapitalize(methodName);
+    stream.write(`\
+${" ".repeat(
+  indent
+)}  let ${decapMethodName} = (connection, request) => WrappedService.${decapMethodName}(connection, request)->ProtozenService.Connection.wrapMethod
 `);
   }
   stream.write(`${" ".repeat(indent)}}
