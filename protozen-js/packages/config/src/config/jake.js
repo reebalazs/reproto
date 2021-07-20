@@ -296,7 +296,7 @@ task("rescript-watch", () => {
       mutex,
       waiting,
       "service",
-      ["packages/service/src/**/*.res", "packages/service/dest/**/*.res"],
+      ["packages/service/src/**/*.res", "packages/service/dist/**/*.res"],
       async () => {
         await executeWait(jake.Task["service:rescript"]);
         await executeWait(jake.Task["proto-demo:rescript"]);
