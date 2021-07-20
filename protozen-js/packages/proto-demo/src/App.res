@@ -16,7 +16,8 @@ let app = () => {
   let connection = createConnection(~url="http://127.0.0.1:8030", ~protoJs=protoJs, ())
   let sendMessage = () => {
     connection
-    ->HelloService.world({world: message})
+//    ->HelloService.World.call({world: message})
+    ->HelloService.World.make(~world=message, ())
     ->then(({v: {world}}) => {
       setResults(_ => list{world ++ " @ " ++ Js.Date.make()->Js.Date.toTimeString, ...results})
       resolve()

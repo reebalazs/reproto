@@ -104,6 +104,7 @@ const jestConfigBase = {
   verbose: false,
   setupFiles: [path.resolve(__dirname, "jestSetup.js")],
   globalSetup: path.resolve(__dirname, "jestGlobalSetup.js"),
+  transformIgnorePatterns: ["node_modules/@glennsl/bs-test/"],
 };
 
 task("jest", async () => {

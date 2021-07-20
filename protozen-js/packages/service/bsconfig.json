@@ -19,8 +19,7 @@
   ],
   "suffix": ".bs.js",
   "namespace": true,
-  "bs-dependencies": ["@ryyppy/rescript-promise"],
-  "bs-dev-dependencies": ["@glennsl/bs-jest"],
+  "bs-dependencies": ["@ryyppy/rescript-promise", "@glennsl/bs-jest"],
   "ppx-flags": [],
   "reason": { "react-jsx": 3 },
   "warnings": {
