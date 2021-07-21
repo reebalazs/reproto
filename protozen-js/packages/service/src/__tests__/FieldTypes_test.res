@@ -2,31 +2,34 @@ open Belt
 open Jest
 open Expect
 
-describe("Encoding proto field types", () => {
+describe("Protobuf field types support", () => {
   open Proto.TypeTest
 
-  test("trivia", () => {
-    let txt = "TXT"
-    expect(txt) |> toBe("TXT")
-  })
-
   describe("typeful", () => {
-    let v: Typeful.t = { stringField: "TXT",
-    int32Field: 0,
+    let testTypeSupport = (v: Typeful.t) => {
+      test("string", () => expect(v.stringField) |> toBe("The answer"))
+      test("int32", () => expect(v.int32Field) |> toBe(42))
+      test("verify", () => expect(v->Typeful.verify) |> toBe(None))
+      test("encode/decode", () => expect(v->Typeful.encode->Typeful.decode) |> toEqual(v))
     }
-    // let encoded = typeful->typefulEncode
-    // Js.log("Here")
-    test("string value", () => expect(v.stringField) |> toBe("TXT"))
-    test("int value", () => expect(v.int32Field) |> toBe(0))
 
+    describe("make", () =>
+      Typeful.make(~stringField="The answer", ~int32Field=42, ())->testTypeSupport
+    )
+
+    describe("as record", () =>
+      {
+        stringField: "The answer",
+        int32Field: 42,
+      }->testTypeSupport
+    )
+
+    describe("defaults", () => {
+      let v = Typeful.make(())
+      test("string", () => expect(v.stringField) |> toBe(""))
+      test("int32", () => expect(v.int32Field) |> toBe(0))
+      test("encode empty", () => expect(v->Typeful.encode->Js_typed_array.ArrayBuffer.byteLength) |> toBe(4))
+      test("encode/decode", () => expect(v->Typeful.encode->Typeful.decode) |> toEqual(v))
+    })
   })
-
-  describe("typeful options with Make", () => {
-    let v = Typeful.make(~stringField="TXT", ())
-    // let encoded = v->typefulEncode
-    test("specified value", () => expect(v.stringField) |> toBe("TXT"))
-    test("optional value", () => expect(v.int32Field) |> toBe(0))
-  })
-
-
 })

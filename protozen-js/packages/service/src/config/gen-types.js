@@ -62,7 +62,7 @@ export async function genTypes(
   await new Promise((resolve) => {
     stream.once("open", function (fd) {
       emitPrologue(stream);
-      emitPackage(stream, data);
+      emitPackage(stream, data, protoJsPath);
       emitEpilogue(stream, protoJsPath);
       resolve();
     });
@@ -115,7 +115,42 @@ function emitFieldRecord(stream: Object, fields: Object, indent) {
   stream.write(`}`);
 }
 
-function emitMessageClass(stream: Object, name, data, indent) {
+function patchName(name) {
+  if (name === "public") {
+    // mangle "public" package id to work before the annotation has run
+    return "public_";
+  } else {
+    return name;
+  }
+}
+
+function emitScopeDirective(stream: Object, packageName: string) {
+  const splitPath = packageName.split(".");
+  // take off the name from the end
+  splitPath.pop();
+  if (splitPath.length > 0) {
+    stream.write(`@scope(`);
+    if (splitPath.length > 1) {
+      stream.write(`(`);
+      for (const segment of splitPath) {
+        stream.write(`"${patchName(segment)}", `);
+      }
+      stream.write(`)`);
+    } else {
+      stream.write(`"${patchName(splitPath[0])}"`);
+    }
+    stream.write(`) `);
+  }
+}
+
+function emitMessageClass(
+  stream: Object,
+  name,
+  data,
+  packageName,
+  protoJsPath: string,
+  indent
+) {
   stream.write(`\
 ${" ".repeat(indent)}module ${capitalize(name)} = {
 ${" ".repeat(indent)}  type t = {
@@ -135,6 +170,26 @@ ${" ".repeat(indent)}  let make = (`);
   stream.write(`) => `);
   emitFieldRecord(stream, data.fields, indent);
   stream.write(`
+${" ".repeat(indent)}  module Raw = {
+${" ".repeat(indent)}    `);
+  emitProtoModuleDirective(stream, protoJsPath);
+  stream.write(`@val `);
+  emitScopeDirective(stream, packageName);
+  stream.write(`external messageClass: _ = "${name}"
+${" ".repeat(
+  indent
+)}    @module("@protozen/service/src/api/proto-type-support") external encode: (t, _) => Js_typed_array.array_buffer = "e"
+${" ".repeat(
+  indent
+)}    @module("@protozen/service/src/api/proto-type-support") external verify: (t, _) => option<string> = "v"
+${" ".repeat(
+  indent
+)}    @module("@protozen/service/src/api/proto-type-support") external decode: (Js_typed_array.ArrayBuffer.t, _) => t = "d"
+${" ".repeat(indent)}  }
+${" ".repeat(indent)}  let raw_messageClass = Raw.messageClass
+${" ".repeat(indent)}  let encode = v => Raw.encode(v, raw_messageClass)
+${" ".repeat(indent)}  let verify = v => Raw.verify(v, raw_messageClass)
+${" ".repeat(indent)}  let decode = b => Raw.decode(b, raw_messageClass)
 ${" ".repeat(indent)}}
 `);
 }
@@ -179,16 +234,23 @@ ${" ".repeat(indent)}}
 `);
 }
 
-function emitEpilogue(stream: Object, protoJsPath) {
+function emitProtoModuleDirective(stream: Object, protoJsPath: string) {
+  stream.write(`@module("${protoJsPath}") `);
+}
+
+function emitEpilogue(stream: Object, protoJsPath: string) {
   stream.write(`\
 type protoJs = unit
-@module("${protoJsPath}") @val external protoJs: protoJs = "default"
+`);
+  emitProtoModuleDirective(stream, protoJsPath);
+  stream.write(`@val external protoJs: protoJs = "default"
 `);
 }
 
 function emitPackage(
   stream: Object,
   dataRoot: Object,
+  protoJsPath: string,
   prefix: string = "",
   indent: number = 0
 ) {
@@ -201,11 +263,11 @@ ${" ".repeat(indent - 2)}module ${capitalize(prefix)} = {
     const data = dataRoot.nested[name];
     const packageName = prefix !== "" ? `${prefix}.${name}` : name;
     if (data.fields) {
-      emitMessageClass(stream, name, data, indent);
+      emitMessageClass(stream, name, data, packageName, protoJsPath, indent);
     } else if (data.methods) {
       emitService(stream, name, data, packageName, dataRoot, indent);
     } else if (data.nested) {
-      emitPackage(stream, data, packageName, indent + 2);
+      emitPackage(stream, data, protoJsPath, packageName, indent + 2);
     }
   }
   if (prefix) {
