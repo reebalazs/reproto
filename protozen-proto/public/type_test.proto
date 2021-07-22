@@ -3,8 +3,13 @@ syntax = "proto2";
 
 package typeTest;
 
+message Basic {
+  optional string stringField = 1;
+  optional int32 int32Field = 2;
+}
+
 message Typeful {
   optional string stringField = 1;
   optional int32 int32Field = 2;
-  // optional int64 int64Field = 3;
+  optional int64 int64Field = 3;
 }

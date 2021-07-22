@@ -74,7 +74,9 @@ describe("Protobuf services support", () => {
           |> getArrayIndex(0)
           |> getArrayIndex(1)
           |> HelloWorldRequest.decode
-          |> (v => v.world |> expect |> toEqual("The answer"))
+          |> (v => v.world)
+          |> expect
+          |> toEqual("The answer")
         ),
       )
       testAsync(

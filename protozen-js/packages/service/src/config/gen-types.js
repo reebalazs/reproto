@@ -76,7 +76,7 @@ function mapFieldType(fieldType: string) {
   const result = {
     string: "string",
     int32: "int",
-    // int64: "int64",
+    int64: "int64",
   }[fieldType];
   if (fieldType === undefined) {
     throw new Error(`Unsupported field type [${fieldType}]`);
@@ -88,9 +88,9 @@ function defaultFieldValue(fieldType: string) {
   const result = {
     string: '""',
     int32: "0",
-    // int64: "0",
+    int64: 'Int64.of_string("0")',
   }[fieldType];
-  if (fieldType === undefined) {
+  if (result === undefined) {
     throw new Error(`Unsupported field type [${fieldType}]`);
   }
   return result;
@@ -153,6 +153,7 @@ function emitMessageClass(
 ) {
   stream.write(`\
 ${" ".repeat(indent)}module ${capitalize(name)} = {
+${" ".repeat(indent)}  open ProtoTypeSupport
 ${" ".repeat(indent)}  type t = {
 `);
   for (const fieldName in data.fields) {
@@ -170,26 +171,40 @@ ${" ".repeat(indent)}  let make = (`);
   stream.write(`) => `);
   emitFieldRecord(stream, data.fields, indent);
   stream.write(`
-${" ".repeat(indent)}  module Raw = {
-${" ".repeat(indent)}    `);
+${" ".repeat(indent)}  `);
   emitProtoModuleDirective(stream, protoJsPath);
   stream.write(`@val `);
   emitScopeDirective(stream, packageName);
   stream.write(`external messageClass: _ = "${name}"
-${" ".repeat(
-  indent
-)}    @module("@protozen/service/src/api/proto-type-support") external encode: (t, _) => Js_typed_array.array_buffer = "e"
-${" ".repeat(
-  indent
-)}    @module("@protozen/service/src/api/proto-type-support") external verify: (t, _) => option<string> = "v"
-${" ".repeat(
-  indent
-)}    @module("@protozen/service/src/api/proto-type-support") external decode: (Js_typed_array.ArrayBuffer.t, _) => t = "d"
+${" ".repeat(indent)}  let encode = v => {
+${" ".repeat(indent)}    Js.Obj.empty()
+`);
+  for (const fieldName in data.fields) {
+    const field = data.fields[fieldName];
+    stream.write(`\
+${" ".repeat(indent)}    ->FromRecord.${field["type"]}("${decapitalize(
+      fieldName
+    )}", v)
+`);
+  }
+  stream.write(`\
+${" ".repeat(indent)}    ->encode(messageClass)
 ${" ".repeat(indent)}  }
-${" ".repeat(indent)}  let raw_messageClass = Raw.messageClass
-${" ".repeat(indent)}  let encode = v => Raw.encode(v, raw_messageClass)
-${" ".repeat(indent)}  let verify = v => Raw.verify(v, raw_messageClass)
-${" ".repeat(indent)}  let decode = b => Raw.decode(b, raw_messageClass)
+${" ".repeat(indent)}  let verify = (v: t) => verify(v, messageClass)
+${" ".repeat(indent)}  let decode = (b): t => {
+${" ".repeat(indent)}    let m = decode(b, messageClass)
+${" ".repeat(indent)}    make(())
+`);
+  for (const fieldName in data.fields) {
+    const field = data.fields[fieldName];
+    stream.write(`\
+${" ".repeat(indent)}    ->ToRecord.${field["type"]}("${decapitalize(
+      fieldName
+    )}", m)
+`);
+  }
+  stream.write(`\
+${" ".repeat(indent)}  }
 ${" ".repeat(indent)}}
 `);
 }
@@ -207,7 +222,6 @@ ${" ".repeat(indent)}module ${capitalize(name)} = {
 `);
   for (const methodName in data.methods) {
     const method = data.methods[methodName];
-    // XXX request in same module. TBD lookup from other modules?
     const requestData = dataRoot.nested[method.requestType];
     stream.write(`\
 ${" ".repeat(indent)}  module ${capitalize(methodName)} = {
