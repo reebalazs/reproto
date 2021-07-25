@@ -70,43 +70,95 @@ export async function genTypes(
   stream.close();
 }
 
+function lookupFrom(data: Object, splitPath: Array<string>) {
+  if (splitPath.length === 0) {
+    return data;
+  } else if (data.nested) {
+    const name = splitPath.shift();
+    const nextData = data.nested[name];
+    if (nextData) {
+      return lookupFrom(data.nested[name], splitPath);
+    }
+  }
+}
+
 function emitPrologue(stream: Object) {}
 
-function mapFieldType(fieldType: string) {
+function mapFieldType(
+  fieldType: string,
+  lookup: Function
+): { type: string, name: string } {
   const result = {
     string: "string",
     int32: "int",
     int64: "int64",
   }[fieldType];
-  if (fieldType === undefined) {
-    throw new Error(`Unsupported field type [${fieldType}]`);
+  if (result !== undefined) {
+    return { type: fieldType, name: result };
+  } else {
+    // enum or message type
+    const data = lookup(fieldType);
+    if (!data) {
+      throw new Error(`Field type not found [${fieldType}]`);
+    }
+    let type;
+    if (data.values) {
+      type = "enum";
+      // } else if (data.fields) {
+      //   fieldType = 'message';
+    } else {
+      throw new Error(`Field type not supported [${fieldType}]`);
+    }
+    return { type, name: `${fieldType}.t` };
   }
-  return result;
 }
 
-function defaultFieldValue(fieldType: string) {
+function defaultFieldValue(fieldType: string, lookup: Function) {
   const result = {
     string: '""',
     int32: "0",
     int64: 'Int64.of_string("0")',
   }[fieldType];
   if (result === undefined) {
-    throw new Error(`Unsupported field type [${fieldType}]`);
+    // enum or message type
+    const data = lookup(fieldType);
+    if (!data) {
+      throw new Error(`Field type not found [${fieldType}]`);
+    }
+    if (data.values) {
+      // enum
+      return `${fieldType}.${Object.keys(data.values)[0]}`;
+    } else {
+      throw new Error(`Unsupported field type [${fieldType}]`);
+    }
   }
   return result;
 }
 
-function emitFieldParameters(stream: Object, fields: Object, indent) {
+function emitFieldParameters(
+  stream: Object,
+  fields: Object,
+  lookup: Function,
+  indent
+) {
   for (const fieldName in fields) {
     const field = fields[fieldName];
     stream.write(
-      `~${decapitalize(fieldName)}=${defaultFieldValue(field["type"])}, `
+      `~${decapitalize(fieldName)}=${defaultFieldValue(
+        field["type"],
+        lookup
+      )}, `
     );
   }
   stream.write(`()`);
 }
 
-function emitFieldRecord(stream: Object, fields: Object, indent) {
+function emitFieldRecord(
+  stream: Object,
+  fields: Object,
+  lookup: Function,
+  indent
+) {
   stream.write(`{`);
   for (const fieldName in fields) {
     const decapitalizedFieldName = decapitalize(fieldName);
@@ -143,7 +195,7 @@ function emitScopeDirective(stream: Object, packageName: string) {
   }
 }
 
-function emitMessageClass(
+function emitEnum(
   stream: Object,
   name,
   data,
@@ -153,23 +205,53 @@ function emitMessageClass(
 ) {
   stream.write(`\
 ${" ".repeat(indent)}module ${capitalize(name)} = {
+${" ".repeat(indent)}  type t =
+`);
+  for (const enumName in data.values) {
+    stream.write(`\
+${" ".repeat(indent)}    | ${capitalize(enumName)}
+`);
+  }
+  stream.write(`\
+${" ".repeat(indent)}}
+`);
+}
+
+function emitMessageClass(
+  stream: Object,
+  name,
+  data,
+  lookup: Function,
+  packageName,
+  protoJsPath: string,
+  indent
+) {
+  const nextLookup = (name: string) =>
+    lookupFrom(data, name.split(".")) || lookup(name);
+  stream.write(`\
+${" ".repeat(indent)}module ${capitalize(name)} = {
+`);
+  if (data.nested) {
+    emitPackage(stream, data, protoJsPath, nextLookup, packageName, indent + 2);
+  }
+  stream.write(`\
 ${" ".repeat(indent)}  open ProtoTypeSupport
 ${" ".repeat(indent)}  type t = {
 `);
   for (const fieldName in data.fields) {
     const field = data.fields[fieldName];
     stream.write(`\
-${" ".repeat(indent)}    @as("${decapitalize(
-      fieldName
-    )}") ${fieldName}: ${mapFieldType(field["type"])},
+${" ".repeat(indent)}    @as("${decapitalize(fieldName)}") ${fieldName}: ${
+      mapFieldType(field["type"], nextLookup).name
+    },
 `);
   }
   stream.write(`\
 ${" ".repeat(indent)}  }
 ${" ".repeat(indent)}  let make = (`);
-  emitFieldParameters(stream, data.fields, indent);
+  emitFieldParameters(stream, data.fields, nextLookup, indent);
   stream.write(`) => `);
-  emitFieldRecord(stream, data.fields, indent);
+  emitFieldRecord(stream, data.fields, nextLookup, indent);
   stream.write(`
 ${" ".repeat(indent)}  `);
   emitProtoModuleDirective(stream, protoJsPath);
@@ -182,9 +264,9 @@ ${" ".repeat(indent)}    Js.Obj.empty()
   for (const fieldName in data.fields) {
     const field = data.fields[fieldName];
     stream.write(`\
-${" ".repeat(indent)}    ->FromRecord.${field["type"]}("${decapitalize(
-      fieldName
-    )}", v)
+${" ".repeat(indent)}    ->FromRecord.${
+      mapFieldType(field["type"], nextLookup).type
+    }("${decapitalize(fieldName)}", v)
 `);
   }
   stream.write(`\
@@ -198,9 +280,9 @@ ${" ".repeat(indent)}    make(())
   for (const fieldName in data.fields) {
     const field = data.fields[fieldName];
     stream.write(`\
-${" ".repeat(indent)}    ->ToRecord.${field["type"]}("${decapitalize(
-      fieldName
-    )}", m)
+${" ".repeat(indent)}    ->ToRecord.${
+      mapFieldType(field["type"], nextLookup).type
+    }("${decapitalize(fieldName)}", m)
 `);
   }
   stream.write(`\
@@ -213,16 +295,18 @@ function emitService(
   stream: Object,
   name,
   data,
+  lookup: Function,
   packageName,
-  dataRoot,
   indent
 ) {
   stream.write(`\
 ${" ".repeat(indent)}module ${capitalize(name)} = {
 `);
+  const nextLookup = (name: string) =>
+    lookupFrom(data, name.split(".")) || lookup(name);
   for (const methodName in data.methods) {
     const method = data.methods[methodName];
-    const requestData = dataRoot.nested[method.requestType];
+    const requestData = nextLookup(method.requestType);
     stream.write(`\
 ${" ".repeat(indent)}  module ${capitalize(methodName)} = {
 ${" ".repeat(
@@ -236,9 +320,9 @@ ${" ".repeat(
   indent
 )}    let call = (connection, request) => wrapped(connection, request)->ProtozenService.Connection.wrapMethod
 ${" ".repeat(indent)}    let make = (connection, `);
-    emitFieldParameters(stream, requestData.fields, indent);
+    emitFieldParameters(stream, requestData.fields, nextLookup, indent);
     stream.write(`) => wrapped(connection, `);
-    emitFieldRecord(stream, requestData.fields, indent);
+    emitFieldRecord(stream, requestData.fields, nextLookup, indent);
     stream.write(`)->ProtozenService.Connection.wrapMethod
 ${" ".repeat(indent)}  }
 `);
@@ -265,27 +349,43 @@ function emitPackage(
   stream: Object,
   dataRoot: Object,
   protoJsPath: string,
+  lookup: Function = (name: string) => lookupFrom(dataRoot, name.split(".")),
   prefix: string = "",
   indent: number = 0
 ) {
-  if (prefix) {
-    stream.write(`\
-${" ".repeat(indent - 2)}module ${capitalize(prefix)} = {
-`);
-  }
+  const nextLookup = (name: string) =>
+    lookupFrom(dataRoot, name.split(".")) || lookup(name);
   for (const name in dataRoot.nested) {
     const data = dataRoot.nested[name];
     const packageName = prefix !== "" ? `${prefix}.${name}` : name;
-    if (data.fields) {
-      emitMessageClass(stream, name, data, packageName, protoJsPath, indent);
+    if (data.values) {
+      emitEnum(stream, name, data, packageName, protoJsPath, indent);
+    } else if (data.fields) {
+      emitMessageClass(
+        stream,
+        name,
+        data,
+        nextLookup,
+        packageName,
+        protoJsPath,
+        indent
+      );
     } else if (data.methods) {
-      emitService(stream, name, data, packageName, dataRoot, indent);
+      emitService(stream, name, data, nextLookup, packageName, indent);
     } else if (data.nested) {
-      emitPackage(stream, data, protoJsPath, packageName, indent + 2);
-    }
-  }
-  if (prefix) {
-    stream.write(`${" ".repeat(indent - 2)}}
+      stream.write(`\
+${" ".repeat(indent)}module ${capitalize(packageName)} = {
 `);
+      emitPackage(
+        stream,
+        data,
+        protoJsPath,
+        nextLookup,
+        packageName,
+        indent + 2
+      );
+      stream.write(`${" ".repeat(indent)}}
+`);
+    }
   }
 }

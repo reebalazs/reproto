@@ -126,5 +126,29 @@ describe("Protobuf field types support", () => {
         |> toBe(largeNegativeString)
       )
     })
+
+    describe("enum", () => {
+      let v = Typeful.make(~enumField=EnumType.EnumV2, ())
+      test("value", () => v.enumField |> expect |> toBe(EnumType.EnumV2))
+      test("encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> (v => v.enumField) |> expect |> toBe(EnumType.EnumV2)
+      )
+      let v = Typeful.make()
+      test("empty", () => v.enumField |> expect |> toBe(EnumType.EnumV0))
+      test("empty encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> (v => v.enumField) |> expect |> toBe(EnumType.EnumV0)
+      )
+      let v = Typeful.make(~enumEField=Typeful.EnumTypeE.EnumVE2, ())
+      test("value embedded", () => v.enumEField |> expect |> toBe(Typeful.EnumTypeE.EnumVE2))
+      test("encode/decode embedded", () =>
+        v |> Typeful.encode |> Typeful.decode |> (v => v.enumEField) |> expect |> toBe(Typeful.EnumTypeE.EnumVE2)
+      )
+      let v = Typeful.make()
+      test("empty embedded", () => v.enumEField |> expect |> toBe(Typeful.EnumTypeE.EnumVE0))
+      test("empty encode/decode embedded", () =>
+        v |> Typeful.encode |> Typeful.decode |> (v => v.enumEField) |> expect |> toBe(Typeful.EnumTypeE.EnumVE0)
+      )
+    })
+
   })
 })

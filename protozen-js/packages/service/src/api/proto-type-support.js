@@ -41,6 +41,13 @@ export const fromRecord = {
     }
     return message;
   },
+
+  enum(message, key, record) {
+    if (record[key] != null) {
+      message[key] = record[key] | 0;
+    }
+    return message;
+  },
 };
 
 // decode field conversion Message => t
@@ -63,6 +70,13 @@ export const toRecord = {
     if (message[key] != null && message.hasOwnProperty(key)) {
       const field = message[key];
       record[key] = [field.high, field.low >>> 0];
+    }
+    return record;
+  },
+
+  enum(record, key, message) {
+    if (message[key] != null && message.hasOwnProperty(key)) {
+      record[key] = message[key];
     }
     return record;
   },

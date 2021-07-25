@@ -8,8 +8,21 @@ message Basic {
   optional int32 int32Field = 2;
 }
 
+enum EnumType {
+  EnumV0 = 0;
+  EnumV1 = 1;
+  EnumV2 = 2;
+}
+
 message Typeful {
+  enum EnumTypeE {
+    EnumVE0 = 0;
+    EnumVE1 = 1;
+    EnumVE2 = 2;
+  }
   optional string stringField = 1;
   optional int32 int32Field = 2;
   optional int64 int64Field = 3;
+  optional EnumType enumField = 4;
+  optional EnumTypeE enumEField = 5;
 }

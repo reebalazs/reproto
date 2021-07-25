@@ -5,9 +5,11 @@ module FromRecord = {
   @module("@protozen/service/src/api/proto-type-support") @scope("fromRecord") external string: ('a, string, _) => 'a = "string"
   @module("@protozen/service/src/api/proto-type-support") @scope("fromRecord") external int32: ('a, string, _) => 'a = "int32"
   @module("@protozen/service/src/api/proto-type-support") @scope("fromRecord") external int64: ('a, string, _) => 'a = "int64"
+  @module("@protozen/service/src/api/proto-type-support") @scope("fromRecord") external enum: ('a, string, _) => 'a = "enum"
 }
 module ToRecord = {
   @module("@protozen/service/src/api/proto-type-support") @scope("toRecord") external string: ('a, string, _) => 'a = "string"
   @module("@protozen/service/src/api/proto-type-support") @scope("toRecord") external int32: ('a, string, _) => 'a = "int32"
   @module("@protozen/service/src/api/proto-type-support") @scope("toRecord") external int64: ('a, string, _) => 'a = "int64"
+  @module("@protozen/service/src/api/proto-type-support") @scope("toRecord") external enum: ('a, string, _) => 'a = "enum"
 }
