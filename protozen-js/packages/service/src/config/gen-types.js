@@ -82,26 +82,37 @@ function lookupFrom(data: Object, splitPath: Array<string>) {
   }
 }
 
+// function isProto2Required(field: Object): boolean {
+//   return field.rule && field.rule === "required";
+// }
+
+function isProto3Optional(field: Object): boolean {
+  return field.options && field.options["proto3_optional"] === true;
+}
+
 function emitPrologue(stream: Object) {}
 
 function mapFieldType(
-  fieldType: string,
+  field: Object,
   lookup: Function
 ): { type: string, name: string } {
+  const fieldType = field["type"];
+  let type;
+  let name;
   const result = {
     string: "string",
     int32: "int",
     int64: "int64",
   }[fieldType];
   if (result !== undefined) {
-    return { type: fieldType, name: result };
+    type = fieldType;
+    name = result;
   } else {
     // enum or message type
     const data = lookup(fieldType);
     if (!data) {
       throw new Error(`Field type not found [${fieldType}]`);
     }
-    let type;
     if (data.values) {
       type = "enum";
     } else if (data.fields) {
@@ -109,33 +120,52 @@ function mapFieldType(
     } else {
       throw new Error(`Field type not supported [${fieldType}]`);
     }
-    return { type, name: `${fieldType}.t` };
+    name = `${fieldType}.t`;
   }
+  if (isProto3Optional(field)) {
+    // proto3 optional: option<'a>
+    // proto3 non-optional: 'a
+    // proto2: 'a
+    name = `option<${name}>`;
+  }
+  return { type, name };
 }
 
-function defaultFieldValue(fieldType: string, lookup: Function) {
-  const result = {
-    string: '""',
-    int32: "0",
-    int64: 'Int64.of_string("0")',
-  }[fieldType];
-  if (result === undefined) {
-    // enum or message type
-    const data = lookup(fieldType);
-    if (!data) {
-      throw new Error(`Field type not found [${fieldType}]`);
-    }
-    if (data.values) {
-      // enum
-      return `${fieldType}.${Object.keys(data.values)[0]}`;
-    } else if (data.fields) {
-      // message
-      return `${fieldType}.make(())`;
+function defaultFieldValue(field: Object, lookup: Function) {
+  if (isProto3Optional(field)) {
+    // proto3: default for option
+    return "=None";
+  } else {
+    // Default values
+    // proto2: optionals
+    // proto2: required field, allow default in make.
+    // proto3: non-optionals
+    // XXX TBD handle proto2 defaults
+    const fieldType = field["type"];
+    const result = {
+      string: '""',
+      int32: "0",
+      int64: 'Int64.of_string("0")',
+    }[fieldType];
+    if (result !== undefined) {
+      return `=${result}`;
     } else {
-      throw new Error(`Unsupported field type [${fieldType}]`);
+      // enum or message type
+      const data = lookup(fieldType);
+      if (!data) {
+        throw new Error(`Field type not found [${fieldType}]`);
+      }
+      if (data.values) {
+        // enum
+        return `=${fieldType}.${Object.keys(data.values)[0]}`;
+      } else if (data.fields) {
+        // message
+        return `=${fieldType}.make()`;
+      } else {
+        throw new Error(`Unsupported field type [${fieldType}]`);
+      }
     }
   }
-  return result;
 }
 
 function emitFieldParameters(
@@ -147,10 +177,7 @@ function emitFieldParameters(
   for (const fieldName in fields) {
     const field = fields[fieldName];
     stream.write(
-      `~${decapitalize(fieldName)}=${defaultFieldValue(
-        field["type"],
-        lookup
-      )}, `
+      `~${decapitalize(fieldName)}${defaultFieldValue(field, lookup)}, `
     );
   }
   stream.write(`()`);
@@ -245,7 +272,7 @@ ${" ".repeat(indent)}  type t = {
     const field = data.fields[fieldName];
     stream.write(`\
 ${" ".repeat(indent)}    @as("${decapitalize(fieldName)}") ${fieldName}: ${
-      mapFieldType(field["type"], nextLookup).name
+      mapFieldType(field, nextLookup).name
     },
 `);
   }
@@ -268,7 +295,7 @@ ${" ".repeat(indent)}    Js.Obj.empty()
     const field = data.fields[fieldName];
     stream.write(`\
 ${" ".repeat(indent)}    ->FromRecord.${
-      mapFieldType(field["type"], nextLookup).type
+      mapFieldType(field, nextLookup).type
     }("${decapitalize(fieldName)}", v)
 `);
   }
@@ -278,13 +305,13 @@ ${" ".repeat(indent)}  }
 ${" ".repeat(indent)}  let verify = (v: t) => verify(v, messageClass)
 ${" ".repeat(indent)}  let decode = (b): t => {
 ${" ".repeat(indent)}    let m = decode(b, messageClass)
-${" ".repeat(indent)}    make(())
+${" ".repeat(indent)}    make()
 `);
   for (const fieldName in data.fields) {
     const field = data.fields[fieldName];
     stream.write(`\
 ${" ".repeat(indent)}    ->ToRecord.${
-      mapFieldType(field["type"], nextLookup).type
+      mapFieldType(field, nextLookup).type
     }("${decapitalize(fieldName)}", m)
 `);
   }

@@ -131,37 +131,73 @@ describe("Protobuf field types support", () => {
       let v = Typeful.make(~enumField=EnumType.EnumV2, ())
       test("value", () => v.enumField |> expect |> toBe(EnumType.EnumV2))
       test("encode/decode", () =>
-        v |> Typeful.encode |> Typeful.decode |> (v => v.enumField) |> expect |> toBe(EnumType.EnumV2)
+        v
+        |> Typeful.encode
+        |> Typeful.decode
+        |> (v => v.enumField)
+        |> expect
+        |> toBe(EnumType.EnumV2)
       )
       let v = Typeful.make()
       test("empty", () => v.enumField |> expect |> toBe(EnumType.EnumV0))
       test("empty encode/decode", () =>
-        v |> Typeful.encode |> Typeful.decode |> (v => v.enumField) |> expect |> toBe(EnumType.EnumV0)
+        v
+        |> Typeful.encode
+        |> Typeful.decode
+        |> (v => v.enumField)
+        |> expect
+        |> toBe(EnumType.EnumV0)
       )
       let v = Typeful.make(~enumEField=Typeful.EnumTypeE.EnumVE2, ())
       test("value embedded", () => v.enumEField |> expect |> toBe(Typeful.EnumTypeE.EnumVE2))
       test("encode/decode embedded", () =>
-        v |> Typeful.encode |> Typeful.decode |> (v => v.enumEField) |> expect |> toBe(Typeful.EnumTypeE.EnumVE2)
+        v
+        |> Typeful.encode
+        |> Typeful.decode
+        |> (v => v.enumEField)
+        |> expect
+        |> toBe(Typeful.EnumTypeE.EnumVE2)
       )
       let v = Typeful.make()
       test("empty embedded", () => v.enumEField |> expect |> toBe(Typeful.EnumTypeE.EnumVE0))
       test("empty encode/decode embedded", () =>
-        v |> Typeful.encode |> Typeful.decode |> (v => v.enumEField) |> expect |> toBe(Typeful.EnumTypeE.EnumVE0)
+        v
+        |> Typeful.encode
+        |> Typeful.decode
+        |> (v => v.enumEField)
+        |> expect
+        |> toBe(Typeful.EnumTypeE.EnumVE0)
       )
     })
 
     describe("message", () => {
-      let v = Typeful.make(~basicField=Basic.make(~stringField="The answer", ~int32Field=42, ()), ())
-      test("value", () => v.basicField |> expect |> toEqual({ stringField: "The answer", int32Field: 42 }: Basic.t))
+      let v = Typeful.make(
+        ~basicField=Basic.make(~stringField="The answer", ~int32Field=42, ()),
+        (),
+      )
+      test("value", () =>
+        v.basicField |> expect |> toEqual(({stringField: "The answer", int32Field: 42}: Basic.t))
+      )
       test("encode/decode", () =>
-        v |> Typeful.encode |> Typeful.decode |> (v => v.basicField) |> expect |> toEqual({stringField:"The answer", int32Field:42}: Basic.t)
+        v
+        |> Typeful.encode
+        |> Typeful.decode
+        |> (v => v.basicField)
+        |> expect
+        |> toEqual(({stringField: "The answer", int32Field: 42}: Basic.t))
       )
       let v = Typeful.make()
-      test("empty", () => v.basicField |> expect |> toEqual({stringField:"", int32Field:0}: Basic.t))
+      test("empty", () =>
+        v.basicField |> expect |> toEqual(({stringField: "", int32Field: 0}: Basic.t))
+      )
       test("empty encode/decode", () =>
-        v |> Typeful.encode |> Typeful.decode |> (v => v.basicField) |> expect |> toEqual({stringField:"", int32Field:0}: Basic.t)
+        v
+        |> Typeful.encode
+        |> Typeful.decode
+        |> (v => v.basicField)
+        |> expect
+        |> toEqual(({stringField: "", int32Field: 0}: Basic.t))
       )
     })
-
   })
 })

@@ -1,7 +1,7 @@
 
-syntax = "proto2";
+syntax = "proto3";
 
-package typeTest;
+package typeTest3;
 
 message Basic {
   optional string stringField = 1;
@@ -9,8 +9,8 @@ message Basic {
 }
 
 message Required {
-  required string stringField = 1;
-  required int32 int32Field = 2;
+  string stringField = 1;
+  int32 int32Field = 2;
 }
 
 enum EnumType {
