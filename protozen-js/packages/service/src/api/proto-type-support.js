@@ -55,6 +55,15 @@ export const fromRecord = {
     }
     return message;
   },
+
+  oneof(message, key, choices, record) {
+    const f = record[key];
+    if (f !== 0) {
+      const [type, subKey] = choices[f.TAG];
+      this[type](message, subKey, { [subKey]: f._0 });
+    }
+    return message;
+  },
 };
 
 // decode field conversion Message => t
@@ -92,6 +101,25 @@ export const toRecord = {
     if (message[key] != null && message.hasOwnProperty(key)) {
       record[key] = message[key];
     }
+    return record;
+  },
+
+  oneof(record, key, choices, message) {
+    for (let i = 0; i < choices.length; i++) {
+      const [type, subKey] = choices[i];
+      if (type === "") {
+        // skip terminator for 1-tuples
+        continue;
+      }
+      const f = message[subKey];
+      if (f != null) {
+        const subRecord = {};
+        this[type](subRecord, subKey, message);
+        record[key] = { TAG: i, _0: subRecord[subKey] };
+        return record;
+      }
+    }
+    record[key] = 0;
     return record;
   },
 };

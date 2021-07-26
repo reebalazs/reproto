@@ -31,4 +31,8 @@ message Typeful {
   optional EnumType enumField = 4;
   optional EnumTypeE enumEField = 5;
   optional Basic basicField = 6;
+  oneof valueField {
+    int32 int32Value = 7;
+    int64 int64Value = 8;
+  }
 }

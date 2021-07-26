@@ -15,6 +15,8 @@ module FromRecord = {
   external enum: ('a, string, _) => 'a = "enum"
   @module("@protozen/service/src/api/proto-type-support") @scope("fromRecord")
   external message: ('a, string, _) => 'a = "message"
+  @module("@protozen/service/src/api/proto-type-support") @scope("fromRecord")
+  external oneof: ('a, string, _, _) => 'a = "oneof"
 }
 module ToRecord = {
   @module("@protozen/service/src/api/proto-type-support") @scope("toRecord")
@@ -27,4 +29,6 @@ module ToRecord = {
   external enum: ('a, string, _) => 'a = "enum"
   @module("@protozen/service/src/api/proto-type-support") @scope("toRecord")
   external message: ('a, string, _) => 'a = "message"
+  @module("@protozen/service/src/api/proto-type-support") @scope("toRecord")
+  external oneof: ('a, string, _, _) => 'a = "oneof"
 }

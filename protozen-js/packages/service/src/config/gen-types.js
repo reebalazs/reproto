@@ -168,16 +168,39 @@ function defaultFieldValue(field: Object, lookup: Function) {
   }
 }
 
+function* iterRealFieldNames(data: Object): Generator<Object, void, void> {
+  for (const fieldName in data.fields) {
+    if (!data._oneofStructuralFieldNames[fieldName]) {
+      yield fieldName;
+    }
+  }
+}
+
+function* iterOneofFieldNames(data: Object): Generator<Object, void, void> {
+  if (data.oneofs) {
+    for (const fieldName in data.oneofs) {
+      if (fieldName.charAt(0) !== "_") {
+        yield fieldName;
+      }
+    }
+  }
+}
+
 function emitFieldParameters(
   stream: Object,
-  fields: Object,
+  data: Object,
   lookup: Function,
   indent
 ) {
-  for (const fieldName in fields) {
-    const field = fields[fieldName];
+  for (const fieldName of iterRealFieldNames(data)) {
+    const field = data.fields[fieldName];
     stream.write(
       `~${decapitalize(fieldName)}${defaultFieldValue(field, lookup)}, `
+    );
+  }
+  for (const fieldName of iterOneofFieldNames(data)) {
+    stream.write(
+      `~${decapitalize(fieldName)}=Oneof.${capitalize(fieldName)}.None, `
     );
   }
   stream.write(`()`);
@@ -185,12 +208,16 @@ function emitFieldParameters(
 
 function emitFieldRecord(
   stream: Object,
-  fields: Object,
+  data: Object,
   lookup: Function,
   indent
 ) {
   stream.write(`{`);
-  for (const fieldName in fields) {
+  for (const fieldName of iterRealFieldNames(data)) {
+    const decapitalizedFieldName = decapitalize(fieldName);
+    stream.write(`${decapitalizedFieldName}: ${decapitalizedFieldName}, `);
+  }
+  for (const fieldName of iterOneofFieldNames(data)) {
     const decapitalizedFieldName = decapitalize(fieldName);
     stream.write(`${decapitalizedFieldName}: ${decapitalizedFieldName}, `);
   }
@@ -247,6 +274,52 @@ ${" ".repeat(indent)}}
 `);
 }
 
+function emitOneofModule(
+  stream: Object,
+  data: Object,
+  lookup: Function,
+  packageName,
+  protoJsPath: string,
+  indent
+) {
+  stream.write(`\
+${" ".repeat(indent)}module Oneof = {
+`);
+  for (const oneofFieldName of iterOneofFieldNames(data)) {
+    stream.write(`\
+${" ".repeat(indent)}  module ${capitalize(oneofFieldName)} = {
+${" ".repeat(indent)}    type t =
+`);
+    const oneofFieldNames = data.oneofs[oneofFieldName].oneof;
+    for (const fieldName of oneofFieldNames) {
+      const field = data.fields[fieldName];
+      stream.write(`\
+${" ".repeat(indent)}      | ${capitalize(fieldName)}(${
+        mapFieldType(field, lookup).name
+      })
+`);
+      data._oneofStructuralFieldNames[fieldName] = true;
+    }
+    stream.write(`\
+${" ".repeat(indent)}      | None
+${" ".repeat(indent)}    let choices = (`);
+    for (const fieldName of oneofFieldNames) {
+      const field = data.fields[fieldName];
+      stream.write(`("${mapFieldType(field, lookup).type}", "${fieldName}"), `);
+    }
+    if (oneofFieldNames.length === 1) {
+      // there is no 1-tuples, workaround with terminator
+      stream.write(`("", ""), `);
+    }
+    stream.write(`)
+${" ".repeat(indent)}  }
+`);
+  }
+  stream.write(`\
+${" ".repeat(indent)}}
+`);
+}
+
 function emitMessageClass(
   stream: Object,
   name,
@@ -264,11 +337,16 @@ ${" ".repeat(indent)}module ${capitalize(name)} = {
   if (data.nested) {
     emitPackage(stream, data, protoJsPath, nextLookup, packageName, indent + 2);
   }
+  // annotation to cache the structural field names in this class
+  data._oneofStructuralFieldNames = {};
+  if (data.oneofs) {
+    emitOneofModule(stream, data, lookup, packageName, protoJsPath, indent + 2);
+  }
   stream.write(`\
 ${" ".repeat(indent)}  open ProtoTypeSupport
 ${" ".repeat(indent)}  type t = {
 `);
-  for (const fieldName in data.fields) {
+  for (const fieldName of iterRealFieldNames(data)) {
     const field = data.fields[fieldName];
     stream.write(`\
 ${" ".repeat(indent)}    @as("${decapitalize(fieldName)}") ${fieldName}: ${
@@ -276,12 +354,19 @@ ${" ".repeat(indent)}    @as("${decapitalize(fieldName)}") ${fieldName}: ${
     },
 `);
   }
+  for (const fieldName of iterOneofFieldNames(data)) {
+    stream.write(`\
+${" ".repeat(indent)}    @as("${decapitalize(
+      fieldName
+    )}") ${fieldName}: Oneof.${capitalize(fieldName)}.t,
+`);
+  }
   stream.write(`\
 ${" ".repeat(indent)}  }
 ${" ".repeat(indent)}  let make = (`);
-  emitFieldParameters(stream, data.fields, nextLookup, indent);
+  emitFieldParameters(stream, data, nextLookup, indent);
   stream.write(`) => `);
-  emitFieldRecord(stream, data.fields, nextLookup, indent);
+  emitFieldRecord(stream, data, nextLookup, indent);
   stream.write(`
 ${" ".repeat(indent)}  `);
   emitProtoModuleDirective(stream, protoJsPath);
@@ -291,12 +376,19 @@ ${" ".repeat(indent)}  `);
 ${" ".repeat(indent)}  let encode = v => {
 ${" ".repeat(indent)}    Js.Obj.empty()
 `);
-  for (const fieldName in data.fields) {
+  for (const fieldName of iterRealFieldNames(data)) {
     const field = data.fields[fieldName];
     stream.write(`\
 ${" ".repeat(indent)}    ->FromRecord.${
       mapFieldType(field, nextLookup).type
     }("${decapitalize(fieldName)}", v)
+`);
+  }
+  for (const fieldName of iterOneofFieldNames(data)) {
+    stream.write(`\
+${" ".repeat(indent)}    ->FromRecord.oneof("${decapitalize(
+      fieldName
+    )}", Oneof.${capitalize(fieldName)}.choices, v)
 `);
   }
   stream.write(`\
@@ -307,12 +399,19 @@ ${" ".repeat(indent)}  let decode = (b): t => {
 ${" ".repeat(indent)}    let m = decode(b, messageClass)
 ${" ".repeat(indent)}    make()
 `);
-  for (const fieldName in data.fields) {
+  for (const fieldName of iterRealFieldNames(data)) {
     const field = data.fields[fieldName];
     stream.write(`\
 ${" ".repeat(indent)}    ->ToRecord.${
       mapFieldType(field, nextLookup).type
     }("${decapitalize(fieldName)}", m)
+`);
+  }
+  for (const fieldName of iterOneofFieldNames(data)) {
+    stream.write(`\
+${" ".repeat(indent)}    ->ToRecord.oneof("${decapitalize(
+      fieldName
+    )}", Oneof.${capitalize(fieldName)}.choices, m)
 `);
   }
   stream.write(`\
@@ -350,9 +449,9 @@ ${" ".repeat(
   indent
 )}    let call = (connection, request) => wrapped(connection, request)->ProtozenService.Connection.wrapMethod
 ${" ".repeat(indent)}    let make = (connection, `);
-    emitFieldParameters(stream, requestData.fields, nextLookup, indent);
+    emitFieldParameters(stream, requestData, nextLookup, indent);
     stream.write(`) => wrapped(connection, `);
-    emitFieldRecord(stream, requestData.fields, nextLookup, indent);
+    emitFieldRecord(stream, requestData, nextLookup, indent);
     stream.write(`)->ProtozenService.Connection.wrapMethod
 ${" ".repeat(indent)}  }
 `);

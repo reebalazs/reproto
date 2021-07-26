@@ -124,5 +124,21 @@ describe("Protobuf field types support", () => {
       test("empty", () => v.basicField |> expect |> toEqual(None))
       test("empty encode/decode", testMessage(v, None))
     })
+
+    describe("oneof", () => {
+      let testMessage = (v, f, ()) =>
+        v |> Typeful.encode |> Typeful.decode |> (v => v.valueField) |> expect |> toEqual(f)
+      let valueField = Typeful.Oneof.ValueField.Int32Value(42)
+      let v = Typeful.make(~valueField, ())
+      test("value case 0", () => v.valueField |> expect |> toEqual(valueField))
+      test("encode/decode case 0", testMessage(v, valueField))
+      let valueField = Typeful.Oneof.ValueField.Int64Value(Int64.of_string("4"))
+      let v = Typeful.make(~valueField, ())
+      test("value oneof case 1", () => v.valueField |> expect |> toEqual(valueField))
+      test("encode/decode case 1", testMessage(v, valueField))
+      let v = Typeful.make()
+      test("empty", () => v.valueField |> expect |> toEqual(Typeful.Oneof.ValueField.None))
+      test("empty encode/decode", testMessage(v, Typeful.Oneof.ValueField.None))
+    })
   })
 })
