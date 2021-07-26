@@ -25,4 +25,5 @@ message Typeful {
   optional int64 int64Field = 3;
   optional EnumType enumField = 4;
   optional EnumTypeE enumEField = 5;
+  optional Basic basicField = 6;
 }

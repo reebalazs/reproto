@@ -104,8 +104,8 @@ function mapFieldType(
     let type;
     if (data.values) {
       type = "enum";
-      // } else if (data.fields) {
-      //   fieldType = 'message';
+    } else if (data.fields) {
+      type = "message";
     } else {
       throw new Error(`Field type not supported [${fieldType}]`);
     }
@@ -128,6 +128,9 @@ function defaultFieldValue(fieldType: string, lookup: Function) {
     if (data.values) {
       // enum
       return `${fieldType}.${Object.keys(data.values)[0]}`;
+    } else if (data.fields) {
+      // message
+      return `${fieldType}.make(())`;
     } else {
       throw new Error(`Unsupported field type [${fieldType}]`);
     }

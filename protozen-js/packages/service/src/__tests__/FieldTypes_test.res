@@ -150,5 +150,18 @@ describe("Protobuf field types support", () => {
       )
     })
 
+    describe("message", () => {
+      let v = Typeful.make(~basicField=Basic.make(~stringField="The answer", ~int32Field=42, ()), ())
+      test("value", () => v.basicField |> expect |> toEqual({ stringField: "The answer", int32Field: 42 }: Basic.t))
+      test("encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> (v => v.basicField) |> expect |> toEqual({stringField:"The answer", int32Field:42}: Basic.t)
+      )
+      let v = Typeful.make()
+      test("empty", () => v.basicField |> expect |> toEqual({stringField:"", int32Field:0}: Basic.t))
+      test("empty encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> (v => v.basicField) |> expect |> toEqual({stringField:"", int32Field:0}: Basic.t)
+      )
+    })
+
   })
 })
