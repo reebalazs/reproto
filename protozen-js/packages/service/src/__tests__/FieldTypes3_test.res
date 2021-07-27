@@ -35,6 +35,36 @@ describe("Protobuf field types support", () => {
     })
   })
 
+  describe("required", () => {
+    let testTypeSupport = (v: Required.t) => {
+      test("string", () => v.stringField |> expect |> toBe("The answer"))
+      test("int32", () => v.int32Field |> expect |> toBe(42))
+      test("verify", () => v |> Required.verify |> expect |> toBe(None))
+      test("encode/decode", () => v |> Required.encode |> Required.decode |> expect |> toEqual(v))
+    }
+
+    describe("make", () =>
+      Required.make(~stringField="The answer", ~int32Field=42, ())->testTypeSupport
+    )
+
+    describe("as record", () =>
+      {
+        stringField: "The answer",
+        int32Field: 42,
+      }->testTypeSupport
+    )
+
+    describe("defaults", () => {
+      let v = Required.make()
+      test("string", () => v.stringField |> expect |> toBe(""))
+      test("int32", () => v.int32Field |> expect |> toBe(0))
+      test("encode empty", () =>
+        v |> Required.encode |> Js_typed_array.ArrayBuffer.byteLength |> expect |> toBe(4)
+      )
+      test("encode/decode", () => v |> Required.encode |> Required.decode |> expect |> toEqual(v))
+    })
+  })
+
   describe("typeful", () => {
     describe("string", () => {
       let v = Typeful.make(~stringField=Some("The answer"), ())
