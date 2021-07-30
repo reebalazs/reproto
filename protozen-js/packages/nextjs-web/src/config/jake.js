@@ -35,7 +35,7 @@ task("rescript", async () => {
   );
 });
 
-task("build", ["rescript-all"], async () => {
+task("build", ["rescript-build-all"], async () => {
   await exec(
     `cd ${rootD};
     \`yarn bin next\` \

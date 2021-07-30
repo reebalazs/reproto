@@ -253,17 +253,20 @@ const executeWait = (t: Object) => {
   });
 };
 
-task("rescript-all", async () => {
-  try {
-    await invokeWait(jake.Task["service:rescript"]);
-    await invokeWait(jake.Task["leaderboard:rescript"]);
-    await invokeWait(jake.Task["get-schwifty:rescript"]);
-    await invokeWait(jake.Task["command:rescript"]);
-    await invokeWait(jake.Task["nextjs-web:rescript"]);
-  } catch (e) {}
+task("rescript", async () => {
+  await invokeWait(jake.Task["service:rescript"]);
+  await invokeWait(jake.Task["leaderboard:rescript"]);
+  await invokeWait(jake.Task["get-schwifty:rescript"]);
+  await invokeWait(jake.Task["nextjs-web:rescript"]);
 });
 
-task("rescript", ["rescript-all"]);
+task("rescript-build-all", ["rescript"]);
+
+task("rescript-all", async () => {
+  try {
+    await invokeWait(jake.Task["rescript"]);
+  } catch (e) {}
+});
 
 const watch = (mutex: Object, waiting: Object, key: string, path, f) => {
   waiting[key] = 0;
