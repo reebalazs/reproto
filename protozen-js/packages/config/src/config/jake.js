@@ -253,7 +253,7 @@ const executeWait = (t: Object) => {
   });
 };
 
-task("rescript", async () => {
+task("rescript-all", async () => {
   try {
     await invokeWait(jake.Task["service:rescript"]);
     await invokeWait(jake.Task["leaderboard:rescript"]);
@@ -262,6 +262,8 @@ task("rescript", async () => {
     await invokeWait(jake.Task["nextjs-web:rescript"]);
   } catch (e) {}
 });
+
+task("rescript", ["rescript-all"]);
 
 const watch = (mutex: Object, waiting: Object, key: string, path, f) => {
   waiting[key] = 0;

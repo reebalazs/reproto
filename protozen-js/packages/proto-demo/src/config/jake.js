@@ -33,7 +33,7 @@ task("rescript", async () => {
   );
 });
 
-task("dev", "rescript", async () => {
+task("dev", ["rescript-all"], async () => {
   (jake.Task["proto-demo:dev"]: Object).startTime = 10 ** 14; // avoid timeout
   const configFile = path.join(rootD, "src", "config", "webpack.config.js");
   exec(

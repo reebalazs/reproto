@@ -13,7 +13,7 @@ task("default", () => {
   info("Service namespace: service:test, more help with service:help");
 });
 
-task('help', () => {
+task("help", () => {
   info(`\
 Service namespace:
 
@@ -21,7 +21,6 @@ jake service:help       print this help
 
   `);
 });
-
 
 task("rescript", async () => {
   await exec(
@@ -33,7 +32,7 @@ task("rescript", async () => {
   );
 });
 
-task("dev", "rescript", async () => {
+task("dev", ["rescript-all"], async () => {
   (jake.Task["service:dev"]: Object).startTime = 10 ** 14; // avoid timeout
   await jake.Task["rescript-watch"].invoke();
 });
