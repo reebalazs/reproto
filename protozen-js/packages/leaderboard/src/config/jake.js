@@ -17,7 +17,7 @@ task("default", () => {
 
 task("help", () => {
   info(`\
-Web namespace:
+Leaderboard namespace:
 
 jake leaderboard:dev        start development server
 jake leaderboard:help       print this help
