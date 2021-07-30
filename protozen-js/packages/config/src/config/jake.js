@@ -34,6 +34,7 @@ task("help", () => {
 Namespaces:
 
 web:                @protozen/web blank app
+nextjs-web:         @protozen/nextjs-web blank app
 get-schwifty:       @protozen/get-schwifty example app
 leaderboard:        @protozen/leaderboard app
 service:            @protozen/service package
@@ -57,6 +58,7 @@ jake jest           same as test
 Namespaces help:
 
 jake web            print help about the web namespace
+jake nextjs-web     print help about the nextjs-web namespace
 jake get-schwifty   print help about the get-schwifty namespace
 jake leaderboard    print help about the leaderboard namespace
 jake service        print help about the service namespace
@@ -171,6 +173,14 @@ task("web", () => {
   jake.Task["web:default"].invoke();
 });
 
+namespace("nextjs-web", () => {
+  require("../../../nextjs-web/src/config/jake.js");
+});
+
+task("nextjs-web", () => {
+  jake.Task["nextjs-web:default"].invoke();
+});
+
 namespace("get-schwifty", () => {
   require("../../../get-schwifty/src/config/jake.js");
 });
@@ -247,7 +257,9 @@ task("rescript", async () => {
   try {
     await invokeWait(jake.Task["service:rescript"]);
     await invokeWait(jake.Task["leaderboard:rescript"]);
+    await invokeWait(jake.Task["get-schwifty:rescript"]);
     await invokeWait(jake.Task["command:rescript"]);
+    await invokeWait(jake.Task["nextjs-web:rescript"]);
   } catch (e) {}
 });
 
@@ -290,6 +302,16 @@ task("rescript-watch", () => {
       ["packages/get-schwifty/src/**/*.res"],
       async () => {
         await executeWait(jake.Task["get-schwifty:rescript"]);
+        await executeWait(jake.Task["nextjs-web:rescript"]);
+      }
+    );
+    watch(
+      mutex,
+      waiting,
+      "nextjs-web",
+      ["packages/nextjs-web/src/**/*.res"],
+      async () => {
+        await executeWait(jake.Task["nextjs-web:rescript"]);
       }
     );
     watch(

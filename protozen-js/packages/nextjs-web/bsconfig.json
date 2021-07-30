@@ -1,0 +1,25 @@
+{
+  "name": "@protozen/nextjs-web",
+  "$schema": "https://raw.githubusercontent.com/rescript-lang/rescript-compiler/master/docs/docson/build-schema.json",
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    }
+  ],
+  "package-specs": [
+    {
+      "module": "es6",
+      "in-source": true
+    }
+  ],
+  "suffix": ".bs.js",
+  "namespace": true,
+  "bs-dependencies": ["@rescript/react"],
+  "ppx-flags": [],
+  "reason": { "react-jsx": 3 },
+  "warnings": {
+    "error": "+101"
+  },
+  "refmt": 3
+}
