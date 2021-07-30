@@ -18,6 +18,7 @@
   },
   "main": "src/index",
   "devDependencies": {
+    "@glennsl/bs-jest": "^0.7.0",
     "enzyme": "^3.10.0",
     "jest": "^24.8.0",
     "jest-cucumber": "^2.0.11",

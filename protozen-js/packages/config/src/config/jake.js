@@ -6,11 +6,12 @@ import path from "path";
 import supportsColor from "supports-color";
 import "../../../../debug";
 import { exec } from "..";
-import { runCLI } from "jest-cli";
-import type { ProjectConfig } from "jest";
+import { runCLI } from "@jest/core";
 import "./jake-proto.js";
 import inspector from "inspector";
 import "./jake-lerna.js";
+import chokidar from "chokidar";
+import { Mutex } from "async-mutex";
 
 const info = Debug("protozen:info:jake");
 const debug = Debug("protozen:debug:jake");
@@ -93,14 +94,38 @@ task("lint", () => {
   jake.Task["flow"].invoke();
 });
 
+const jestConfigBase = {
+  rootDir: rootD,
+  colors: supportsColor.stdout,
+  verbose: false,
+  setupFiles: [path.resolve(__dirname, "jestSetup.js")],
+  globalSetup: path.resolve(__dirname, "jestGlobalSetup.js"),
+};
+
 task("jest", async () => {
   const cwd = process.cwd();
   try {
     process.chdir(rootD);
-    const jestConfig: ProjectConfig = {
-      rootDir: rootD,
-      colors: supportsColor.stdout,
-      verbose: false,
+    const jestConfig = {
+      ...jestConfigBase,
+      collectCoverage: true,
+      coveragePathIgnorePatterns: [
+        "/node_modules/",
+        // Uncovered exceptions: proto
+        "/service/dist/",
+        // version check
+        "/check-version",
+        // Rescript glue
+        "/service/src/api/create-connection",
+      ],
+      coverageThreshold: JSON.stringify({
+        global: {
+          branches: 60,
+          functions: 65,
+          lines: 75,
+          statements: -1000,
+        },
+      }),
     };
     const result = await runCLI(jestConfig, [rootD]);
     if (!result.results.success) {
@@ -112,13 +137,12 @@ task("jest", async () => {
 });
 
 task("jest-watch", async () => {
+  (jake.Task["jest-watch"]: Object).startTime = 10 ** 14; // avoid timeout
   const cwd = process.cwd();
   try {
     process.chdir(rootD);
-    const jestConfig: ProjectConfig = {
-      rootDir: rootD,
-      colors: supportsColor.stdout,
-      verbose: false,
+    const jestConfig = {
+      ...jestConfigBase,
       watch: true,
     };
     const result = await runCLI(jestConfig, [rootD]);
@@ -135,6 +159,7 @@ task("test", () => {
 });
 
 task("dev", () => {
+  (jake.Task["dev"]: Object).startTime = 10 ** 14; // avoid timeout
   jake.Task["jest-watch"].invoke();
 });
 

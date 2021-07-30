@@ -1,5 +1,5 @@
 // @flow
-/* global task */
+/* global task jake */
 
 import path from "path";
 import Debug from "debug";
@@ -31,4 +31,9 @@ task("rescript", async () => {
         -with-deps \
     `
   );
+});
+
+task("dev", "rescript", async () => {
+  (jake.Task["service:dev"]: Object).startTime = 10 ** 14; // avoid timeout
+  await jake.Task["rescript-watch"].invoke();
 });
