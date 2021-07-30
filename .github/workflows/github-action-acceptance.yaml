@@ -22,4 +22,5 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn
+      - run: ./jake rescript
       - run: ./jake test
