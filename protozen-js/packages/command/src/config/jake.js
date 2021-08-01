@@ -4,7 +4,7 @@
 import path from "path";
 import Debug from "debug";
 import inspector from "inspector";
-import { hello, promiseTest } from "@protozen/command";
+import { hello } from "@protozen/command";
 import { exec } from "@protozen/config";
 
 const info = Debug("protozen:info:jake");
@@ -25,7 +25,7 @@ jake command:help                    print this help
   `);
 });
 
-task("rescript", async () => {
+task("rescript-this", async () => {
   await exec(
     `cd ${rootD};
     \`yarn bin rescript\` \
@@ -35,7 +35,7 @@ task("rescript", async () => {
   );
 });
 
-task("dev", "rescript", async () => {
+task("dev", ["rescript-all"], async () => {
   (jake.Task["command:dev"]: Object).startTime = 10 ** 14; // avoid timeout
   await jake.Task["rescript-watch"].invoke();
 });
@@ -96,5 +96,7 @@ task("hello", async (...args) => {
 });
 
 task("promise-test", async (...args) => {
+  // $FlowFixMe
+  const promiseTest = require("../api/PromiseTest.bs").promiseTest;
   await runCommand("promise-test", promiseTest, args);
 });

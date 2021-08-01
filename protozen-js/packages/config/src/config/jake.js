@@ -345,8 +345,6 @@ task("rescript-watch", () => {
       async () => {
         await executeWait(jake.Task["service:rescript-this"]);
         await executeWait(jake.Task["proto-demo:rescript-this"]);
-        await executeWait(jake.Task["service:rescript"]);
-        await executeWait(jake.Task["proto-demo:rescript"]);
         await executeWait(jake.Task["command:rescript-this"]);
       }
     );
@@ -365,7 +363,7 @@ task("rescript-watch", () => {
       "command",
       ["packages/command/src/**/*.res"],
       async () => {
-        await executeWait(jake.Task["command:rescript"]);
+        await executeWait(jake.Task["command:rescript-this"]);
       }
     );
   });
