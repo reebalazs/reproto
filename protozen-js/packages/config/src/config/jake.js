@@ -254,10 +254,10 @@ const executeWait = (t: Object) => {
 };
 
 task("rescript", async () => {
-  await invokeWait(jake.Task["service:rescript"]);
-  await invokeWait(jake.Task["leaderboard:rescript"]);
-  await invokeWait(jake.Task["get-schwifty:rescript"]);
-  await invokeWait(jake.Task["nextjs-web:rescript"]);
+  await invokeWait(jake.Task["service:rescript-this"]);
+  await invokeWait(jake.Task["leaderboard:rescript-this"]);
+  await invokeWait(jake.Task["get-schwifty:rescript-this"]);
+  await invokeWait(jake.Task["nextjs-web:rescript-this"]);
 });
 
 task("rescript-build-all", ["rescript"]);
@@ -277,11 +277,7 @@ const watch = (mutex: Object, waiting: Object, key: string, path, f) => {
     .on("all", async (event, path) => {
       waiting[key]++;
       if (waiting[key] === 1) {
-        await mutex.runExclusive(async () => {
-          try {
-            await f();
-          } catch (e) {}
-        });
+        await mutex.runExclusive(f);
       }
       waiting[key]--;
     });
@@ -294,10 +290,19 @@ task("rescript-watch", () => {
     watch(
       mutex,
       waiting,
+      "proto-demo",
+      ["packages/proto-demo/src/**/*.res"],
+      async () => {
+        await executeWait(jake.Task["proto-demo:rescript-this"]);
+      }
+    );
+    watch(
+      mutex,
+      waiting,
       "leaderboard",
       ["packages/leaderboard/src/**/*.res"],
       async () => {
-        await executeWait(jake.Task["leaderboard:rescript"]);
+        await executeWait(jake.Task["leaderboard:rescript-this"]);
       }
     );
     watch(
@@ -306,8 +311,8 @@ task("rescript-watch", () => {
       "get-schwifty",
       ["packages/get-schwifty/src/**/*.res"],
       async () => {
-        await executeWait(jake.Task["get-schwifty:rescript"]);
-        await executeWait(jake.Task["nextjs-web:rescript"]);
+        await executeWait(jake.Task["get-schwifty:rescript-this"]);
+        await executeWait(jake.Task["nextjs-web:rescript-this"]);
       }
     );
     watch(
@@ -316,7 +321,7 @@ task("rescript-watch", () => {
       "nextjs-web",
       ["packages/nextjs-web/src/**/*.res"],
       async () => {
-        await executeWait(jake.Task["nextjs-web:rescript"]);
+        await executeWait(jake.Task["nextjs-web:rescript-this"]);
       }
     );
     watch(
@@ -325,8 +330,8 @@ task("rescript-watch", () => {
       "service",
       ["packages/service/src/**/*.res", "packages/service/dist/**/*.res"],
       async () => {
-        await executeWait(jake.Task["service:rescript"]);
-        await executeWait(jake.Task["proto-demo:rescript"]);
+        await executeWait(jake.Task["service:rescript-this"]);
+        await executeWait(jake.Task["proto-demo:rescript-this"]);
       }
     );
   });

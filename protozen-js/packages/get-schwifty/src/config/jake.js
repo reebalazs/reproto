@@ -25,7 +25,7 @@ jake get-schwifty:help       print this help
   `);
 });
 
-task("rescript", async () => {
+task("rescript-this", async () => {
   await exec(
     `cd ${rootD};
     \`yarn bin rescript\` \
