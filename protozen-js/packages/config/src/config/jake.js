@@ -103,7 +103,13 @@ const jestConfigBase = {
   colors: supportsColor.stdout,
   verbose: false,
   setupFiles: [path.resolve(__dirname, "jestSetup.js")],
-  globalSetup: path.resolve(__dirname, "jestGlobalSetup.js"),
+  /// As of 2021-08-03, this causes a circular load problem with Babel.
+  // Determining test suites to run...(node:88943) Warning: Accessing non-existent property 'fromObject' of module exports inside circular dependency
+  // (Use `node --trace-warnings ...` to show where the warning was created)
+  // jake aborted.
+  // TypeError: /Users/ree/work/protozen/rescript-playground/protozen-js/packages/config/src/config/jestGlobalSetup.js: /Users/ree/work/protozen/rescript-playground/protozen-js/node_modules/convert-source-map/index.js: _convertSourceMap(...).fromObject is not a function
+  //
+  // globalSetup: path.resolve(__dirname, "jestGlobalSetup.js"),
   transformIgnorePatterns: ["node_modules/@glennsl/bs-test/"],
 };
 
