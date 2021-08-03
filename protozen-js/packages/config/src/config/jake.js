@@ -290,7 +290,11 @@ const watch = (mutex: Object, waiting: Object, key: string, path, f) => {
     .on("all", async (event, path) => {
       waiting[key]++;
       if (waiting[key] === 1) {
-        await mutex.runExclusive(f);
+        await mutex.runExclusive(async () => {
+          try {
+            await f();
+          } catch (e) {}
+        });
       }
       waiting[key]--;
     });
@@ -345,15 +349,6 @@ task("rescript-watch", () => {
       async () => {
         await executeWait(jake.Task["service:rescript-this"]);
         await executeWait(jake.Task["proto-demo:rescript-this"]);
-        await executeWait(jake.Task["command:rescript-this"]);
-      }
-    );
-    watch(
-      mutex,
-      waiting,
-      "command",
-      ["packages/service/src/**/*.res"],
-      async () => {
         await executeWait(jake.Task["command:rescript-this"]);
       }
     );
