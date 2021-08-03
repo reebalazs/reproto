@@ -70,7 +70,7 @@ function processArgs(
 
 async function runCommand(
   commandName: string,
-  commandFunc: function,
+  commandFunc: Function,
   args: Array<string>
 ) {
   const nodeOptions = [];
@@ -99,4 +99,10 @@ task("promise-test", async (...args) => {
   // $FlowFixMe
   const promiseTest = require("../api/PromiseTest.bs").promiseTest;
   await runCommand("promise-test", promiseTest, args);
+});
+
+task("demo-server", async (...args) => {
+  // $FlowFixMe
+  const demoServer = require("../api/DemoServer.bs").demoServer;
+  await runCommand("demo-server", demoServer, args);
 });

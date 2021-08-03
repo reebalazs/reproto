@@ -18,7 +18,8 @@
   },
   "bin": {
     "hello": "src/script/hello-script.js",
-    "promise-test": "src/script/promise-test.js"
+    "promise-test": "src/script/promise-test.js",
+    "demo-server": "src/script/demo-server.js"
   },
   "main": "src/index",
   "devDependencies": {
@@ -30,6 +31,8 @@
   "dependencies": {
     "@protozen/service": "^0.1.5",
     "@ryyppy/rescript-promise": "^2.1.0",
+    "express": "^4.17.1",
+    "rescript-express": "^0.4.1",
     "yargs": "^14.0.0"
   }
 }

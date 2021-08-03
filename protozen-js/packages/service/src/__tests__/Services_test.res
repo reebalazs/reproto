@@ -19,8 +19,10 @@ let getArrayIndex = (i, a) =>
 
 describe("Protobuf services support", () => {
   open Promise
-  open ProtozenService.Connection
-  open ProtozenService.Proto
+  // open ProtozenService.Connection
+  // open ProtozenService.Proto
+  open Connection
+  open Proto
   open Services
 
   describe("HelloService", () => {
@@ -92,6 +94,14 @@ describe("Protobuf services support", () => {
     describe(
       "make call",
       describeRequest(conn => HelloService.World.make(conn, ~world="The answer", ())),
+    )
+    test(
+      "Request",
+      () => (HelloService.World.Request.make === HelloWorldRequest.make) |> expect |> toBe(true)
+    )
+    test(
+      "Response",
+      () => (HelloService.World.Response.make === HelloWorldResponse.make) |> expect |> toBe(true)
     )
   })
 })

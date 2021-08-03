@@ -445,6 +445,8 @@ ${" ".repeat(
     )}.t) => Promise.t<${capitalize(method.responseType)}.t> = "${
       packageName ? packageName + "/" : ""
     }${decapitalize(methodName)}"
+${" ".repeat(indent)}    module Request = ${capitalize(method.requestType)}
+${" ".repeat(indent)}    module Response = ${capitalize(method.responseType)}
 ${" ".repeat(
   indent
 )}    let call = (connection, request) => wrapped(connection, request)->ProtozenService.Connection.wrapMethod
