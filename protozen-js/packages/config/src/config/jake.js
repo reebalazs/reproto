@@ -25,7 +25,7 @@ const rootD = path.resolve(__dirname, "..", "..", "..", "..");
 
 task("default", () => {
   info(
-    "Namespaces: web, get-schwifty, leaderboard, service, command. Targets: install, protoc, protodesc, lint, help"
+    "Namespaces: web, get-schwifty, leaderboard, proto-demo, service, command. Targets: install, protoc, protodesc, lint, help"
   );
 });
 
@@ -37,6 +37,7 @@ web:                @protozen/web blank app
 nextjs-web:         @protozen/nextjs-web blank app
 get-schwifty:       @protozen/get-schwifty example app
 leaderboard:        @protozen/leaderboard app
+proto-demo:         @protozen/proto-demo app
 service:            @protozen/service package
 command:            @protozen/command package
 
@@ -61,6 +62,7 @@ jake web            print help about the web namespace
 jake nextjs-web     print help about the nextjs-web namespace
 jake get-schwifty   print help about the get-schwifty namespace
 jake leaderboard    print help about the leaderboard namespace
+jake proto-demo     print help about the proto-demo namespace
 jake service        print help about the service namespace
 jake command        print help about the command namespace
 
@@ -101,7 +103,14 @@ const jestConfigBase = {
   colors: supportsColor.stdout,
   verbose: false,
   setupFiles: [path.resolve(__dirname, "jestSetup.js")],
-  globalSetup: path.resolve(__dirname, "jestGlobalSetup.js"),
+  /// As of 2021-08-03, this causes a circular load problem with Babel.
+  // Determining test suites to run...(node:88943) Warning: Accessing non-existent property 'fromObject' of module exports inside circular dependency
+  // (Use `node --trace-warnings ...` to show where the warning was created)
+  // jake aborted.
+  // TypeError: /Users/ree/work/protozen/rescript-playground/protozen-js/packages/config/src/config/jestGlobalSetup.js: /Users/ree/work/protozen/rescript-playground/protozen-js/node_modules/convert-source-map/index.js: _convertSourceMap(...).fromObject is not a function
+  //
+  // globalSetup: path.resolve(__dirname, "jestGlobalSetup.js"),
+  transformIgnorePatterns: ["node_modules/@glennsl/bs-test/"],
 };
 
 task("jest", async () => {
@@ -197,6 +206,14 @@ task("leaderboard", () => {
   jake.Task["leaderboard:default"].invoke();
 });
 
+namespace("proto-demo", () => {
+  require("../../../proto-demo/src/config/jake.js");
+});
+
+task("proto-demo", () => {
+  jake.Task["proto-demo:default"].invoke();
+});
+
 namespace("service", () => {
   require("../../../service/src/config/jake.js");
 });
@@ -255,9 +272,11 @@ const executeWait = (t: Object) => {
 
 task("rescript", async () => {
   await invokeWait(jake.Task["service:rescript-this"]);
+  await invokeWait(jake.Task["proto-demo:rescript-this"]);
   await invokeWait(jake.Task["leaderboard:rescript-this"]);
   await invokeWait(jake.Task["get-schwifty:rescript-this"]);
   await invokeWait(jake.Task["nextjs-web:rescript-this"]);
+  await invokeWait(jake.Task["command:rescript-this"]);
 });
 
 task("rescript-build-all", ["rescript"]);
@@ -277,7 +296,11 @@ const watch = (mutex: Object, waiting: Object, key: string, path, f) => {
     .on("all", async (event, path) => {
       waiting[key]++;
       if (waiting[key] === 1) {
-        await mutex.runExclusive(f);
+        await mutex.runExclusive(async () => {
+          try {
+            await f();
+          } catch (e) {}
+        });
       }
       waiting[key]--;
     });
@@ -332,6 +355,16 @@ task("rescript-watch", () => {
       async () => {
         await executeWait(jake.Task["service:rescript-this"]);
         await executeWait(jake.Task["proto-demo:rescript-this"]);
+        await executeWait(jake.Task["command:rescript-this"]);
+      }
+    );
+    watch(
+      mutex,
+      waiting,
+      "command",
+      ["packages/command/src/**/*.res"],
+      async () => {
+        await executeWait(jake.Task["command:rescript-this"]);
       }
     );
   });

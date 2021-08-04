@@ -1,5 +1,5 @@
 // @flow
-/* global task, jake */
+/* global task jake */
 
 import path from "path";
 import Debug from "debug";
@@ -44,5 +44,5 @@ task("dev", ["rescript-all"], async () => {
        --progress \
     `
   );
-  jake.Task["rescript-watch"].invoke();
+  await jake.Task["rescript-watch"].invoke();
 });
