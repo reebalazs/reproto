@@ -44,8 +44,10 @@ const mapSourceToPy = (name) =>
   path.join(protoPythonD, path.basename(name.replace(/\.proto$/, "_pb2.py")));
 const protoPyFiles = protoSources.map(mapSourceToPy);
 
+// protoc target is run on install. do _not_ include targets that require the protoc binary.
+// TBD change this eventually to make it consistent
 task("protoc", ["proto"]);
-task("proto", ["protojs", "protopy", "protores"]);
+task("proto", ["protojs", "protores"]);
 
 task("protodebug", [protoDesc, protoViewerMappings]);
 
