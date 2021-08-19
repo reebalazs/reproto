@@ -32,3 +32,34 @@ module ToRecord = {
   @module("@protozen/service/src/api/proto-type-support") @scope("toRecord")
   external oneof: ('a, string, _, _) => 'a = "oneof"
 }
+
+// New style conversion
+
+module Field = {
+  @module("@protozen/service/src/api/proto-type-support") @scope("field")
+  external fromR: ('a, string, _, _) => 'a = "fromR"
+  @module("@protozen/service/src/api/proto-type-support") @scope("field")
+  external toR: ('a, string, _, _) => 'a = "toR"
+}
+
+module MapField = {
+  @module("@protozen/service/src/api/proto-type-support") @scope("mapField")
+  external fromR: ('a, string, _, _) => 'a = "fromR"
+  @module("@protozen/service/src/api/proto-type-support") @scope("mapField")
+  external toR: ('a, string, _, _) => 'a = "toR"
+}
+
+module Convert = {
+  @module("@protozen/service/src/api/proto-type-support") @scope("Convert") @val
+  external string: _ = "string"
+  @module("@protozen/service/src/api/proto-type-support") @scope("Convert") @val
+  external int32: _ = "int32"
+  @module("@protozen/service/src/api/proto-type-support") @scope("Convert") @val
+  external int64: _ = "int64"
+  @module("@protozen/service/src/api/proto-type-support") @scope("Convert") @val
+  external enum: _ = "enum"
+  @module("@protozen/service/src/api/proto-type-support") @scope("Convert") @val
+  external message: _ = "message"
+  @module("@protozen/service/src/api/proto-type-support") @scope("Convert") @val
+  external oneof: _ = "oneof"
+}

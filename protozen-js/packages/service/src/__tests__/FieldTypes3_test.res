@@ -169,5 +169,17 @@ describe("Protobuf field types support", () => {
       test("empty", () => v.valueField |> expect |> toEqual(Typeful.Oneof.ValueField.None))
       test("empty encode/decode", testMessage(v, Typeful.Oneof.ValueField.None))
     })
+
+    describe("repeated", () => {
+      let testMessage = (v, f, ()) =>
+        v |> Typeful.encode |> Typeful.decode |> (v => v.repeatedStringField) |> expect |> toEqual(f)
+      let repeatedStringField = ["a", "b", "c"]
+      let v = Typeful.make(~repeatedStringField, ())
+      test("value", () => v.repeatedStringField |> expect |> toEqual(repeatedStringField))
+      test("encode/decode ", testMessage(v, repeatedStringField))
+      let v = Typeful.make()
+      test("empty", () => v.repeatedStringField |> expect |> toEqual([]))
+      test("empty encode/decode", testMessage(v, []))
+    })
   })
 })

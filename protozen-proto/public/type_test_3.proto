@@ -35,4 +35,5 @@ message Typeful {
     int32 int32Value = 7;
     int64 int64Value = 8;
   }
+  repeated string repeatedStringField=9;
 }
