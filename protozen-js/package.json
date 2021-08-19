@@ -37,6 +37,7 @@
     "@babel/plugin-transform-runtime": "^7.6.2",
     "@ryyppy/rescript-promise": "^2.1.0",
     "change-case": "^3.1.0",
-    "debug": "^4.1.1"
+    "debug": "^4.1.1",
+    "rescript-logger": "^2.0.0"
   }
 }

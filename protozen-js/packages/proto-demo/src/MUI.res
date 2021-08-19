@@ -1,4 +1,3 @@
-open MaterialUi
 open MscharleyBsMaterialUiIcons
 
 module IconButton = MaterialUi.IconButton

@@ -1,4 +1,3 @@
-open Belt
 open Promise
 
 type connection = unit

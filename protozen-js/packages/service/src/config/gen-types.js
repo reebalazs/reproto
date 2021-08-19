@@ -95,10 +95,22 @@ function emitPrologue(stream: Object) {}
 function mapFieldType(
   field: Object,
   lookup: Function
-): { type: string, name: string } {
+): { type: string, name: string, fieldAccessor: string } {
   const fieldType = field["type"];
+  const fieldRule = field["rule"];
   let type;
   let name;
+  let fieldAccessor;
+  let isRepeated;
+  if (!fieldRule || fieldRule === "required") {
+    // nothing to do, handle the same for now
+    fieldAccessor = "Field";
+  } else if (fieldRule === "repeated") {
+    isRepeated = true;
+    fieldAccessor = "MapField";
+  } else {
+    throw new Error(`Field rule not supported [${fieldRule}]`);
+  }
   const result = {
     string: "string",
     int32: "int",
@@ -122,16 +134,27 @@ function mapFieldType(
     }
     name = `${fieldType}.t`;
   }
-  if (isProto3Optional(field)) {
+  if (isRepeated) {
+    name = `array<${name}>`;
+    if (isProto3Optional(field)) {
+      throw new Error(
+        `Field cannot be repeated and optional [${(field, name)}]`
+      );
+    }
+  } else if (isProto3Optional(field)) {
     // proto3 optional: option<'a>
     // proto3 non-optional: 'a
     // proto2: 'a
     name = `option<${name}>`;
   }
-  return { type, name };
+  return { type, name, fieldAccessor };
 }
 
 function defaultFieldValue(field: Object, lookup: Function) {
+  if (field["rule"] === "repeated") {
+    // repeated field
+    return "=[]";
+  }
   if (isProto3Optional(field)) {
     // proto3: default for option
     return "=None";
@@ -312,6 +335,7 @@ ${" ".repeat(indent)}    let choices = (`);
       stream.write(`("", ""), `);
     }
     stream.write(`)
+${" ".repeat(indent)}    let convert = ProtoTypeSupport.Convert.oneof(choices)
 ${" ".repeat(indent)}  }
 `);
   }
@@ -343,7 +367,6 @@ ${" ".repeat(indent)}module ${capitalize(name)} = {
     emitOneofModule(stream, data, lookup, packageName, protoJsPath, indent + 2);
   }
   stream.write(`\
-${" ".repeat(indent)}  open ProtoTypeSupport
 ${" ".repeat(indent)}  type t = {
 `);
   for (const fieldName of iterRealFieldNames(data)) {
@@ -378,40 +401,48 @@ ${" ".repeat(indent)}    Js.Obj.empty()
 `);
   for (const fieldName of iterRealFieldNames(data)) {
     const field = data.fields[fieldName];
+    const mapper = mapFieldType(field, nextLookup);
     stream.write(`\
-${" ".repeat(indent)}    ->FromRecord.${
-      mapFieldType(field, nextLookup).type
-    }("${decapitalize(fieldName)}", v)
+${" ".repeat(indent)}    ->ProtoTypeSupport.${
+      mapper.fieldAccessor
+    }.fromR("${decapitalize(fieldName)}", ProtoTypeSupport.Convert.${
+      mapper.type
+    }, v)
 `);
   }
   for (const fieldName of iterOneofFieldNames(data)) {
     stream.write(`\
-${" ".repeat(indent)}    ->FromRecord.oneof("${decapitalize(
+${" ".repeat(indent)}    ->ProtoTypeSupport.Field.fromR("${decapitalize(
       fieldName
-    )}", Oneof.${capitalize(fieldName)}.choices, v)
+    )}", Oneof.${capitalize(fieldName)}.convert, v)
 `);
   }
   stream.write(`\
-${" ".repeat(indent)}    ->encode(messageClass)
+${" ".repeat(indent)}    ->ProtoTypeSupport.encode(messageClass)
 ${" ".repeat(indent)}  }
-${" ".repeat(indent)}  let verify = (v: t) => verify(v, messageClass)
+${" ".repeat(
+  indent
+)}  let verify = (v: t) => ProtoTypeSupport.verify(v, messageClass)
 ${" ".repeat(indent)}  let decode = (b): t => {
-${" ".repeat(indent)}    let m = decode(b, messageClass)
+${" ".repeat(indent)}    let m = ProtoTypeSupport.decode(b, messageClass)
 ${" ".repeat(indent)}    make()
 `);
   for (const fieldName of iterRealFieldNames(data)) {
     const field = data.fields[fieldName];
+    const mapper = mapFieldType(field, nextLookup);
     stream.write(`\
-${" ".repeat(indent)}    ->ToRecord.${
-      mapFieldType(field, nextLookup).type
-    }("${decapitalize(fieldName)}", m)
+${" ".repeat(indent)}    ->ProtoTypeSupport.${
+      mapper.fieldAccessor
+    }.toR("${decapitalize(fieldName)}", ProtoTypeSupport.Convert.${
+      mapper.type
+    }, m)
 `);
   }
   for (const fieldName of iterOneofFieldNames(data)) {
     stream.write(`\
-${" ".repeat(indent)}    ->ToRecord.oneof("${decapitalize(
+${" ".repeat(indent)}    ->ProtoTypeSupport.Field.toR("${decapitalize(
       fieldName
-    )}", Oneof.${capitalize(fieldName)}.choices, m)
+    )}", Oneof.${capitalize(fieldName)}.convert, m)
 `);
   }
   stream.write(`\

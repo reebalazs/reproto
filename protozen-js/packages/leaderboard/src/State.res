@@ -9,7 +9,7 @@ type result = {
 type rank = int
 
 module ComparableResult = Id.MakeComparable({
-  open Pervasives
+  // open Pervasives
   type t = (string, int)
   let cmp = ((id1, score1), (id2, score2)) => {
     switch compare(score1, score2) {

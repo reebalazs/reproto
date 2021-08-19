@@ -1,7 +1,6 @@
 open Belt
-open State
 @react.component
-let make = (~state, ~dispatch) => {
+let make = (~dispatch) => {
   open MaterialUi
   open Icons
   open Action
