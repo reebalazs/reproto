@@ -131,9 +131,9 @@ task("jest", async () => {
       ],
       coverageThreshold: JSON.stringify({
         global: {
-          branches: 60,
+          branches: 50,
           functions: 65,
-          lines: 75,
+          lines: 65,
           statements: -1000,
         },
       }),
