@@ -1,4 +1,4 @@
-open State
+type result = State.result
 
 type action =
   | AddResult({name: string, score: int})

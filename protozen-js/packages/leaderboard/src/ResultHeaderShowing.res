@@ -1,5 +1,3 @@
-open Belt
-open State
 @react.component
 let make = (~state, ~dispatch) => {
   open MaterialUi

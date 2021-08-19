@@ -32,7 +32,7 @@ describe("Protobuf services support", () => {
       let testSendAsync = (expectIt, done) => {
         JestJs.clearAllMocks()
         put
-        |> mockImplementationOnce(r =>
+        |> mockImplementationOnce(_ =>
           resolve({
             data: HelloWorldResponse.make(
               ~world="What is the question?",

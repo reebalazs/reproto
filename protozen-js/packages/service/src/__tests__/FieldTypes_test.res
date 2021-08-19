@@ -1,4 +1,3 @@
-open Belt
 open Jest
 open Expect
 

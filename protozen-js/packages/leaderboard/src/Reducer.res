@@ -28,6 +28,6 @@ let reducer = (state, action) => {
         state.results->Map.remove((result.id, result.score))
       },
     }
-  | _ => initialState
+//  | _ => initialState
   }
 }

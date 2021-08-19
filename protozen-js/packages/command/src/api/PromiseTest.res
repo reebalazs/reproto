@@ -1,5 +1,3 @@
-open Belt
-
 type rec stream<'a> = {v: 'a, next: Promise.t<option<stream<'a>>>}
 type oStream<'a> = option<stream<'a>>
 
@@ -19,7 +17,7 @@ let rec wait = (cnt: int) => {
 let promiseTest = () => {
   open Promise
 
-  let rec consume = p =>
+  let consume = p =>
     make((terminate, _reject) => {
       let rec consumeNext = p => {
         p
@@ -42,7 +40,7 @@ let promiseTest = () => {
 
   wait(5)
   ->consume
-  ->then(result => {
+  ->then(_ => {
     Js.log("Terminated final CATCH")->resolve
   })
 

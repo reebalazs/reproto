@@ -1,5 +1,3 @@
-open Belt
-
 let validateName = name => {
   switch name === "" {
   | true => "Name is mandatory"
