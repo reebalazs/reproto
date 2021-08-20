@@ -22,7 +22,8 @@
   "bs-dependencies": [
     "@ryyppy/rescript-promise",
     "@glennsl/bs-jest",
-    "rescript-logger"
+    "rescript-logger",
+    "bs-axios"
   ],
   "ppx-flags": ["rescript-logger/ppx"],
   "reason": { "react-jsx": 3 },

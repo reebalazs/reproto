@@ -4,7 +4,7 @@
 import Debug from "debug";
 import path from "path";
 import fs from "fs";
-import { rpcPath, mkdirp, exec } from "..";
+import { mkdirp, exec } from "..";
 import {
   genTypes,
   genProto,
@@ -110,7 +110,7 @@ file(protoViewerMappings, protoSources, async () => {
         for (const methodName in methods) {
           const method = methods[methodName];
           const { requestType, responseType } = method;
-          const path = rpcPath(serviceName, methodName);
+          const path = `/api/1.0/${serviceName}/${methodName}`;
           debug("Mapping:", path, requestType, responseType);
           stream.write(`
     <viewerMapping>

@@ -15,7 +15,8 @@ app->use((_req, res, next) => {
 
 app->use(rawMiddlewareWithOptions({"type": "application/x-protobuf"}))
 
-app->put("/api/1.0/services/hello_service/world", (req, res) => {
+//app->put("/api/1.0/services/hello_service/world", (req, res) => {
+app->put("/api/1.0/services.HelloService/World", (req, res) => {
   open HelloService.World
   let {world} = req->body->Request.decode
   Js.log("RQ hello_service/world: " ++ world)
