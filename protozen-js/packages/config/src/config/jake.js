@@ -307,6 +307,7 @@ const watch = (mutex: Object, waiting: Object, key: string, path, f) => {
 };
 
 task("rescript-watch", () => {
+  process.env.RES_LOG = "info";
   return new Promise(() => {
     const mutex = new Mutex();
     const waiting = {};

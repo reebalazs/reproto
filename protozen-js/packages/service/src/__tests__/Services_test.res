@@ -19,16 +19,14 @@ let getArrayIndex = (i, a) =>
 
 describe("Protobuf services support", () => {
   open Promise
-  // open ProtozenService.Connection
-  // open ProtozenService.Proto
-  open Connection
   open Proto
   open Services
+  open ProtozenService.MethodWrapper
 
   describe("HelloService", () => {
-    let conn = createConnection(~url="http://127.0.0.1:8030", ~protoJs, ())
+    let conn = AxiosConnection.createConnection(~url="http://127.0.0.1:8030", ())
 
-    let describeRequest = (doRequest: connection => protoResponse<HelloWorldResponse.t>, ()) => {
+    let describeRequest = (doRequest: serviceRoot => protoResponse<HelloWorldResponse.t>, ()) => {
       let testSendAsync = (expectIt, done) => {
         JestJs.clearAllMocks()
         put
@@ -65,7 +63,7 @@ describe("Protobuf services support", () => {
           |> getArrayIndex(0)
           |> getArrayIndex(0)
           |> expect
-          |> toEqual("/api/1.0/services/hello_service/world")
+          |> toEqual("/api/1.0/services.HelloService/World")
         ),
       )
       testAsync(

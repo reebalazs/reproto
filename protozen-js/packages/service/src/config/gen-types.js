@@ -61,9 +61,9 @@ export async function genTypes(
   const stream = fs.createWriteStream(output);
   await new Promise((resolve) => {
     stream.once("open", function (fd) {
-      emitPrologue(stream);
+      emitPrologue(stream, data, protoJsPath);
       emitPackage(stream, data, protoJsPath);
-      emitEpilogue(stream, protoJsPath);
+      emitEpilogue(stream, data, protoJsPath);
       resolve();
     });
   });
@@ -90,7 +90,17 @@ function isProto3Optional(field: Object): boolean {
   return field.options && field.options["proto3_optional"] === true;
 }
 
-function emitPrologue(stream: Object) {}
+function emitPrologue(stream: Object, dataRoot: Object, protoJsPath: string) {
+  stream.write(`\
+type protoJs = unit
+`);
+  emitProtoModuleDirective(stream, protoJsPath);
+  stream.write(`@val external protoJs: protoJs = "default"
+type serviceRoot
+@module("@protozen/service") external _createServiceRoot: _ => serviceRoot = "createServiceRoot"
+let createServiceRoot = () => _createServiceRoot(protoJs)
+`);
+}
 
 function mapFieldType(
   field: Object,
@@ -455,6 +465,7 @@ function emitService(
   stream: Object,
   name,
   data,
+  protoJsPath,
   lookup: Function,
   packageName,
   indent
@@ -469,9 +480,7 @@ ${" ".repeat(indent)}module ${capitalize(name)} = {
     const requestData = nextLookup(method.requestType);
     stream.write(`\
 ${" ".repeat(indent)}  module ${capitalize(methodName)} = {
-${" ".repeat(
-  indent
-)}    @send external wrapped: (ProtozenService.Connection.connection, ${capitalize(
+${" ".repeat(indent)}    @send external wrapped: (serviceRoot, ${capitalize(
       method.requestType
     )}.t) => Promise.t<${capitalize(method.responseType)}.t> = "${
       packageName ? packageName + "/" : ""
@@ -480,16 +489,30 @@ ${" ".repeat(indent)}    module Request = ${capitalize(method.requestType)}
 ${" ".repeat(indent)}    module Response = ${capitalize(method.responseType)}
 ${" ".repeat(
   indent
-)}    let call = (connection, request) => wrapped(connection, request)->ProtozenService.Connection.wrapMethod
-${" ".repeat(indent)}    let make = (connection, `);
+)}    let call = (serviceRoot, request) => wrapped(serviceRoot, request)->ProtozenService.MethodWrapper.methodWrapper
+${" ".repeat(indent)}    let make = (serviceRoot, `);
     emitFieldParameters(stream, requestData, nextLookup, indent);
-    stream.write(`) => wrapped(connection, `);
+    stream.write(`) => wrapped(serviceRoot, `);
     emitFieldRecord(stream, requestData, nextLookup, indent);
-    stream.write(`)->ProtozenService.Connection.wrapMethod
+    stream.write(`)->ProtozenService.MethodWrapper.methodWrapper
 ${" ".repeat(indent)}  }
 `);
   }
   stream.write(`\
+${" ".repeat(indent)}  `);
+  emitProtoModuleDirective(stream, protoJsPath);
+  stream.write(`@val `);
+  emitScopeDirective(stream, packageName);
+  stream.write(`external serviceClass: _ = "${capitalize(name)}"
+${" ".repeat(
+  indent
+)}  @module("@protozen/service") external _create: (serviceRoot, _, _, bool, bool) => serviceRoot = "createService"
+${" ".repeat(
+  indent
+)}  let create = (serviceRoot, rpcImpl, requestDelimited, responseDelimited) =>
+${" ".repeat(
+  indent
+)}    _create(serviceRoot, serviceClass, rpcImpl, requestDelimited, responseDelimited)
 ${" ".repeat(indent)}}
 `);
 }
@@ -498,14 +521,7 @@ function emitProtoModuleDirective(stream: Object, protoJsPath: string) {
   stream.write(`@module("${protoJsPath}") `);
 }
 
-function emitEpilogue(stream: Object, protoJsPath: string) {
-  stream.write(`\
-type protoJs = unit
-`);
-  emitProtoModuleDirective(stream, protoJsPath);
-  stream.write(`@val external protoJs: protoJs = "default"
-`);
-}
+function emitEpilogue(stream: Object, dataRoot: Object, protoJsPath: string) {}
 
 function emitPackage(
   stream: Object,
@@ -533,7 +549,15 @@ function emitPackage(
         indent
       );
     } else if (data.methods) {
-      emitService(stream, name, data, nextLookup, packageName, indent);
+      emitService(
+        stream,
+        name,
+        data,
+        protoJsPath,
+        nextLookup,
+        packageName,
+        indent
+      );
     } else if (data.nested) {
       stream.write(`\
 ${" ".repeat(indent)}module ${capitalize(packageName)} = {

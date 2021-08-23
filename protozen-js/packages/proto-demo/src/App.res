@@ -2,18 +2,15 @@ open Belt
 @react.component
 let app = () => {
   open Promise
-  // open Proto
-  // open Services
   open MUI
   open CssJs
-  open ProtozenService.Connection
   open ProtozenService.Proto
   open Services
 
   let (message, setMessage) = React.useState(_ => "Oh-oh. You gotta get schwifty.")
   let (results, setResults) = React.useState(_ => list{})
 
-  let connection = createConnection(~url="http://127.0.0.1:8030", ~protoJs=protoJs, ())
+  let connection = ProtozenService.AxiosConnection.createConnection(~url="http://127.0.0.1:8030", ())
   let sendMessage = () => {
     connection
 //    ->HelloService.World.call({world: message})
