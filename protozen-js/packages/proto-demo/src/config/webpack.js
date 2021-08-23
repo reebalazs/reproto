@@ -3,7 +3,7 @@ import path from "path";
 import { NoEmitOnErrorsPlugin } from "webpack";
 import babelConfig from "../../../../babel.config";
 
-const src = path.resolve(__dirname, "..");
+const src = path.resolve(__dirname, "..", "client");
 const dist = path.resolve(__dirname, "..", "..", "dist");
 
 module.exports = {

@@ -6,4 +6,4 @@ require("@babel/register")({
 process.on("unhandledRejection", (up) => {
   throw up;
 });
-require("../api/DemoServer.bs.js").demoServer();
+require("../server/DemoServer.bs.js").demoServer();
