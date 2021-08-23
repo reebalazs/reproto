@@ -25,7 +25,7 @@ const rootD = path.resolve(__dirname, "..", "..", "..", "..");
 
 task("default", () => {
   info(
-    "Namespaces: web, get-schwifty, leaderboard, proto-demo, service, command. Targets: install, protoc, protodesc, lint, help"
+    "Namespaces: web, get-schwifty, leaderboard, proto-demo, service. Targets: install, protoc, protodesc, lint, help"
   );
 });
 
@@ -39,7 +39,6 @@ get-schwifty:       @protozen/get-schwifty example app
 leaderboard:        @protozen/leaderboard app
 proto-demo:         @protozen/proto-demo app
 service:            @protozen/service package
-command:            @protozen/command package
 
 Root targets:
 
@@ -64,7 +63,6 @@ jake get-schwifty   print help about the get-schwifty namespace
 jake leaderboard    print help about the leaderboard namespace
 jake proto-demo     print help about the proto-demo namespace
 jake service        print help about the service namespace
-jake command        print help about the command namespace
 
   `);
 });
@@ -222,23 +220,6 @@ task("service", () => {
   jake.Task["service:default"].invoke();
 });
 
-namespace("command", () => {
-  try {
-    require("../../../command/src/config/jake.js");
-  } catch (err) {
-    const commands = require("yargs").argv._;
-    if (
-      !(commands.length === 1 && ["install", "protoc"].includes(commands[0]))
-    ) {
-      info("Error importing command namespace. %s %O", err.message);
-    }
-  }
-});
-
-task("command", () => {
-  jake.Task["command:default"].invoke();
-});
-
 const addTaskPromiseListeners = (
   t: Object,
   resolve: Function,
@@ -276,7 +257,6 @@ task("rescript", async () => {
   await invokeWait(jake.Task["leaderboard:rescript-this"]);
   await invokeWait(jake.Task["get-schwifty:rescript-this"]);
   await invokeWait(jake.Task["nextjs-web:rescript-this"]);
-  await invokeWait(jake.Task["command:rescript-this"]);
 });
 
 task("rescript-build-all", ["rescript"]);
@@ -356,16 +336,6 @@ task("rescript-watch", () => {
       async () => {
         await executeWait(jake.Task["service:rescript-this"]);
         await executeWait(jake.Task["proto-demo:rescript-this"]);
-        await executeWait(jake.Task["command:rescript-this"]);
-      }
-    );
-    watch(
-      mutex,
-      waiting,
-      "command",
-      ["packages/command/src/**/*.res"],
-      async () => {
-        await executeWait(jake.Task["command:rescript-this"]);
       }
     );
   });

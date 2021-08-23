@@ -3,4 +3,4 @@
 process.on("unhandledRejection", (up) => {
   throw up;
 });
-require("../api/PromiseTest.bs.js").promiseTest();
+require("../reproto-service-example/PromiseTest.bs.js").promiseTest();

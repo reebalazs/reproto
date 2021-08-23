@@ -17,6 +17,9 @@
     "yarn": ">=1.17.3"
   },
   "main": "src/index",
+  "bin": {
+    "promise-test": "src/script/promise-test.js"
+  },
   "devDependencies": {
     "@glennsl/bs-jest": "^0.7.0",
     "enzyme": "^3.10.0",
