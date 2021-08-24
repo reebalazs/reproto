@@ -99,6 +99,9 @@ type protoJs = unit
 type serviceRoot
 @module("@protozen/service") external _createServiceRoot: _ => serviceRoot = "createServiceRoot"
 let createServiceRoot = () => _createServiceRoot(protoJs)
+type rec protoStreamNext<'req> = ProtozenService.MethodWrapper.protoStreamNext<'req>
+type rec protoStreamCallback<'res> = ProtozenService.MethodWrapper.protoStreamCallback<'res>
+let methodWrapper = ProtozenService.MethodWrapper.methodWrapper
 `);
 }
 
@@ -482,19 +485,21 @@ ${" ".repeat(indent)}module ${capitalize(name)} = {
 ${" ".repeat(indent)}  module ${capitalize(methodName)} = {
 ${" ".repeat(indent)}    @send external wrapped: (serviceRoot, ${capitalize(
       method.requestType
-    )}.t) => Promise.t<${capitalize(method.responseType)}.t> = "${
-      packageName ? packageName + "/" : ""
-    }${decapitalize(methodName)}"
+    )}.t, protoStreamCallback<${capitalize(
+      method.responseType
+    )}.t>) => unit = "${packageName ? packageName + "/" : ""}${decapitalize(
+      methodName
+    )}"
 ${" ".repeat(indent)}    module Request = ${capitalize(method.requestType)}
 ${" ".repeat(indent)}    module Response = ${capitalize(method.responseType)}
 ${" ".repeat(
   indent
-)}    let call = (serviceRoot, request) => wrapped(serviceRoot, request)->ProtozenService.MethodWrapper.methodWrapper
+)}    let call = (serviceRoot, request) => methodWrapper(wrapped, serviceRoot, request)
 ${" ".repeat(indent)}    let make = (serviceRoot, `);
     emitFieldParameters(stream, requestData, nextLookup, indent);
-    stream.write(`) => wrapped(serviceRoot, `);
+    stream.write(`) => methodWrapper(wrapped, serviceRoot, `);
     emitFieldRecord(stream, requestData, nextLookup, indent);
-    stream.write(`)->ProtozenService.MethodWrapper.methodWrapper
+    stream.write(`)
 ${" ".repeat(indent)}  }
 `);
   }
@@ -509,10 +514,10 @@ ${" ".repeat(
 )}  @module("@protozen/service") external _create: (serviceRoot, _, _, bool, bool) => serviceRoot = "createService"
 ${" ".repeat(
   indent
-)}  let create = (serviceRoot, rpcImpl, requestDelimited, responseDelimited) =>
+)}  let create = (serviceRoot, wrappedRpcImpl, requestDelimited, responseDelimited) =>
 ${" ".repeat(
   indent
-)}    _create(serviceRoot, serviceClass, rpcImpl, requestDelimited, responseDelimited)
+)}    _create(serviceRoot, serviceClass, ProtozenService.RpcImpl.unwrap(wrappedRpcImpl), requestDelimited, responseDelimited)
 ${" ".repeat(indent)}}
 `);
 }

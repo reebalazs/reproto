@@ -1,5 +1,8 @@
-type rec stream<'a> = {v: 'a, next: Promise.t<option<stream<'a>>>}
-type oStream<'a> = option<stream<'a>>
+
+type rec stream<'a> =
+  | Message('a, Promise.t<stream<'a>>)
+  | Terminator
+type rec pStream<'a> = Promise.t<stream<'a>>
 
 let rec wait = (cnt: int) => {
   open Js.Global
@@ -7,8 +10,8 @@ let rec wait = (cnt: int) => {
   Promise.make((resolve, _reject) => {
     let _ = setTimeout(() => {
       switch cnt {
-      | 0 => resolve(. None)
-      | c_ => resolve(. Some({v: c_, next: wait(c_ - 1)}))
+      | 0 => resolve(. Terminator)
+      | c_ => resolve(. Message(c_, wait(c_ - 1)))
       }
     }, 1000)
   })
@@ -21,15 +24,15 @@ let promiseTest = () => {
     make((terminate, _reject) => {
       let rec consumeNext = p => {
         p
-        ->then(oStream => {
-          switch oStream {
-          | None => {
+        ->then(stream => {
+          switch stream {
+          | Terminator => {
               Js.log("Terminated")
               terminate(. ignore())
             }
-          | Some(s_) => {
-              Js.log("As promised:" ++ Js.Int.toString(s_.v))
-              consumeNext(s_.next)
+          | Message(v, next) => {
+              Js.log("As promised:" ++ Js.Int.toString(v))
+              consumeNext(next)
             }
           }->resolve
         })
