@@ -3,6 +3,8 @@ open Jest
 open Expect
 open MockJs
 
+exception UnexpectedTerminator
+
 type response = {
   data: Js_typed_array.ArrayBuffer.t,
   status: int,
@@ -21,12 +23,11 @@ describe("Protobuf services support", () => {
   open Promise
   open Proto
   open Services
-  open ProtozenService.MethodWrapper
 
   describe("HelloService", () => {
     let conn = AxiosConnection.createConnection(~url="http://127.0.0.1:8030", ())
 
-    let describeRequest = (doRequest: serviceRoot => protoResponse<HelloWorldResponse.t>, ()) => {
+    let describeRequest = (doRequest: serviceRoot => protoStreamNext<HelloWorldResponse.t>, ()) => {
       let testSendAsync = (expectIt, done) => {
         JestJs.clearAllMocks()
         put
@@ -44,8 +45,11 @@ describe("Protobuf services support", () => {
 
         conn
         ->doRequest
-        ->then(({v: {world}}) => {
-          expectIt(put, world) |> done
+        ->then(message => {
+          switch message {
+          | StreamMessage({world}, _) => expectIt(put, world) |> done
+          | StreamTerminator => raise(UnexpectedTerminator)
+          }
           resolve()
         })
         ->ignore
@@ -93,13 +97,11 @@ describe("Protobuf services support", () => {
       "make call",
       describeRequest(conn => HelloService.World.make(conn, ~world="The answer", ())),
     )
-    test(
-      "Request",
-      () => (HelloService.World.Request.make === HelloWorldRequest.make) |> expect |> toBe(true)
+    test("Request", () =>
+      HelloService.World.Request.make === HelloWorldRequest.make |> expect |> toBe(true)
     )
-    test(
-      "Response",
-      () => (HelloService.World.Response.make === HelloWorldResponse.make) |> expect |> toBe(true)
+    test("Response", () =>
+      HelloService.World.Response.make === HelloWorldResponse.make |> expect |> toBe(true)
     )
   })
 })

@@ -1,16 +1,52 @@
-open Promise
+exception Fatal
+exception UnsupportedServiceTerminator
 
-type rec protoStream<'a> = {v: 'a, next: t<option<protoStream<'a>>>}
-type oProtoStream<'a> = option<protoStream<'a>>
-// for no-streams, 1 response required
-type protoResponse<'a> = t<protoStream<'a>>
-// for streams, zero response allowed
-type oProtoResponse<'a> = t<oProtoStream<'a>>
+%%raw(`
+const _isExnTerminator = exn => exn ? exn.message === "PROTO_STREAM_TERMINATOR" : false;
+`)
+@val external isExnTerminator: exn => bool = "_isExnTerminator"
 
-// No stream wrapper, returns protoResponse
-let methodWrapper = response => make((resolve, _reject) =>
-  response->then(v => {
-    resolve(. {v, next: Promise.resolve(None)})
-    Promise.resolve()
-    })->ignore
-  )
+type rec protoStream<'req> =
+  | StreamMessage('req, Promise.t<protoStream<'req>>)
+  | StreamTerminator
+type rec protoStreamNext<'req> = Promise.t<protoStream<'req>>
+//type protoStreamCallback<'res> = (option<exn>, option<'res>) => unit
+type protoStreamCallback<'res> = (Js.Nullable.t<exn>, Js.Nullable.t<'res>) => unit
+type callbackQueue<'res> = array<protoStreamCallback<'res>>
+
+let methodWrapper = (wrapped, serviceRoot, request) => {
+  let callbackQueue = []
+  let rec makePromise = () =>
+    Promise.make((resolve, reject) =>
+      callbackQueue
+      ->Js.Array2.push((error, response) =>
+        switch error->Js.Nullable.toOption {
+        | Some(error) =>
+          switch isExnTerminator(error) {
+          | true => resolve(. StreamTerminator)
+          | false => reject(. error)
+          }
+        | None =>
+          switch response->Js.Nullable.toOption {
+          | Some(response) => resolve(. StreamMessage(response, makePromise()))
+          | None => raise(UnsupportedServiceTerminator)
+          }
+        }
+      )
+      ->ignore
+    )
+  let promise = makePromise()
+  let protoStreamCallback =
+    callbackQueue
+    ->Js.Array2.pop
+    ->(
+      v => {
+        switch v {
+        | Some(protoStreamCallback) => protoStreamCallback
+        | None => raise(Fatal)
+        }
+      }
+    )
+  wrapped(serviceRoot, request, protoStreamCallback)
+  promise
+}

@@ -1,4 +1,7 @@
 open Belt
+
+exception UnexpectedTerminator
+
 @react.component
 let app = () => {
   open Promise
@@ -15,8 +18,11 @@ let app = () => {
     connection
 //    ->HelloService.World.call({world: message})
     ->HelloService.World.make(~world=message, ())
-    ->then(({v: {world}}) => {
-      setResults(_ => list{world ++ " @ " ++ Js.Date.make()->Js.Date.toTimeString, ...results})
+      ->then(message => {
+        switch message {
+          | StreamMessage({world}, _) => setResults(_ => list{world ++ " @ " ++ Js.Date.make()->Js.Date.toTimeString, ...results})
+          | StreamTerminator => raise(UnexpectedTerminator)
+        }
       resolve()
     })
     ->ignore

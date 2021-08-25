@@ -20,21 +20,20 @@ let createConnection = (~url="https://example.com", ()) => {
     ),
   )
 
-  open RpcImpl
-  let rpcImpl = (method, requestData, callback) => {
+  let rpcImpl: RpcImpl.t = (method, requestData, callback) => {
     open Promise
     let path = `/api/1.0/${method.__servicePath__}/${method.name}`
     inst
     ->putBinary(path, Js_typed_array.Uint8Array.fromBuffer(requestData))
     ->then(resp => {
       switch resp["status"] {
-      | 200 => callback(None, Some(Js_typed_array.Uint8Array.fromBuffer(resp["data"])))
+      | 200 => callback(CallbackResponse(resp["data"]))
       | status => Js.Exn.raiseError(`Error ${status->Int.toString}: ${resp["statusText"]}`)
       }
       resolve()
     })
     ->catch(error => {
-      callback(Some(error), None)
+      callback(CallbackError(error))
       resolve()
     })
     ->ignore
