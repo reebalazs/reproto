@@ -1,0 +1,16 @@
+.yarn/*
+!.yarn/cache
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+node_modules
+dist
+.DS_Store
+yarn-error.log
+!_*
+lib
+.merlin
+*.bs.js
+.bsb.lock
+coverage

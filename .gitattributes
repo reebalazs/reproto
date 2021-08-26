@@ -1,0 +1,12 @@
+.yarn/**/*    -diff -merge
+.yarn/**/*    linguist-generated=true
+.pnp.cjs    -diff -merge
+.pnp.cjs    linguist-generated=true
+.yarn/releases/** binary
+.yarn/plugins/** binary
+*.bs.js       -diff -merge
+*.bs.js    linguist-generated=true
+*.proto.js       -diff -merge
+*.proto.js    linguist-generated=true
+Proto*.res       -diff -merge
+Proto*.res    linguist-generated=true

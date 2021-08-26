@@ -1,8 +1,0 @@
-
-syntax = "proto2";
-
-package public;
-
-message Protozen {
-  optional string name = 1;
-}
