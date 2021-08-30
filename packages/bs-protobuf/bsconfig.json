@@ -1,0 +1,33 @@
+{
+  "name": "@reproto/bs-protobuf",
+  "$schema": "https://raw.githubusercontent.com/rescript-lang/rescript-compiler/master/docs/docson/build-schema.json",
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    },
+    {
+      "dir": "__tests__"
+    }
+  ],
+  "package-specs": [
+    {
+      "module": "commonjs",
+      "in-source": true
+    }
+  ],
+  "suffix": ".bs.js",
+  "namespace": true,
+  "bs-dependencies": [
+    "@ryyppy/rescript-promise",
+    "@glennsl/bs-jest",
+    "rescript-logger",
+    "bs-axios"
+  ],
+  "ppx-flags": ["rescript-logger/ppx"],
+  "reason": { "react-jsx": 3 },
+  "warnings": {
+    "error": "+101"
+  },
+  "refmt": 3
+}

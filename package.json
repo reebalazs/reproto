@@ -1,0 +1,62 @@
+{
+  "name": "@reproto",
+  "description": "Reproto: Protocol Buffers for Rescript",
+  "version": "0.1.0",
+  "license": "BSD-3-Clause",
+  "homepage": "https://github.com/reebalazs/reproto",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:reebalazs/reproto.git"
+  },
+  "bugs": {
+    "url": "https://github.com/reebalazs/reproto/issues"
+  },
+  "author": "Balazs Ree <ree@greenfinity.hu>",
+  "engines": {
+    "node": ">=14.17.1",
+    "yarn": ">=3.0.1"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "protores": "NODE_PATH=packages/bs-protobuf packages/bs-protobuf/src/script/protores.js",
+    "protores:build": "yarn workspace @reproto/bs-protobuf protores:build && yarn workspace @reproto/proto-demo protores:build",
+    "rescript:build": "rescript build -with-deps",
+    "rescript:dev": "rescript build -w -with-deps",
+    "bs-protobuf:build": "yarn workspace @reproto/bs-protobuf build",
+    "proto-demo:build": "yarn workspace @reproto/proto-demo build",
+    "build": "yarn bs-protobuf:build && yarn workspace @reproto/proto-demo protores:build && yarn rescript:build && yarn workspace @reproto/proto-demo webpack:build",
+    "bs-protobuf:dev": "NINJA_ANSI_FORCED=1 yarn workspace @reproto/bs-protobuf && yarn rescript:dev & yarn workspace @reproto/bs-protobuf dev",
+    "proto-demo:dev": "NINJA_ANSI_FORCED=1 yarn workspace @reproto/proto-demo build && yarn rescript:dev & yarn workspace @reproto/proto-demo dev",
+    "dev": "NINJA_ANSI_FORCED=1 yarn build && yarn rescript:dev & yarn workspace @reproto/bs-protobuf dev & yarn workspace @reproto/proto-demo dev",
+    "test": "yarn jest:run",
+    "jest:run": "yarn jest --coverage",
+    "jest:dev": "yarn jest --watchAll"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.8",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.14.5",
+    "@glennsl/bs-jest": "^0.7.0",
+    "async-mutex": "^0.3.1",
+    "babel-eslint": "^10.0.3",
+    "babel-jest": "^24.9.0",
+    "babel-plugin-transform-regenerator": "^6.26.0",
+    "chokidar": "3",
+    "eslint": "^6.5.1",
+    "eslint-plugin-react": "^7.16.0",
+    "jest": "^27.0.6",
+    "jest-cli": "^27.0.6",
+    "protobufjs": "^6.11.2",
+    "rescript": "^9.1.4",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.6.2",
+    "@ryyppy/rescript-promise": "^2.1.0",
+    "rescript-logger": "^2.0.0"
+  }
+}

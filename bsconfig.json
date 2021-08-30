@@ -1,0 +1,45 @@
+{
+  "name": "@reproto",
+  "$schema": "https://raw.githubusercontent.com/rescript-lang/rescript-compiler/master/docs/docson/build-schema.json",
+  "sources": [
+    {
+      "dir": "packages/bs-protobuf/src",
+      "subdirs": true
+    },
+    {
+      "dir": "packages/bs-protobuf/__tests__",
+      "type": "dev"
+    },
+    {
+      "dir": "packages/proto-demo/src",
+      "subdirs": true
+    }
+  ],
+  "package-specs": [
+    {
+      "module": "commonjs",
+      "in-source": true
+    }
+  ],
+  "suffix": ".bs.js",
+  "namespace": true,
+  "bs-dependencies": [
+    "@ryyppy/rescript-promise",
+    "rescript-logger",
+    "bs-axios",
+    "@reproto/bs-protobuf",
+    "@rescript/react",
+    "@jsiebern/bs-material-ui",
+    "@mscharley/bs-material-ui-icons",
+    "bs-css",
+    "bs-css-emotion",
+    "rescript-express"
+  ],
+  "bs-dev-dependencies": ["@glennsl/bs-jest"],
+  "ppx-flags": ["rescript-logger/ppx"],
+  "reason": { "react-jsx": 3 },
+  "warnings": {
+    "error": "+101"
+  },
+  "refmt": 3
+}

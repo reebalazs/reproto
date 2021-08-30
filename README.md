@@ -1,4 +1,4 @@
-# Reproto
+# Reproto - Protocol Buffer support for Rescript
 
 ## @reproto/bs-protobuf
 

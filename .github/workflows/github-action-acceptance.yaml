@@ -2,9 +2,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ "*" ]
   pull_request:
-    branches: [ master ]
+    branches: [ "*" ]
 
 jobs:
   build:
@@ -21,6 +21,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn
-      - run: ./jake rescript
-      - run: ./jake test
+      - run: yarn install
+      - run: yarn build
+      - run: yarn test
