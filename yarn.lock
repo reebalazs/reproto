@@ -2360,20 +2360,32 @@ __metadata:
     "@babel/preset-flow": ^7.14.5
     "@glennsl/bs-jest": ^0.7.0
     "@ryyppy/rescript-promise": ^2.1.0
-    bs-axios: ^0.0.43
     bs-platform: ^9.0.2
     chokidar: ^3.5.2
     colors: ^1.4.0
     enzyme: ^3.10.0
     jest: ^24.8.0
-    jest-cucumber: ^2.0.11
-    jest-environment-node: ^24.5.0
     rescript: ^9.1.4
     rescript-logger: ^2.0.0
     yargs: ^17.1.1
   bin:
     promise-test: src/script/promise-test.js
     protores: src/script/protores.js
+  languageName: unknown
+  linkType: soft
+
+"@reproto/bs-rpc-axios@workspace:packages/bs-rpc-axios":
+  version: 0.0.0-use.local
+  resolution: "@reproto/bs-rpc-axios@workspace:packages/bs-rpc-axios"
+  dependencies:
+    "@glennsl/bs-jest": ^0.7.0
+    "@reproto/bs-protobuf": ^0.1.5
+    "@ryyppy/rescript-promise": ^2.1.0
+    bs-axios: ^0.0.43
+    bs-platform: ^9.0.2
+    jest: ^24.8.0
+    rescript: ^9.1.4
+    rescript-logger: ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -2619,15 +2631,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^24.0.7":
-  version: 24.9.1
-  resolution: "@types/jest@npm:24.9.1"
-  dependencies:
-    jest-diff: ^24.3.0
-  checksum: eb6b3e177b90c823604216cc78028bd10edf9127cdab543776b35ce48779ba94b3d28f44e8420b9a9d122f3e2f126e3f57fb7f270b4b4c7dfb09da40f9798e39
-  languageName: node
-  linkType: hard
-
 "@types/json-schema@npm:*, @types/json-schema@npm:^7.0.5, @types/json-schema@npm:^7.0.8":
   version: 7.0.9
   resolution: "@types/json-schema@npm:7.0.9"
@@ -2653,13 +2656,6 @@ __metadata:
   version: 16.7.2
   resolution: "@types/node@npm:16.7.2"
   checksum: aef77c109e2fd93b5dc6ec0a57a0878aaaa58adf0e63d9618d67b116ad3f2a3eb2589a99deaf9fda4a0805068b2533e3d2cf8e8dc3572251c498ec3dc929a76c
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^11.9.4":
-  version: 11.15.54
-  resolution: "@types/node@npm:11.15.54"
-  checksum: d65c15001070c5df893876bb7637024a1a412d8ccfd803c61b4ee3293aafb85d69e278cd27dc28f66c8d21018d85fa50f93ade0937a187c16c8dad23fb1598d8
   languageName: node
   linkType: hard
 
@@ -6923,15 +6919,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"gherkin@npm:^5.0.0":
-  version: 5.1.0
-  resolution: "gherkin@npm:5.1.0"
-  bin:
-    gherkin-javascript: bin/gherkin
-  checksum: 38be6507fcf8d3a251493e91e576a8706a769d5829397f9acc41ddddcbd7c9e8b86fbb5fec3c2b20c27d48f0290a29d5834abe55320fce802a899567e5cceede
-  languageName: node
-  linkType: hard
-
 "glob-parent@npm:^3.1.0":
   version: 3.1.0
   resolution: "glob-parent@npm:3.1.0"
@@ -8395,20 +8382,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jest-cucumber@npm:^2.0.11":
-  version: 2.0.13
-  resolution: "jest-cucumber@npm:2.0.13"
-  dependencies:
-    "@types/jest": ^24.0.7
-    "@types/node": ^11.9.4
-    callsites: ^3.0.0
-    gherkin: ^5.0.0
-    jest: ^24.1.0
-  checksum: 1505e66cc26ce4105fe82a49a0002fcad1843b6f84bca1898a3a1fd0a354af4b622f1300d9be081adef638b645742d0cadd397ab1b72d992f8e97f8c231e780c
-  languageName: node
-  linkType: hard
-
-"jest-diff@npm:^24.3.0, jest-diff@npm:^24.9.0":
+"jest-diff@npm:^24.9.0":
   version: 24.9.0
   resolution: "jest-diff@npm:24.9.0"
   dependencies:
@@ -8554,7 +8528,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jest-environment-node@npm:^24.5.0, jest-environment-node@npm:^24.9.0":
+"jest-environment-node@npm:^24.9.0":
   version: 24.9.0
   resolution: "jest-environment-node@npm:24.9.0"
   dependencies:
@@ -9481,7 +9455,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"jest@npm:^24.1.0, jest@npm:^24.8.0":
+"jest@npm:^24.8.0":
   version: 24.9.0
   resolution: "jest@npm:24.9.0"
   dependencies:

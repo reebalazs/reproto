@@ -1,6 +1,6 @@
 {
-  "name": "@reproto/bs-protobuf",
-  "description": "Reproto: Protocol Buffers for Rescript",
+  "name": "@reproto/bs-rpc-axios",
+  "description": "Reproto: Non-streaming RPC implementation with Axios",
   "version": "0.1.5",
   "license": "BSD-3-Clause",
   "homepage": "https://github.com/reebalazs/reproto",
@@ -17,27 +17,20 @@
     "yarn": ">=3.0.1"
   },
   "main": "src/index",
-  "bin": {
-    "promise-test": "src/script/promise-test.js",
-    "protores": "src/script/protores.js"
-  },
   "scripts": {
-    "protores:build": "mkdir -p test/proto-res && yarn protores -v test/proto/*.proto -o test/proto-res/Proto.res",
-    "protores:dev": "mkdir -p test/proto-res && yarn protores -w -s -v test/proto/*.proto -o test/proto-res/Proto.res",
+    "protores:build": "mkdir -p test/proto-res && yarn protores -v test/proto/*.proto -o test/proto-res/ProtoRpcAxios.res",
+    "protores:dev": "mkdir -p test/proto-res && yarn protores -w -s -v test/proto/*.proto -o test/proto-res/ProtoRpcAxios.res",
     "build": "yarn protores:build",
     "dev": "yarn protores:dev"
   },
   "devDependencies": {
-    "@babel/preset-flow": "^7.14.5",
     "@glennsl/bs-jest": "^0.7.0",
-    "chokidar": "^3.5.2",
-    "colors": "^1.4.0",
-    "enzyme": "^3.10.0",
-    "jest": "^24.8.0",
-    "yargs": "^17.1.1"
+    "@reproto/bs-protobuf": "^0.1.5",
+    "jest": "^24.8.0"
   },
   "dependencies": {
     "@ryyppy/rescript-promise": "^2.1.0",
+    "bs-axios": "^0.0.43",
     "bs-platform": "^9.0.2",
     "rescript": "^9.1.4",
     "rescript-logger": "^2.0.0"

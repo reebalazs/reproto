@@ -1,6 +1,6 @@
 # @reproto/bs-protobuf
 
-Services for protozen
+Reproto: Protocol Buffer support for Rescript
 
 ## Scope
 

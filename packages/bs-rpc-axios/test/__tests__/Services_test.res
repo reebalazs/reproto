@@ -21,15 +21,15 @@ let getArrayIndex = (i, a) =>
 
 module Connection = {
   let create = (~url="https://example.com", ()) => {
-    let rpc = AxiosRpc.createRpc(~url, ())
-    open Proto
+    let rpc = RpcAxios.createRpc(~url, ())
+    open ProtoRpcAxios
     createServiceRoot()->ServiceTest.HelloService.create(rpc, false, false)
   }
 }
 
 describe("Protobuf services functionality with AxiosConnection", () => {
   open Promise
-  open Proto
+  open ProtoRpcAxios
   open ServiceTest
 
   describe("HelloService", () => {

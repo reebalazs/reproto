@@ -5,7 +5,11 @@ const config = {
   setupFiles: ["./jestSetup.js"],
   transformIgnorePatterns: ["node_modules/@glennsl/bs-test/"],
   collectCoverage: false, // unless explititly specified
-  coveragePathIgnorePatterns: ["/node_modules/"],
+  coveragePathIgnorePatterns: [
+    "/node_modules/",
+    "/bs-rpc-axios/test/proto-res/",
+    "/proto-demo/proto-res/",
+  ],
   coverageThreshold: {
     global: {
       branches: 60,

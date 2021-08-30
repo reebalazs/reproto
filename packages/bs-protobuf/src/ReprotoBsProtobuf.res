@@ -2,5 +2,3 @@
 module MethodWrapper = MethodWrapper
 module ProtoTypeSupport = ProtoTypeSupport
 module RpcImpl = RpcImpl
-//
-module AxiosRpc = AxiosRpc
