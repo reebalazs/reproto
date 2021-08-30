@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package serviceTest;
+
+message HelloWorldRequest {
+    optional string world = 1;
+}
+
+message HelloWorldResponse {
+    optional string world = 1;
+}
+
+service HelloService {
+    rpc World (HelloWorldRequest) returns (HelloWorldResponse);
+}

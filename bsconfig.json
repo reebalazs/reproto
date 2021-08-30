@@ -7,8 +7,18 @@
       "subdirs": true
     },
     {
-      "dir": "packages/bs-protobuf/__tests__",
-      "type": "dev"
+      "dir": "packages/bs-protobuf/test",
+      "type": "dev",
+      "subdirs": true
+    },
+    {
+      "dir": "packages/bs-rpc-axios/src",
+      "subdirs": true
+    },
+    {
+      "dir": "packages/bs-rpc-axios/test",
+      "type": "dev",
+      "subdirs": true
     },
     {
       "dir": "packages/proto-demo/src",
