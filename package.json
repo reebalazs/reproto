@@ -23,7 +23,7 @@
     "protores": "NODE_PATH=packages/bs-protobuf packages/bs-protobuf/src/script/protores.js",
     "protores:build": "yarn workspace @reproto/bs-protobuf protores:build && yarn workspace @reproto/bs-rpc-axios protores:build && yarn workspace @reproto/proto-demo protores:build",
     "rescript:build": "rescript build -with-deps",
-    "rescript:dev": "rescript build -w -with-deps",
+    "rescript:dev": "NINJA_ANSI_FORCED=1 RES_LOG=info rescript build -w -with-deps",
     "bs-protobuf:build": "yarn workspace @reproto/bs-protobuf build",
     "bs-rpc-axios:build": "yarn workspace @reproto/bs-rpc-axios build",
     "proto-demo:build": "yarn workspace @reproto/proto-demo build",
@@ -31,7 +31,7 @@
     "bs-protobuf:dev": "NINJA_ANSI_FORCED=1 yarn workspace @reproto/bs-protobuf build && yarn rescript:dev & yarn workspace @reproto/bs-protobuf dev",
     "bs-rpc-axios:dev": "NINJA_ANSI_FORCED=1 yarn workspace @reproto/bs-rpc-axios build && yarn rescript:dev & yarn workspace @reproto/bs-rpc-axios dev",
     "proto-demo:dev": "NINJA_ANSI_FORCED=1 yarn workspace @reproto/proto-demo build && yarn rescript:dev & yarn workspace @reproto/proto-demo dev",
-    "dev": "NINJA_ANSI_FORCED=1 yarn build && yarn rescript:dev & yarn workspace @reproto/bs-protobuf dev & yarn workspace @reproto/bs-rpc-axios dev & yarn workspace @reproto/proto-demo dev",
+    "dev": "yarn build && yarn rescript:dev & yarn workspace @reproto/bs-protobuf dev & yarn workspace @reproto/bs-rpc-axios dev & yarn workspace @reproto/proto-demo dev",
     "test": "yarn jest:run",
     "jest:run": "yarn jest --coverage",
     "jest:dev": "yarn jest --watchAll"

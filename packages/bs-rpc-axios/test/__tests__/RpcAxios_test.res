@@ -27,7 +27,7 @@ module Connection = {
   }
 }
 
-describe("Protobuf services functionality with AxiosConnection", () => {
+describe("Protobuf services with RpcAxios", () => {
   open Promise
   open ProtoRpcAxios
   open ServiceTest
