@@ -153,14 +153,7 @@ export const serviceTest3 = $root.serviceTest3 = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        HelloWorldRequest.prototype.world = null;
-
-        let $oneOfFields;
-
-        Object.defineProperty(HelloWorldRequest.prototype, "_world", {
-            get: $util.oneOfGetter($oneOfFields = ["world"]),
-            set: $util.oneOfSetter($oneOfFields)
-        });
+        HelloWorldRequest.prototype.world = "";
 
         HelloWorldRequest.create = function create(properties) {
             return new HelloWorldRequest(properties);
@@ -214,14 +207,7 @@ export const serviceTest3 = $root.serviceTest3 = (() => {
                         this[keys[i]] = properties[keys[i]];
         }
 
-        HelloWorldResponse.prototype.world = null;
-
-        let $oneOfFields;
-
-        Object.defineProperty(HelloWorldResponse.prototype, "_world", {
-            get: $util.oneOfGetter($oneOfFields = ["world"]),
-            set: $util.oneOfSetter($oneOfFields)
-        });
+        HelloWorldResponse.prototype.world = "";
 
         HelloWorldResponse.create = function create(properties) {
             return new HelloWorldResponse(properties);

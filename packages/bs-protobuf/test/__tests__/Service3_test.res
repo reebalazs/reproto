@@ -5,9 +5,9 @@ open Promise
 
 exception TestError(string)
 
-describe("proto services", () => {
+describe("proto services for version 3", () => {
   open Proto
-  open ServiceTest
+  open ServiceTest3
 
   test("Request", () =>
     HelloService.World.Request.make === HelloWorldRequest.make |> expect |> toBe(true)
@@ -43,7 +43,7 @@ describe("proto services", () => {
   testAsync("method has __servicePath__ annotation", done => {
 
     let rpcImpl: RpcImpl.t = (method, _, _) =>
-      method.__servicePath__ |> expect |> toBe("serviceTest.HelloService") |> done
+      method.__servicePath__ |> expect |> toBe("serviceTest3.HelloService") |> done
 
     createServiceRoot()
     ->HelloService.create(rpcImpl, false, false)
@@ -54,7 +54,7 @@ describe("proto services", () => {
   testAsync("request path", done => {
     open RpcImpl
     let rpcImpl = (path, _, _) => {
-      path.__servicePath__|>expect|>toBe("serviceTest.HelloService")|>done
+      path.__servicePath__|>expect|>toBe("serviceTest3.HelloService")|>done
     }
     createServiceRoot()->HelloService.create(rpcImpl, false, false)
     ->HelloService.World.make(~world="The answer", ())->ignore
