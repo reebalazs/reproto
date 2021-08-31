@@ -1,7 +1,9 @@
-# @protozen/proto-demo
+# @reproto/proto-demo
 
-Protobuf demo app for protozen
+Reproto: Protocol Buffers demo app
 
 ## Scope
 
-**TBD**
+A working React client + Express server example that implements
+non-streaming GRPC (Not grpc-web). It uses the Axios RPC implementation
+provided by the `@reproto/bs-rpc-axios` package.
