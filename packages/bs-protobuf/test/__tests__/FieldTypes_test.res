@@ -156,6 +156,28 @@ describe("Protobuf field types support", () => {
       )
     })
 
+    describe("bytes", () => {
+      let buffer = Js_typed_array.Uint8Array.make([1, 2, 3, 4, 0, 255, 254])
+      let v = Typeful.make(~bytesField=buffer, ())
+      test("value", () => v.bytesField |> expect |> toBe(buffer))
+      test("encode/decode", () =>
+        v
+        |> Typeful.encode
+        |> Typeful.decode
+        |> (v => v.bytesField)
+        |> expect
+        |> toEqual(buffer)
+      )
+      let empty = Typeful.make()
+      let buffer = Js_typed_array.Uint8Array.make([])
+      test("empty", () => empty.bytesField |> expect |> toEqual(buffer))
+      test("empty encode/decode", () =>
+        empty |> Typeful.encode |> Typeful.decode |> (v => v.bytesField) |> expect |> toEqual(buffer)
+      )
+      let v = Typeful.make(~bytesField=buffer, ())
+      test("zero length", () => v.bytesField |> expect |> toEqual(buffer))
+    })
+
     describe("enum", () => {
       let v = Typeful.make(~enumField=EnumType.EnumV2, ())
       test("value", () => v.enumField |> expect |> toBe(EnumType.EnumV2))

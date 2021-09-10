@@ -428,6 +428,7 @@ export const typeTest = $root.typeTest = (() => {
         Typeful.prototype.int32Value = null;
         Typeful.prototype.int64Value = null;
         Typeful.prototype.repeatedStringField = $util.emptyArray;
+        Typeful.prototype.bytesField = $util.newBuffer([]);
 
         let $oneOfFields;
 
@@ -462,6 +463,8 @@ export const typeTest = $root.typeTest = (() => {
             if (message.repeatedStringField != null && message.repeatedStringField.length)
                 for (let i = 0; i < message.repeatedStringField.length; ++i)
                     writer.uint32(74).string(message.repeatedStringField[i]);
+            if (message.bytesField != null && Object.hasOwnProperty.call(message, "bytesField"))
+                writer.uint32(82).bytes(message.bytesField);
             return writer;
         };
 
@@ -504,6 +507,9 @@ export const typeTest = $root.typeTest = (() => {
                     if (!(message.repeatedStringField && message.repeatedStringField.length))
                         message.repeatedStringField = [];
                     message.repeatedStringField.push(reader.string());
+                    break;
+                case 10:
+                    message.bytesField = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -696,6 +702,7 @@ export const typeTest3 = $root.typeTest3 = (() => {
         Typeful.prototype.int32Value = null;
         Typeful.prototype.int64Value = null;
         Typeful.prototype.repeatedStringField = $util.emptyArray;
+        Typeful.prototype.bytesField = null;
 
         let $oneOfFields;
 
@@ -734,6 +741,11 @@ export const typeTest3 = $root.typeTest3 = (() => {
             set: $util.oneOfSetter($oneOfFields)
         });
 
+        Object.defineProperty(Typeful.prototype, "_bytesField", {
+            get: $util.oneOfGetter($oneOfFields = ["bytesField"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
         Typeful.create = function create(properties) {
             return new Typeful(properties);
         };
@@ -760,6 +772,8 @@ export const typeTest3 = $root.typeTest3 = (() => {
             if (message.repeatedStringField != null && message.repeatedStringField.length)
                 for (let i = 0; i < message.repeatedStringField.length; ++i)
                     writer.uint32(74).string(message.repeatedStringField[i]);
+            if (message.bytesField != null && Object.hasOwnProperty.call(message, "bytesField"))
+                writer.uint32(82).bytes(message.bytesField);
             return writer;
         };
 
@@ -802,6 +816,9 @@ export const typeTest3 = $root.typeTest3 = (() => {
                     if (!(message.repeatedStringField && message.repeatedStringField.length))
                         message.repeatedStringField = [];
                     message.repeatedStringField.push(reader.string());
+                    break;
+                case 10:
+                    message.bytesField = reader.bytes();
                     break;
                 default:
                     reader.skipType(tag & 7);

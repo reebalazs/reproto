@@ -148,6 +148,7 @@ function mapFieldType(
     string: "string",
     int32: "int",
     int64: "int64",
+    bytes: "Js_typed_array.Uint8Array.t",
   }[fieldType];
   if (result !== undefined) {
     type = fieldType;
@@ -202,6 +203,7 @@ function defaultFieldValue(field: Object, lookup: Function) {
       string: '""',
       int32: "0",
       int64: 'Int64.of_string("0")',
+      bytes: "Js_typed_array.Uint8Array.make([])",
     }[fieldType];
     if (result !== undefined) {
       return `=${result}`;

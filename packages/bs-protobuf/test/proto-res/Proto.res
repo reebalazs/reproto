@@ -177,9 +177,10 @@ module TypeTest = {
       @as("enumEField") enumEField: EnumTypeE.t,
       @as("basicField") basicField: Basic.t,
       @as("repeatedStringField") repeatedStringField: array<string>,
+      @as("bytesField") bytesField: Js_typed_array.Uint8Array.t,
       @as("valueField") valueField: Oneof.ValueField.t,
     }
-    let make = (~stringField="", ~int32Field=0, ~int64Field=Int64.of_string("0"), ~enumField=EnumType.EnumV0, ~enumEField=EnumTypeE.EnumVE0, ~basicField=Basic.make(), ~repeatedStringField=[], ~valueField=Oneof.ValueField.None, ()) => {stringField: stringField, int32Field: int32Field, int64Field: int64Field, enumField: enumField, enumEField: enumEField, basicField: basicField, repeatedStringField: repeatedStringField, valueField: valueField, }
+    let make = (~stringField="", ~int32Field=0, ~int64Field=Int64.of_string("0"), ~enumField=EnumType.EnumV0, ~enumEField=EnumTypeE.EnumVE0, ~basicField=Basic.make(), ~repeatedStringField=[], ~bytesField=Js_typed_array.Uint8Array.make([]), ~valueField=Oneof.ValueField.None, ()) => {stringField: stringField, int32Field: int32Field, int64Field: int64Field, enumField: enumField, enumEField: enumEField, basicField: basicField, repeatedStringField: repeatedStringField, bytesField: bytesField, valueField: valueField, }
     @module("./Proto.proto.js") @val @scope("typeTest") external messageClass: _ = "Typeful"
     let encode = v => {
       Js.Obj.empty()
@@ -190,6 +191,7 @@ module TypeTest = {
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("enumEField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.enum, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("basicField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.message, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.MapField.fromR("repeatedStringField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.string, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("bytesField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.bytes, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("valueField", Oneof.ValueField.convert, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.encode(messageClass)
     }
@@ -203,6 +205,7 @@ module TypeTest = {
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("enumEField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.enum, m)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("basicField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.message, m)
       ->ReprotoBsProtobuf.ProtoTypeSupport.MapField.toR("repeatedStringField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.string, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("bytesField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.bytes, m)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("valueField", Oneof.ValueField.convert, m)
     }
   }
@@ -281,9 +284,10 @@ module TypeTest3 = {
       @as("enumEField") enumEField: option<EnumTypeE.t>,
       @as("basicField") basicField: option<Basic.t>,
       @as("repeatedStringField") repeatedStringField: array<string>,
+      @as("bytesField") bytesField: option<Js_typed_array.Uint8Array.t>,
       @as("valueField") valueField: Oneof.ValueField.t,
     }
-    let make = (~stringField=None, ~int32Field=None, ~int64Field=None, ~enumField=None, ~enumEField=None, ~basicField=None, ~repeatedStringField=[], ~valueField=Oneof.ValueField.None, ()) => {stringField: stringField, int32Field: int32Field, int64Field: int64Field, enumField: enumField, enumEField: enumEField, basicField: basicField, repeatedStringField: repeatedStringField, valueField: valueField, }
+    let make = (~stringField=None, ~int32Field=None, ~int64Field=None, ~enumField=None, ~enumEField=None, ~basicField=None, ~repeatedStringField=[], ~bytesField=None, ~valueField=Oneof.ValueField.None, ()) => {stringField: stringField, int32Field: int32Field, int64Field: int64Field, enumField: enumField, enumEField: enumEField, basicField: basicField, repeatedStringField: repeatedStringField, bytesField: bytesField, valueField: valueField, }
     @module("./Proto.proto.js") @val @scope("typeTest3") external messageClass: _ = "Typeful"
     let encode = v => {
       Js.Obj.empty()
@@ -294,6 +298,7 @@ module TypeTest3 = {
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("enumEField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.enum, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("basicField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.message, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.MapField.fromR("repeatedStringField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.string, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("bytesField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.bytes, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("valueField", Oneof.ValueField.convert, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.encode(messageClass)
     }
@@ -307,6 +312,7 @@ module TypeTest3 = {
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("enumEField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.enum, m)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("basicField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.message, m)
       ->ReprotoBsProtobuf.ProtoTypeSupport.MapField.toR("repeatedStringField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.string, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("bytesField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.bytes, m)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("valueField", Oneof.ValueField.convert, m)
     }
   }
