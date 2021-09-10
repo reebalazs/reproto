@@ -123,6 +123,20 @@ export const Convert = {
     },
   },
 
+  bytes: {
+    fromR(v) {
+      if (v != null && v.byteLength > 0) {
+        return { m: v };
+      }
+    },
+
+    toR({ has, m }) {
+      if (has && m != null) {
+        return { v: Uint8Array.from(m) };
+      }
+    },
+  },
+
   enum: {
     fromR(v) {
       if (v != null) {
@@ -155,6 +169,8 @@ export const Convert = {
     return new OneofConverter(choices);
   },
 };
+
+// Oneof conversion
 
 class OneofConverter {
   constructor(choices) {

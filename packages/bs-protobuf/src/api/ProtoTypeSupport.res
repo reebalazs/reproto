@@ -12,6 +12,8 @@ module FromRecord = {
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("fromRecord")
   external int64: ('a, string, _) => 'a = "int64"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("fromRecord")
+  external bytes: ('a, string, _) => 'a = "bytes"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("fromRecord")
   external enum: ('a, string, _) => 'a = "enum"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("fromRecord")
   external message: ('a, string, _) => 'a = "message"
@@ -25,6 +27,8 @@ module ToRecord = {
   external int32: ('a, string, _) => 'a = "int32"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("toRecord")
   external int64: ('a, string, _) => 'a = "int64"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("toRecord")
+  external bytes: ('a, string, _) => 'a = "bytes"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("toRecord")
   external enum: ('a, string, _) => 'a = "enum"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("toRecord")
@@ -56,6 +60,8 @@ module Convert = {
   external int32: _ = "int32"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external int64: _ = "int64"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
+  external bytes: _ = "bytes"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external enum: _ = "enum"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
