@@ -4,40 +4,6 @@ external decode: (Js_typed_array.ArrayBuffer.t, _) => 'a = "d"
 external encode: (_, _) => Js_typed_array.array_buffer = "e"
 @module("@reproto/bs-protobuf/src/api/proto-type-support")
 external verify: ('a, _) => option<string> = "v"
-module FromRecord = {
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("fromRecord")
-  external string: ('a, string, _) => 'a = "string"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("fromRecord")
-  external int32: ('a, string, _) => 'a = "int32"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("fromRecord")
-  external int64: ('a, string, _) => 'a = "int64"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("fromRecord")
-  external bytes: ('a, string, _) => 'a = "bytes"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("fromRecord")
-  external enum: ('a, string, _) => 'a = "enum"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("fromRecord")
-  external message: ('a, string, _) => 'a = "message"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("fromRecord")
-  external oneof: ('a, string, _, _) => 'a = "oneof"
-}
-module ToRecord = {
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("toRecord")
-  external string: ('a, string, _) => 'a = "string"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("toRecord")
-  external int32: ('a, string, _) => 'a = "int32"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("toRecord")
-  external int64: ('a, string, _) => 'a = "int64"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("toRecord")
-  external bytes: ('a, string, _) => 'a = "bytes"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("toRecord")
-  external enum: ('a, string, _) => 'a = "enum"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("toRecord")
-  external message: ('a, string, _) => 'a = "message"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("toRecord")
-  external oneof: ('a, string, _, _) => 'a = "oneof"
-}
-
-// New style conversion
 
 module Field = {
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("field")
