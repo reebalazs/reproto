@@ -27,6 +27,14 @@ module Convert = {
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external int64: _ = "int64"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
+  external uint64: _ = "uint64"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
+  external sint64: _ = "sint64"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
+  external fixed64: _ = "fixed64"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
+  external sfixed64: _ = "sfixed4"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external bytes: _ = "bytes"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external enum: _ = "enum"

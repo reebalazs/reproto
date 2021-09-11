@@ -96,64 +96,68 @@ describe("Protobuf field types support", () => {
       )
     })
 
-    describe("int64", () => {
-      let v = Typeful.make(~int64Field=Int64.of_string("4"), ())
-      test("value", () => v.int64Field |> Int64.to_string |> expect |> toBe("4"))
+    let testInt64 = (makeValue, getField) => {
+      let v = makeValue(Int64.of_string("4"))
+      test("value", () => v |> getField |> Int64.to_string |> expect |> toBe("4"))
       test("encode/decode", () =>
-        v
-        |> Typeful.encode
-        |> Typeful.decode
-        |> (v => v.int64Field)
-        |> Int64.to_string
-        |> expect
-        |> toBe("4")
+        v |> Typeful.encode |> Typeful.decode |> getField |> Int64.to_string |> expect |> toBe("4")
       )
       let v = Typeful.make()
-      test("empty", () => v.int64Field |> Int64.to_string |> expect |> toBe("0"))
+      test("empty", () => v |> getField |> Int64.to_string |> expect |> toBe("0"))
       test("empty encode/decode", () =>
-        v
-        |> Typeful.encode
-        |> Typeful.decode
-        |> (v => v.int64Field)
-        |> Int64.to_string
-        |> expect
-        |> toBe("0")
+        v |> Typeful.encode |> Typeful.decode |> getField |> Int64.to_string |> expect |> toBe("0")
       )
       let largeString = "9007199254740992" // Number.MAX_SAFE_INTEGER + 1
-      let v = Typeful.make(~int64Field=Int64.of_string(largeString), ())
-      test("maxvalue", () => v.int64Field |> Int64.to_string |> expect |> toBe(largeString))
+      let v = makeValue(Int64.of_string(largeString))
+      test("maxvalue", () => v |> getField |> Int64.to_string |> expect |> toBe(largeString))
       test("maxvalue encode/decode", () =>
         v
         |> Typeful.encode
         |> Typeful.decode
-        |> (v => v.int64Field)
+        |> getField
         |> Int64.to_string
         |> expect
         |> toBe(largeString)
       )
-      let v = Typeful.make(~int64Field=Int64.of_string("-4"), ())
-      test("negative", () => v.int64Field |> Int64.to_string |> expect |> toBe("-4"))
+      let v = makeValue(Int64.of_string("-4"))
+      test("negative", () => v |> getField |> Int64.to_string |> expect |> toBe("-4"))
       test("negative encode/decode", () =>
-        v
-        |> Typeful.encode
-        |> Typeful.decode
-        |> (v => v.int64Field)
-        |> Int64.to_string
-        |> expect
-        |> toBe("-4")
+        v |> Typeful.encode |> Typeful.decode |> getField |> Int64.to_string |> expect |> toBe("-4")
       )
       let largeNegativeString = "-" ++ largeString
-      let v = Typeful.make(~int64Field=Int64.of_string(largeNegativeString), ())
-      test("maxvalue", () => v.int64Field |> Int64.to_string |> expect |> toBe(largeNegativeString))
+      let v = makeValue(Int64.of_string(largeNegativeString))
+      test("maxvalue", () =>
+        v |> getField |> Int64.to_string |> expect |> toBe(largeNegativeString)
+      )
       test("maxvalue encode/decode", () =>
         v
         |> Typeful.encode
         |> Typeful.decode
-        |> (v => v.int64Field)
+        |> getField
         |> Int64.to_string
         |> expect
         |> toBe(largeNegativeString)
       )
+    }
+
+    describe("int64", () => {
+      testInt64(int64Field => Typeful.make(~int64Field, ()), v => v.int64Field)
+    })
+
+    describe("uint64", () => {
+      testInt64(uint64Field => Typeful.make(~uint64Field, ()), v => v.uint64Field)
+    })
+
+    describe("sint64", () => {
+      testInt64(sint64Field => Typeful.make(~sint64Field, ()), v => v.sint64Field)
+    })
+
+    describe("fixed64", () => {
+      testInt64(fixed64Field => Typeful.make(~fixed64Field, ()), v => v.fixed64Field)
+    })
+
+    describe("sfixed64", () => {
+      testInt64(sfixed64Field => Typeful.make(~sfixed64Field, ()), v => v.sfixed64Field)
     })
 
     describe("bytes", () => {
@@ -161,18 +165,18 @@ describe("Protobuf field types support", () => {
       let v = Typeful.make(~bytesField=buffer, ())
       test("value", () => v.bytesField |> expect |> toBe(buffer))
       test("encode/decode", () =>
-        v
-        |> Typeful.encode
-        |> Typeful.decode
-        |> (v => v.bytesField)
-        |> expect
-        |> toEqual(buffer)
+        v |> Typeful.encode |> Typeful.decode |> (v => v.bytesField) |> expect |> toEqual(buffer)
       )
       let empty = Typeful.make()
       let buffer = Js_typed_array.Uint8Array.make([])
       test("empty", () => empty.bytesField |> expect |> toEqual(buffer))
       test("empty encode/decode", () =>
-        empty |> Typeful.encode |> Typeful.decode |> (v => v.bytesField) |> expect |> toEqual(buffer)
+        empty
+        |> Typeful.encode
+        |> Typeful.decode
+        |> (v => v.bytesField)
+        |> expect
+        |> toEqual(buffer)
       )
       let v = Typeful.make(~bytesField=buffer, ())
       test("zero length", () => v.bytesField |> expect |> toEqual(buffer))
@@ -269,7 +273,12 @@ describe("Protobuf field types support", () => {
 
     describe("repeated", () => {
       let testMessage = (v, f, ()) =>
-        v |> Typeful.encode |> Typeful.decode |> (v => v.repeatedStringField) |> expect |> toEqual(f)
+        v
+        |> Typeful.encode
+        |> Typeful.decode
+        |> (v => v.repeatedStringField)
+        |> expect
+        |> toEqual(f)
       let repeatedStringField = ["a", "b", "c"]
       let v = Typeful.make(~repeatedStringField, ())
       test("value", () => v.repeatedStringField |> expect |> toEqual(repeatedStringField))
@@ -278,6 +287,5 @@ describe("Protobuf field types support", () => {
       test("empty", () => v.repeatedStringField |> expect |> toEqual([]))
       test("empty encode/decode", testMessage(v, []))
     })
-
   })
 })
