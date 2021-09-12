@@ -20,6 +20,8 @@ export function d(b, messageClass) {
 
 // Conversion helpers
 
+const maxSafe32 = 2147483647;
+
 const int32 = {
   fromR(v) {
     if (v != null) {
@@ -29,6 +31,11 @@ const int32 = {
 
   toR({ has, m }) {
     if (has && m != null) {
+      if (m > maxSafe32) {
+        // Overflow to negatives to make sure
+        // that we return a safe value
+        m -= 2 * (maxSafe32 + 1);
+      }
       return { v: m };
     }
   },
@@ -166,6 +173,14 @@ export const Convert = {
   },
 
   int32,
+
+  uint32: int32,
+
+  sint32: int32,
+
+  fixed32: int32,
+
+  sfixed32: int32,
 
   int64,
 

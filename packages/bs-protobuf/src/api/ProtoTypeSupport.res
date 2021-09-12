@@ -25,6 +25,14 @@ module Convert = {
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external int32: _ = "int32"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
+  external uint32: _ = "uint32"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
+  external sint32: _ = "sint32"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
+  external fixed32: _ = "fixed32"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
+  external sfixed32: _ = "sfixed32"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external int64: _ = "int64"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external uint64: _ = "uint64"
@@ -33,7 +41,7 @@ module Convert = {
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external fixed64: _ = "fixed64"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
-  external sfixed64: _ = "sfixed4"
+  external sfixed64: _ = "sfixed64"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external bytes: _ = "bytes"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val

@@ -433,6 +433,10 @@ export const typeTest = $root.typeTest = (() => {
         Typeful.prototype.sint64Field = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
         Typeful.prototype.fixed64Field = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
         Typeful.prototype.sfixed64Field = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+        Typeful.prototype.uint32Field = 0;
+        Typeful.prototype.sint32Field = 0;
+        Typeful.prototype.fixed32Field = 0;
+        Typeful.prototype.sfixed32Field = 0;
 
         let $oneOfFields;
 
@@ -477,6 +481,14 @@ export const typeTest = $root.typeTest = (() => {
                 writer.uint32(104).uint64(message.fixed64Field);
             if (message.sfixed64Field != null && Object.hasOwnProperty.call(message, "sfixed64Field"))
                 writer.uint32(112).uint64(message.sfixed64Field);
+            if (message.uint32Field != null && Object.hasOwnProperty.call(message, "uint32Field"))
+                writer.uint32(120).uint32(message.uint32Field);
+            if (message.sint32Field != null && Object.hasOwnProperty.call(message, "sint32Field"))
+                writer.uint32(128).sint32(message.sint32Field);
+            if (message.fixed32Field != null && Object.hasOwnProperty.call(message, "fixed32Field"))
+                writer.uint32(141).fixed32(message.fixed32Field);
+            if (message.sfixed32Field != null && Object.hasOwnProperty.call(message, "sfixed32Field"))
+                writer.uint32(149).sfixed32(message.sfixed32Field);
             return writer;
         };
 
@@ -534,6 +546,18 @@ export const typeTest = $root.typeTest = (() => {
                     break;
                 case 14:
                     message.sfixed64Field = reader.uint64();
+                    break;
+                case 15:
+                    message.uint32Field = reader.uint32();
+                    break;
+                case 16:
+                    message.sint32Field = reader.sint32();
+                    break;
+                case 17:
+                    message.fixed32Field = reader.fixed32();
+                    break;
+                case 18:
+                    message.sfixed32Field = reader.sfixed32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -731,6 +755,10 @@ export const typeTest3 = $root.typeTest3 = (() => {
         Typeful.prototype.sint64Field = null;
         Typeful.prototype.fixed64Field = null;
         Typeful.prototype.sfixed64Field = null;
+        Typeful.prototype.uint32Field = null;
+        Typeful.prototype.sint32Field = null;
+        Typeful.prototype.fixed32Field = null;
+        Typeful.prototype.sfixed32Field = null;
 
         let $oneOfFields;
 
@@ -794,6 +822,26 @@ export const typeTest3 = $root.typeTest3 = (() => {
             set: $util.oneOfSetter($oneOfFields)
         });
 
+        Object.defineProperty(Typeful.prototype, "_uint32Field", {
+            get: $util.oneOfGetter($oneOfFields = ["uint32Field"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        Object.defineProperty(Typeful.prototype, "_sint32Field", {
+            get: $util.oneOfGetter($oneOfFields = ["sint32Field"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        Object.defineProperty(Typeful.prototype, "_fixed32Field", {
+            get: $util.oneOfGetter($oneOfFields = ["fixed32Field"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        Object.defineProperty(Typeful.prototype, "_sfixed32Field", {
+            get: $util.oneOfGetter($oneOfFields = ["sfixed32Field"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
         Typeful.create = function create(properties) {
             return new Typeful(properties);
         };
@@ -830,6 +878,14 @@ export const typeTest3 = $root.typeTest3 = (() => {
                 writer.uint32(105).fixed64(message.fixed64Field);
             if (message.sfixed64Field != null && Object.hasOwnProperty.call(message, "sfixed64Field"))
                 writer.uint32(113).sfixed64(message.sfixed64Field);
+            if (message.uint32Field != null && Object.hasOwnProperty.call(message, "uint32Field"))
+                writer.uint32(120).uint32(message.uint32Field);
+            if (message.sint32Field != null && Object.hasOwnProperty.call(message, "sint32Field"))
+                writer.uint32(128).sint32(message.sint32Field);
+            if (message.fixed32Field != null && Object.hasOwnProperty.call(message, "fixed32Field"))
+                writer.uint32(141).fixed32(message.fixed32Field);
+            if (message.sfixed32Field != null && Object.hasOwnProperty.call(message, "sfixed32Field"))
+                writer.uint32(149).sfixed32(message.sfixed32Field);
             return writer;
         };
 
@@ -887,6 +943,18 @@ export const typeTest3 = $root.typeTest3 = (() => {
                     break;
                 case 14:
                     message.sfixed64Field = reader.sfixed64();
+                    break;
+                case 15:
+                    message.uint32Field = reader.uint32();
+                    break;
+                case 16:
+                    message.sint32Field = reader.sint32();
+                    break;
+                case 17:
+                    message.fixed32Field = reader.fixed32();
+                    break;
+                case 18:
+                    message.sfixed32Field = reader.sfixed32();
                     break;
                 default:
                     reader.skipType(tag & 7);

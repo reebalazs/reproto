@@ -83,17 +83,56 @@ describe("Protobuf field types support", () => {
       )
     })
 
-    describe("int32", () => {
-      let v = Typeful.make(~int32Field=Some(4), ())
-      test("value", () => v.int32Field |> expect |> toBe(Some(4)))
+    let testInt32 = (makeValue, getField) => {
+      let v = makeValue(Some(4))
+      test("value", () => v |> getField |> expect |> toBe(Some(4)))
       test("encode/decode", () =>
-        v |> Typeful.encode |> Typeful.decode |> (v => v.int32Field) |> expect |> toBe(Some(4))
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(Some(4))
+      )
+      let field = -4
+      let v = makeValue(Some(field))
+      test("negative", () => v |> getField |> expect |> toBe(Some(field)))
+      test("negative encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(Some(field))
+      )
+      let maxSafe = 2147483647
+      let field = maxSafe
+      let v = makeValue(Some(field))
+      test("max safe", () => v |> getField |> expect |> toBe(Some(field)))
+      test("max safe encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(Some(field))
+      )
+      let field = -maxSafe
+      let v = makeValue(Some(field))
+      test("min safe", () => v |> getField |> expect |> toBe(Some(field)))
+      test("min safe encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(Some(field))
       )
       let empty = Typeful.make()
-      test("empty", () => empty.int32Field |> expect |> toBe(None))
+      test("empty", () => empty |> getField |> expect |> toBe(None))
       test("empty encode/decode", () =>
-        empty |> Typeful.encode |> Typeful.decode |> (v => v.int32Field) |> expect |> toBe(None)
+        empty |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(None)
       )
+    }
+
+    describe("int32", () => {
+      testInt32(int32Field => Typeful.make(~int32Field, ()), v => v.int32Field)
+    })
+
+    describe("uint32", () => {
+      testInt32(uint32Field => Typeful.make(~uint32Field, ()), v => v.uint32Field)
+    })
+
+    describe("sint32", () => {
+      testInt32(sint32Field => Typeful.make(~sint32Field, ()), v => v.sint32Field)
+    })
+
+    describe("fixed32", () => {
+      testInt32(fixed32Field => Typeful.make(~fixed32Field, ()), v => v.fixed32Field)
+    })
+
+    describe("sfixed32", () => {
+      testInt32(sfixed32Field => Typeful.make(~sfixed32Field, ()), v => v.sfixed32Field)
     })
 
     let testInt64 = (makeValue, getField) => {
