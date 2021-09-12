@@ -147,7 +147,15 @@ function mapFieldType(
   const result = {
     string: "string",
     int32: "int",
+    uint32: "int",
+    sint32: "int",
+    fixed32: "int",
+    sfixed32: "int",
     int64: "int64",
+    uint64: "int64",
+    sint64: "int64",
+    fixed64: "int64",
+    sfixed64: "int64",
     bytes: "Js_typed_array.Uint8Array.t",
   }[fieldType];
   if (result !== undefined) {
@@ -202,7 +210,15 @@ function defaultFieldValue(field: Object, lookup: Function) {
     const result = {
       string: '""',
       int32: "0",
+      uint32: "0",
+      sint32: "0",
+      fixed32: "0",
+      sfixed32: "0",
       int64: 'Int64.of_string("0")',
+      uint64: 'Int64.of_string("0")',
+      sint64: 'Int64.of_string("0")',
+      fixed64: 'Int64.of_string("0")',
+      sfixed64: 'Int64.of_string("0")',
       bytes: "Js_typed_array.Uint8Array.make([])",
     }[fieldType];
     if (result !== undefined) {

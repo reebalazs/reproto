@@ -83,42 +83,101 @@ describe("Protobuf field types support", () => {
       )
     })
 
-    describe("int32", () => {
-      let v = Typeful.make(~int32Field=Some(4), ())
-      test("value", () => v.int32Field |> expect |> toBe(Some(4)))
+    let testInt32 = (makeValue, getField) => {
+      let v = makeValue(Some(4))
+      test("value", () => v |> getField |> expect |> toBe(Some(4)))
       test("encode/decode", () =>
-        v |> Typeful.encode |> Typeful.decode |> (v => v.int32Field) |> expect |> toBe(Some(4))
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(Some(4))
+      )
+      let field = -4
+      let v = makeValue(Some(field))
+      test("negative", () => v |> getField |> expect |> toBe(Some(field)))
+      test("negative encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(Some(field))
+      )
+      let maxSafe = 2147483647
+      let field = maxSafe
+      let v = makeValue(Some(field))
+      test("max safe", () => v |> getField |> expect |> toBe(Some(field)))
+      test("max safe encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(Some(field))
+      )
+      let field = -maxSafe
+      let v = makeValue(Some(field))
+      test("min safe", () => v |> getField |> expect |> toBe(Some(field)))
+      test("min safe encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(Some(field))
       )
       let empty = Typeful.make()
-      test("empty", () => empty.int32Field |> expect |> toBe(None))
+      test("empty", () => empty |> getField |> expect |> toBe(None))
       test("empty encode/decode", () =>
-        empty |> Typeful.encode |> Typeful.decode |> (v => v.int32Field) |> expect |> toBe(None)
+        empty |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(None)
       )
+    }
+
+    describe("int32", () => {
+      testInt32(int32Field => Typeful.make(~int32Field, ()), v => v.int32Field)
     })
 
-    describe("int64", () => {
+    describe("uint32", () => {
+      testInt32(uint32Field => Typeful.make(~uint32Field, ()), v => v.uint32Field)
+    })
+
+    describe("sint32", () => {
+      testInt32(sint32Field => Typeful.make(~sint32Field, ()), v => v.sint32Field)
+    })
+
+    describe("fixed32", () => {
+      testInt32(fixed32Field => Typeful.make(~fixed32Field, ()), v => v.fixed32Field)
+    })
+
+    describe("sfixed32", () => {
+      testInt32(sfixed32Field => Typeful.make(~sfixed32Field, ()), v => v.sfixed32Field)
+    })
+
+    let testInt64 = (makeValue, getField) => {
       let testEncode = (v, f, ()) =>
-        v |> Typeful.encode |> Typeful.decode |> (v => v.int64Field) |> expect |> toEqual(f)
-      let int64Field = Some(Int64.of_string("4"))
-      let v = Typeful.make(~int64Field, ())
-      test("value", () => v.int64Field |> expect |> toEqual(int64Field))
-      test("encode/decode", testEncode(v, int64Field))
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toEqual(f)
+      let field = Some(Int64.of_string("4"))
+      let v = makeValue(field)
+      test("value", () => v |> getField |> expect |> toEqual(field))
+      test("encode/decode", testEncode(v, field))
       let v = Typeful.make()
-      test("empty", () => v.int64Field |> expect |> toBe(None))
+      test("empty", () => v |> getField |> expect |> toBe(None))
       test("empty encode/decode", testEncode(v, None))
       let largeString = "9007199254740992" // Number.MAX_SAFE_INTEGER + 1
-      let int64Field = Some(Int64.of_string(largeString))
-      let v = Typeful.make(~int64Field, ())
-      test("maxvalue", () => v.int64Field |> expect |> toEqual(int64Field))
-      test("maxvalue encode/decode", testEncode(v, int64Field))
-      let int64Field = Some(Int64.of_string("4"))
-      let v = Typeful.make(~int64Field, ())
-      test("negative", () => v.int64Field |> expect |> toEqual(int64Field))
-      test("negative encode/decode", testEncode(v, int64Field))
-      let int64Field = Some(Int64.of_string("-" ++ largeString))
-      let v = Typeful.make(~int64Field, ())
-      test("minvalue", () => v.int64Field |> expect |> toEqual(int64Field))
-      test("minvalue encode/decode", testEncode(v, int64Field))
+      let field = Some(Int64.of_string(largeString))
+      let v = makeValue(field)
+      test("maxvalue", () => v |> getField |> expect |> toEqual(field))
+      test("maxvalue encode/decode", testEncode(v, field))
+      let field = Some(Int64.of_string("4"))
+      let v = makeValue(field)
+      test("negative", () => v |> getField |> expect |> toEqual(field))
+      test("negative encode/decode", testEncode(v, field))
+      let field = Some(Int64.of_string("-" ++ largeString))
+      let v = makeValue(field)
+      test("minvalue", () => v |> getField |> expect |> toEqual(field))
+      test("minvalue encode/decode", testEncode(v, field))
+    }
+
+    describe("int64", () => {
+      testInt64(int64Field => Typeful.make(~int64Field, ()), v => v.int64Field)
+    })
+
+    describe("uint64", () => {
+      testInt64(uint64Field => Typeful.make(~uint64Field, ()), v => v.uint64Field)
+    })
+
+    describe("sint64", () => {
+      testInt64(sint64Field => Typeful.make(~sint64Field, ()), v => v.sint64Field)
+    })
+
+    describe("fixed64", () => {
+      testInt64(fixed64Field => Typeful.make(~fixed64Field, ()), v => v.fixed64Field)
+    })
+
+    describe("sfixed64", () => {
+      testInt64(sfixed64Field => Typeful.make(~sfixed64Field, ()), v => v.sfixed64Field)
     })
 
     describe("bytes", () => {
@@ -194,7 +253,12 @@ describe("Protobuf field types support", () => {
 
     describe("repeated", () => {
       let testMessage = (v, f, ()) =>
-        v |> Typeful.encode |> Typeful.decode |> (v => v.repeatedStringField) |> expect |> toEqual(f)
+        v
+        |> Typeful.encode
+        |> Typeful.decode
+        |> (v => v.repeatedStringField)
+        |> expect
+        |> toEqual(f)
       let repeatedStringField = ["a", "b", "c"]
       let v = Typeful.make(~repeatedStringField, ())
       test("value", () => v.repeatedStringField |> expect |> toEqual(repeatedStringField))

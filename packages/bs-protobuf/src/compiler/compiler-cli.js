@@ -63,6 +63,10 @@ export async function protoRes() {
   await genCli(options);
 }
 
+const emphasized = (txt) => colors.yellow(colors.bold(txt));
+const erroredThin = (txt) => colors.red(txt);
+const errored = (txt) => colors.red(colors.bold(txt));
+
 function makeJsOutput(output) {
   // The file is in the same directory, different extension
   return (
@@ -78,30 +82,38 @@ export async function genCli({
   skipInitial,
   verbose,
 }) {
-  if (!skipInitial) {
+  const doIt = async () => {
     await genAll({
       filenames,
       includes,
       output,
       verbose,
     });
+  };
+  const doItProtected = async () => {
+    try {
+      await doIt();
+    } catch (e) {
+      console.log(erroredThin("Proto compilation failed:"));
+      console.log(errored(e.message));
+    }
+  };
+  if (!skipInitial) {
+    if (watch) {
+      await doItProtected();
+    } else {
+      await doIt();
+    }
   }
   if (watch) {
     const path = [].concat(filenames, includes);
     chokidar
       .watch(path, { ignoreInitial: true })
       .on("all", async (event, path) => {
-        await genAll({
-          filenames,
-          includes,
-          output,
-          verbose,
-        });
+        await doItProtected();
       });
   }
 }
-
-const emphasized = (txt) => colors.yellow(colors.bold(txt));
 
 async function genAll({ filenames, includes, output, verbose }) {
   const jsOutput = makeJsOutput(output);

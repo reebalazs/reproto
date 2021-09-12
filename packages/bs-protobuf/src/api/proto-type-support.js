@@ -18,6 +18,83 @@ export function d(b, messageClass) {
   return message;
 }
 
+// Conversion helpers
+
+const maxSafe32 = 2147483647;
+
+const int32 = {
+  fromR(v) {
+    if (v != null) {
+      return { m: v | 0 };
+    }
+  },
+
+  toR({ has, m }) {
+    if (has && m != null) {
+      if (m > maxSafe32) {
+        // Overflow to negatives to make sure
+        // that we return a safe value
+        m -= 2 * (maxSafe32 + 1);
+      }
+      return { v: m };
+    }
+  },
+};
+
+const int64 = {
+  fromR(v) {
+    if (v != null) {
+      return { m: new util.Long(v[1], v[0], false) };
+    }
+  },
+
+  toR({ has, m }) {
+    if (has && m != null) {
+      return { v: [m.high, m.low >>> 0] };
+    }
+  },
+};
+
+class OneofConverter {
+  constructor(choices) {
+    this.choices = choices;
+  }
+
+  fromR(v) {
+    if (v !== 0) {
+      const [type, key] = this.choices[v.TAG];
+      const result = Convert[type].fromR(v._0);
+      if (result) {
+        if (result.key) {
+          throw new Error(`Oneof cannot be duplicated [${key}]`);
+        }
+        return { m: result.m, key };
+      }
+    }
+  }
+
+  toR({ message }) {
+    if (!message) {
+      throw new Error("Oneof cannot ve repeated");
+    }
+    for (let i = 0; i < this.choices.length; i++) {
+      const [type, subKey] = this.choices[i];
+      if (type === "") {
+        // skip terminator for 1-tuples
+        continue;
+      }
+      const f = message[subKey];
+      if (f != null) {
+        const result = Convert[type].toR({ has: true, m: f });
+        if (result !== undefined) {
+          return { v: { TAG: i, _0: result.v } };
+        }
+      }
+    }
+    return { v: 0 };
+  }
+}
+
 // Field mapping
 
 export const field = {
@@ -95,33 +172,25 @@ export const Convert = {
     },
   },
 
-  int32: {
-    fromR(v) {
-      if (v != null) {
-        return { m: v | 0 };
-      }
-    },
+  int32,
 
-    toR({ has, m }) {
-      if (has && m != null) {
-        return { v: m };
-      }
-    },
-  },
+  uint32: int32,
 
-  int64: {
-    fromR(v) {
-      if (v != null) {
-        return { m: new util.Long(v[1], v[0], false) };
-      }
-    },
+  sint32: int32,
 
-    toR({ has, m }) {
-      if (has && m != null) {
-        return { v: [m.high, m.low >>> 0] };
-      }
-    },
-  },
+  fixed32: int32,
+
+  sfixed32: int32,
+
+  int64,
+
+  uint64: int64,
+
+  sint64: int64,
+
+  fixed64: int64,
+
+  sfixed64: int64,
 
   bytes: {
     fromR(v) {
@@ -137,19 +206,7 @@ export const Convert = {
     },
   },
 
-  enum: {
-    fromR(v) {
-      if (v != null) {
-        return { m: v | 0 };
-      }
-    },
-
-    toR({ has, m }) {
-      if (has && m != null) {
-        return { v: m };
-      }
-    },
-  },
+  enum: int32,
 
   message: {
     fromR(v) {
@@ -169,45 +226,3 @@ export const Convert = {
     return new OneofConverter(choices);
   },
 };
-
-// Oneof conversion
-
-class OneofConverter {
-  constructor(choices) {
-    this.choices = choices;
-  }
-
-  fromR(v) {
-    if (v !== 0) {
-      const [type, key] = this.choices[v.TAG];
-      const result = Convert[type].fromR(v._0);
-      if (result) {
-        if (result.key) {
-          throw new Error(`Oneof cannot be duplicated [${key}]`);
-        }
-        return { m: result.m, key };
-      }
-    }
-  }
-
-  toR({ message }) {
-    if (!message) {
-      throw new Error("Oneof cannot ve repeated");
-    }
-    for (let i = 0; i < this.choices.length; i++) {
-      const [type, subKey] = this.choices[i];
-      if (type === "") {
-        // skip terminator for 1-tuples
-        continue;
-      }
-      const f = message[subKey];
-      if (f != null) {
-        const result = Convert[type].toR({ has: true, m: f });
-        if (result !== undefined) {
-          return { v: { TAG: i, _0: result.v } };
-        }
-      }
-    }
-    return { v: 0 };
-  }
-}

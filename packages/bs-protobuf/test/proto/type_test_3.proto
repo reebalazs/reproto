@@ -37,4 +37,12 @@ message Typeful {
   }
   repeated string repeatedStringField=9;
   optional bytes bytesField=10;
+  optional uint64 uint64Field=11;
+  optional sint64 sint64Field=12;
+  optional fixed64 fixed64Field=13;
+  optional sfixed64 sfixed64Field=14;
+  optional uint32 uint32Field=15;
+  optional sint32 sint32Field=16;
+  optional fixed32 fixed32Field=17;
+  optional sfixed32 sfixed32Field=18;
 }

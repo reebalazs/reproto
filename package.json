@@ -22,6 +22,7 @@
   "scripts": {
     "protores": "NODE_PATH=packages/bs-protobuf packages/bs-protobuf/src/script/protores.js",
     "protores:build": "yarn workspace @reproto/bs-protobuf protores:build && yarn workspace @reproto/bs-rpc-axios protores:build && yarn workspace @reproto/proto-demo protores:build",
+    "protores:dev": "yarn protores:build && yarn workspace @reproto/bs-protobuf protores:dev & yarn workspace @reproto/bs-rpc-axios protores:dev & yarn workspace @reproto/proto-demo protores:dev",
     "rescript:build": "rescript build -with-deps",
     "rescript:dev": "NINJA_ANSI_FORCED=1 RES_LOG=info rescript build -w -with-deps",
     "bs-protobuf:build": "yarn workspace @reproto/bs-protobuf build",

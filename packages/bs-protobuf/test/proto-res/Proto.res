@@ -178,9 +178,17 @@ module TypeTest = {
       @as("basicField") basicField: Basic.t,
       @as("repeatedStringField") repeatedStringField: array<string>,
       @as("bytesField") bytesField: Js_typed_array.Uint8Array.t,
+      @as("uint64Field") uint64Field: int64,
+      @as("sint64Field") sint64Field: int64,
+      @as("fixed64Field") fixed64Field: int64,
+      @as("sfixed64Field") sfixed64Field: int64,
+      @as("uint32Field") uint32Field: int,
+      @as("sint32Field") sint32Field: int,
+      @as("fixed32Field") fixed32Field: int,
+      @as("sfixed32Field") sfixed32Field: int,
       @as("valueField") valueField: Oneof.ValueField.t,
     }
-    let make = (~stringField="", ~int32Field=0, ~int64Field=Int64.of_string("0"), ~enumField=EnumType.EnumV0, ~enumEField=EnumTypeE.EnumVE0, ~basicField=Basic.make(), ~repeatedStringField=[], ~bytesField=Js_typed_array.Uint8Array.make([]), ~valueField=Oneof.ValueField.None, ()) => {stringField: stringField, int32Field: int32Field, int64Field: int64Field, enumField: enumField, enumEField: enumEField, basicField: basicField, repeatedStringField: repeatedStringField, bytesField: bytesField, valueField: valueField, }
+    let make = (~stringField="", ~int32Field=0, ~int64Field=Int64.of_string("0"), ~enumField=EnumType.EnumV0, ~enumEField=EnumTypeE.EnumVE0, ~basicField=Basic.make(), ~repeatedStringField=[], ~bytesField=Js_typed_array.Uint8Array.make([]), ~uint64Field=Int64.of_string("0"), ~sint64Field=Int64.of_string("0"), ~fixed64Field=Int64.of_string("0"), ~sfixed64Field=Int64.of_string("0"), ~uint32Field=0, ~sint32Field=0, ~fixed32Field=0, ~sfixed32Field=0, ~valueField=Oneof.ValueField.None, ()) => {stringField: stringField, int32Field: int32Field, int64Field: int64Field, enumField: enumField, enumEField: enumEField, basicField: basicField, repeatedStringField: repeatedStringField, bytesField: bytesField, uint64Field: uint64Field, sint64Field: sint64Field, fixed64Field: fixed64Field, sfixed64Field: sfixed64Field, uint32Field: uint32Field, sint32Field: sint32Field, fixed32Field: fixed32Field, sfixed32Field: sfixed32Field, valueField: valueField, }
     @module("./Proto.proto.js") @val @scope("typeTest") external messageClass: _ = "Typeful"
     let encode = v => {
       Js.Obj.empty()
@@ -192,6 +200,14 @@ module TypeTest = {
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("basicField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.message, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.MapField.fromR("repeatedStringField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.string, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("bytesField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.bytes, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("uint64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint64, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("sint64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint64, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("fixed64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint64, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("sfixed64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint64, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("uint32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint32, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("sint32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.sint32, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("fixed32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.fixed32, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("sfixed32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.sfixed32, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("valueField", Oneof.ValueField.convert, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.encode(messageClass)
     }
@@ -206,6 +222,14 @@ module TypeTest = {
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("basicField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.message, m)
       ->ReprotoBsProtobuf.ProtoTypeSupport.MapField.toR("repeatedStringField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.string, m)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("bytesField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.bytes, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("uint64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint64, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("sint64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint64, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("fixed64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint64, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("sfixed64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint64, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("uint32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint32, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("sint32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.sint32, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("fixed32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.fixed32, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("sfixed32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.sfixed32, m)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("valueField", Oneof.ValueField.convert, m)
     }
   }
@@ -285,9 +309,17 @@ module TypeTest3 = {
       @as("basicField") basicField: option<Basic.t>,
       @as("repeatedStringField") repeatedStringField: array<string>,
       @as("bytesField") bytesField: option<Js_typed_array.Uint8Array.t>,
+      @as("uint64Field") uint64Field: option<int64>,
+      @as("sint64Field") sint64Field: option<int64>,
+      @as("fixed64Field") fixed64Field: option<int64>,
+      @as("sfixed64Field") sfixed64Field: option<int64>,
+      @as("uint32Field") uint32Field: option<int>,
+      @as("sint32Field") sint32Field: option<int>,
+      @as("fixed32Field") fixed32Field: option<int>,
+      @as("sfixed32Field") sfixed32Field: option<int>,
       @as("valueField") valueField: Oneof.ValueField.t,
     }
-    let make = (~stringField=None, ~int32Field=None, ~int64Field=None, ~enumField=None, ~enumEField=None, ~basicField=None, ~repeatedStringField=[], ~bytesField=None, ~valueField=Oneof.ValueField.None, ()) => {stringField: stringField, int32Field: int32Field, int64Field: int64Field, enumField: enumField, enumEField: enumEField, basicField: basicField, repeatedStringField: repeatedStringField, bytesField: bytesField, valueField: valueField, }
+    let make = (~stringField=None, ~int32Field=None, ~int64Field=None, ~enumField=None, ~enumEField=None, ~basicField=None, ~repeatedStringField=[], ~bytesField=None, ~uint64Field=None, ~sint64Field=None, ~fixed64Field=None, ~sfixed64Field=None, ~uint32Field=None, ~sint32Field=None, ~fixed32Field=None, ~sfixed32Field=None, ~valueField=Oneof.ValueField.None, ()) => {stringField: stringField, int32Field: int32Field, int64Field: int64Field, enumField: enumField, enumEField: enumEField, basicField: basicField, repeatedStringField: repeatedStringField, bytesField: bytesField, uint64Field: uint64Field, sint64Field: sint64Field, fixed64Field: fixed64Field, sfixed64Field: sfixed64Field, uint32Field: uint32Field, sint32Field: sint32Field, fixed32Field: fixed32Field, sfixed32Field: sfixed32Field, valueField: valueField, }
     @module("./Proto.proto.js") @val @scope("typeTest3") external messageClass: _ = "Typeful"
     let encode = v => {
       Js.Obj.empty()
@@ -299,6 +331,14 @@ module TypeTest3 = {
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("basicField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.message, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.MapField.fromR("repeatedStringField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.string, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("bytesField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.bytes, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("uint64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint64, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("sint64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.sint64, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("fixed64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.fixed64, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("sfixed64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.sfixed64, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("uint32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint32, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("sint32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.sint32, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("fixed32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.fixed32, v)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("sfixed32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.sfixed32, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.fromR("valueField", Oneof.ValueField.convert, v)
       ->ReprotoBsProtobuf.ProtoTypeSupport.encode(messageClass)
     }
@@ -313,6 +353,14 @@ module TypeTest3 = {
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("basicField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.message, m)
       ->ReprotoBsProtobuf.ProtoTypeSupport.MapField.toR("repeatedStringField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.string, m)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("bytesField", ReprotoBsProtobuf.ProtoTypeSupport.Convert.bytes, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("uint64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint64, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("sint64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.sint64, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("fixed64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.fixed64, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("sfixed64Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.sfixed64, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("uint32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.uint32, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("sint32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.sint32, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("fixed32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.fixed32, m)
+      ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("sfixed32Field", ReprotoBsProtobuf.ProtoTypeSupport.Convert.sfixed32, m)
       ->ReprotoBsProtobuf.ProtoTypeSupport.Field.toR("valueField", Oneof.ValueField.convert, m)
     }
   }
