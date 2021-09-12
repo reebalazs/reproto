@@ -75,7 +75,7 @@ class OneofConverter {
 
   toR({ message }) {
     if (!message) {
-      throw new Error("Oneof cannot ve repeated");
+      throw new Error("Oneof cannot be repeated");
     }
     for (let i = 0; i < this.choices.length; i++) {
       const [type, subKey] = this.choices[i];
