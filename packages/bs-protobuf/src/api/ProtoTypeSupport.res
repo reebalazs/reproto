@@ -43,6 +43,10 @@ module Convert = {
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external sfixed64: _ = "sfixed64"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
+  external float: _ = "float"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
+  external double: _ = "double"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external bytes: _ = "bytes"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external enum: _ = "enum"

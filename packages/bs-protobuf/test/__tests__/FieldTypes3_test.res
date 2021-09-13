@@ -1,5 +1,6 @@
 open Jest
 open Expect
+open Belt
 
 describe("Protobuf field types support", () => {
   open Proto.TypeTest3
@@ -178,6 +179,52 @@ describe("Protobuf field types support", () => {
 
     describe("sfixed64", () => {
       testInt64(sfixed64Field => Typeful.make(~sfixed64Field, ()), v => v.sfixed64Field)
+    })
+
+    let testFloat = (makeValue, getField) => {
+      let field = 3.14
+      let v = makeValue(Some(field))
+      test("value", () => v |> getField |> expect |> toBe(Some(field)))
+      test("value encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> Option.getExn |> expect |> toBeCloseTo(field))
+      let field = -3.14
+      let v = makeValue(Some(field))
+      test("negative", () => v |> getField |> expect |> toBe(Some(field)))
+      test("negative encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> Option.getExn |> expect |> toBeCloseTo(field))
+      let large = 21474836.0
+      let field = large
+      let v = makeValue(Some(field))
+      test("large", () => v |> getField |> expect |> toBe(Some(field)))
+      test("large encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> Option.getExn |> expect |> toBe(field))
+      let empty = Typeful.make()
+      test("empty", () => empty |> getField |> expect |> toBe(None))
+      test("empty encode/decode", () =>
+        empty |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(None)
+      )
+    }
+
+    describe("float", () => {
+      testFloat(floatField => Typeful.make(~floatField, ()), v => v.floatField)
+    })
+
+    describe("double", () => {
+      let makeValue = doubleField => Typeful.make(~doubleField, ())
+      let getField = (v: Typeful.t) => v.doubleField
+      testFloat(makeValue, getField)
+      let large32 = 2147483647.0
+      let field = large32
+      let v = makeValue(Some(field))
+      test("large 32", () => v |> getField |> expect |> toBe(Some(field)))
+      test("large 32 encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> Option.getExn |> expect |> toBe(field))
+      let large64 = 9007199254740992.0
+      let field = large64
+      let v = makeValue(Some(field))
+      test("large 64", () => v |> getField |> expect |> toBe(Some(field)))
+      test("large 64 encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> Option.getExn |> expect |> toBe(field))
     })
 
     describe("bytes", () => {

@@ -437,6 +437,8 @@ export const typeTest = $root.typeTest = (() => {
         Typeful.prototype.sint32Field = 0;
         Typeful.prototype.fixed32Field = 0;
         Typeful.prototype.sfixed32Field = 0;
+        Typeful.prototype.floatField = 0;
+        Typeful.prototype.doubleField = 0;
 
         let $oneOfFields;
 
@@ -489,6 +491,10 @@ export const typeTest = $root.typeTest = (() => {
                 writer.uint32(141).fixed32(message.fixed32Field);
             if (message.sfixed32Field != null && Object.hasOwnProperty.call(message, "sfixed32Field"))
                 writer.uint32(149).sfixed32(message.sfixed32Field);
+            if (message.floatField != null && Object.hasOwnProperty.call(message, "floatField"))
+                writer.uint32(157).float(message.floatField);
+            if (message.doubleField != null && Object.hasOwnProperty.call(message, "doubleField"))
+                writer.uint32(161).double(message.doubleField);
             return writer;
         };
 
@@ -558,6 +564,12 @@ export const typeTest = $root.typeTest = (() => {
                     break;
                 case 18:
                     message.sfixed32Field = reader.sfixed32();
+                    break;
+                case 19:
+                    message.floatField = reader.float();
+                    break;
+                case 20:
+                    message.doubleField = reader.double();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -759,6 +771,8 @@ export const typeTest3 = $root.typeTest3 = (() => {
         Typeful.prototype.sint32Field = null;
         Typeful.prototype.fixed32Field = null;
         Typeful.prototype.sfixed32Field = null;
+        Typeful.prototype.floatField = null;
+        Typeful.prototype.doubleField = null;
 
         let $oneOfFields;
 
@@ -842,6 +856,16 @@ export const typeTest3 = $root.typeTest3 = (() => {
             set: $util.oneOfSetter($oneOfFields)
         });
 
+        Object.defineProperty(Typeful.prototype, "_floatField", {
+            get: $util.oneOfGetter($oneOfFields = ["floatField"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        Object.defineProperty(Typeful.prototype, "_doubleField", {
+            get: $util.oneOfGetter($oneOfFields = ["doubleField"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
         Typeful.create = function create(properties) {
             return new Typeful(properties);
         };
@@ -886,6 +910,10 @@ export const typeTest3 = $root.typeTest3 = (() => {
                 writer.uint32(141).fixed32(message.fixed32Field);
             if (message.sfixed32Field != null && Object.hasOwnProperty.call(message, "sfixed32Field"))
                 writer.uint32(149).sfixed32(message.sfixed32Field);
+            if (message.floatField != null && Object.hasOwnProperty.call(message, "floatField"))
+                writer.uint32(157).float(message.floatField);
+            if (message.doubleField != null && Object.hasOwnProperty.call(message, "doubleField"))
+                writer.uint32(161).double(message.doubleField);
             return writer;
         };
 
@@ -955,6 +983,12 @@ export const typeTest3 = $root.typeTest3 = (() => {
                     break;
                 case 18:
                     message.sfixed32Field = reader.sfixed32();
+                    break;
+                case 19:
+                    message.floatField = reader.float();
+                    break;
+                case 20:
+                    message.doubleField = reader.double();
                     break;
                 default:
                     reader.skipType(tag & 7);

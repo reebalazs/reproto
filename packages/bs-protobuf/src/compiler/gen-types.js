@@ -157,6 +157,8 @@ function mapFieldType(
     fixed64: "int64",
     sfixed64: "int64",
     bytes: "Js_typed_array.Uint8Array.t",
+    double: "float",
+    float: "float",
   }[fieldType];
   if (result !== undefined) {
     type = fieldType;
@@ -220,6 +222,8 @@ function defaultFieldValue(field: Object, lookup: Function) {
       fixed64: 'Int64.of_string("0")',
       sfixed64: 'Int64.of_string("0")',
       bytes: "Js_typed_array.Uint8Array.make([])",
+      double: "0.0",
+      float: "0.0",
     }[fieldType];
     if (result !== undefined) {
       return `=${result}`;

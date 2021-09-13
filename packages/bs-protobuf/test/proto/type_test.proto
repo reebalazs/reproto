@@ -45,4 +45,6 @@ message Typeful {
   optional sint32 sint32Field=16;
   optional fixed32 fixed32Field=17;
   optional sfixed32 sfixed32Field=18;
+  optional float floatField=19;
+  optional double doubleField=20;
 }

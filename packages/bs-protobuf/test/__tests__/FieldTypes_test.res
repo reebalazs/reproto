@@ -199,6 +199,52 @@ describe("Protobuf field types support", () => {
       testInt64(sfixed64Field => Typeful.make(~sfixed64Field, ()), v => v.sfixed64Field)
     })
 
+    let testFloat = (makeValue, getField) => {
+      let field = 3.14
+      let v = makeValue(field)
+      test("value", () => v |> getField |> expect |> toBe(field))
+      test("value encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBeCloseTo(field))
+      let field = -3.14
+      let v = makeValue(field)
+      test("negative", () => v |> getField |> expect |> toBe(field))
+      test("negative encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBeCloseTo(field))
+      let large = 21474836.0
+      let field = large
+      let v = makeValue(field)
+      test("large", () => v |> getField |> expect |> toBe(field))
+      test("large encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(field))
+      let empty = Typeful.make()
+      test("empty", () => empty |> getField |> expect |> toBe(0.0))
+      test("empty encode/decode", () =>
+        empty |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(0.0)
+      )
+    }
+
+    describe("float", () => {
+      testFloat(floatField => Typeful.make(~floatField, ()), v => v.floatField)
+    })
+
+    describe("double", () => {
+      let makeValue = doubleField => Typeful.make(~doubleField, ())
+      let getField = (v: Typeful.t) => v.doubleField
+      testFloat(makeValue, getField)
+      let large32 = 2147483647.0
+      let field = large32
+      let v = makeValue(field)
+      test("large 32", () => v |> getField |> expect |> toBe(field))
+      test("large 32 encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(field))
+      let large64 = 9007199254740992.0
+      let field = large64
+      let v = makeValue(field)
+      test("large 64", () => v |> getField |> expect |> toBe(field))
+      test("large 64 encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(field))
+    })
+
     describe("bytes", () => {
       let buffer = Js_typed_array.Uint8Array.make([1, 2, 3, 4, 0, 255, 254])
       let v = Typeful.make(~bytesField=buffer, ())
