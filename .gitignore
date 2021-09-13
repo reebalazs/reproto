@@ -14,3 +14,6 @@ lib
 *.bs.js
 .bsb.lock
 coverage
+*.proto.js
+Proto*.res
+!ProtoTypeSupport.res
