@@ -57,7 +57,6 @@ provided by the `@reproto/bs-rpc-axios` package.
 Status: Work in progress. Planned next:
 
 - Documentation
-- Add missing proto field types
 - First production ready release planned for **END OF SEPTEMBER 2021**
 
 Stay tuned!
