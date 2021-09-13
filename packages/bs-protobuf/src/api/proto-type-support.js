@@ -55,6 +55,20 @@ const int64 = {
   },
 };
 
+const float = {
+  fromR(v) {
+    if (v != null) {
+      return { m: Number(v) };
+    }
+  },
+
+  toR({ has, m }) {
+    if (has && m != null) {
+      return { v: m };
+    }
+  },
+};
+
 class OneofConverter {
   constructor(choices) {
     this.choices = choices;
@@ -191,6 +205,10 @@ export const Convert = {
   fixed64: int64,
 
   sfixed64: int64,
+
+  float,
+
+  double: float,
 
   bytes: {
     fromR(v) {
