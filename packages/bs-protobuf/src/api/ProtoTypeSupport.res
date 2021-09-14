@@ -12,11 +12,34 @@ module Field = {
   external toR: ('a, string, _, _) => 'a = "toR"
 }
 
-module MapField = {
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("mapField")
+module MapFieldArray = {
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("mapFieldArray")
   external fromR: ('a, string, _, _) => 'a = "fromR"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("mapField")
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("mapFieldArray")
   external toR: ('a, string, _, _) => 'a = "toR"
+}
+
+module MapFieldTupleArray = {
+  module StringKey = {
+    @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope(("mapFieldTupleArray", "stringKey"))
+    external mFromA: (_, _) => _ = "mFromA"
+    @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope(("mapFieldTupleArray", "stringKey"))
+    external mToA: (_, _) => _ = "mToA"
+  }
+
+  module IntKey = {
+    @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope(("mapFieldTupleArray", "intKey"))
+    external mFromA: (_, _) => _ = "mFromA"
+    @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope(("mapFieldTupleArray", "intKey"))
+    external mToA: (_, _) => _ = "mToA"
+  }
+
+  module Int64Key = {
+    @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope(("mapFieldTupleArray", "int64Key"))
+    external mFromA: (_, _) => _ = "mFromA"
+    @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope(("mapFieldTupleArray", "int64Key"))
+    external mToA: (_, _) => _ = "mToA"
+  }
 }
 
 module Convert = {
@@ -54,4 +77,58 @@ module Convert = {
   external message: _ = "message"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external oneof: _ = "oneof"
+}
+
+%%raw(`
+const _getKey = (o, key) => o[key];
+const _setKey = (o, key, value) => { o[key] = value; return o }
+`)
+@val external _getKey: (_, string) => _ = "_getKey"
+@val external _setKey: ('a, string, _) => 'a = "_setKey"
+
+module MapField = {
+  module StringKey = {
+    let fromR = (message, key, f, record) => {
+      let v = _getKey(record, key)
+      let array = Belt.Map.String.toArray(v)
+      let m = MapFieldTupleArray.StringKey.mFromA(f, array)
+      _setKey(message, key, m)
+    }
+    let toR = (record, key, f, message) => {
+      let m = _getKey(message, key)
+      let array = MapFieldTupleArray.StringKey.mToA(f, m)
+      let v = Belt.Map.String.fromArray(array)
+      _setKey(record, key, v)
+    }
+  }
+
+  module IntKey = {
+    let fromR = (message, key, f, record) => {
+      let v = _getKey(record, key)
+      let array = Belt.Map.Int.toArray(v)
+      let m = MapFieldTupleArray.IntKey.mFromA(f, array)
+      _setKey(message, key, m)
+    }
+    let toR = (record, key, f, message) => {
+      let m = _getKey(message, key)
+      let array = MapFieldTupleArray.IntKey.mToA(f, m)
+      let v = Belt.Map.Int.fromArray(array)
+      _setKey(record, key, v)
+    }
+  }
+
+  module Int64Key = {
+    let fromR = (message, key, f, record) => {
+      let v = _getKey(record, key)
+      let array = MapInt64.toArray(v)
+      let m = MapFieldTupleArray.Int64Key.mFromA(f, array)
+      _setKey(message, key, m)
+    }
+    let toR = (record, key, f, message) => {
+      let m = _getKey(message, key)
+      let array = MapFieldTupleArray.Int64Key.mToA(f, m)
+      let v = MapInt64.fromArray(array)
+      _setKey(record, key, v)
+    }
+  }
 }

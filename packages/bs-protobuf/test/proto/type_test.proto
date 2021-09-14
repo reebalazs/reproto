@@ -47,4 +47,7 @@ message Typeful {
   optional sfixed32 sfixed32Field=18;
   optional float floatField=19;
   optional double doubleField=20;
+  map<string, string> mapStringStringField=21;
+  map<int32, string> mapInt32StringField=22;
+  map<int64, string> mapInt64StringField=23;
 }
