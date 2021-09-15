@@ -1,7 +1,7 @@
 const config = {
   verbose: false,
   rootDir: "./",
-  testPathIgnorePatterns: ["/node_modules/", "/.cache/"],
+  testPathIgnorePatterns: ["/node_modules/", "/.cache/", "/protobuf.js"],
   setupFiles: ["./jestSetup.js"],
   transformIgnorePatterns: ["node_modules/@glennsl/bs-test/"],
   collectCoverage: false, // unless explititly specified

@@ -1,0 +1,4 @@
+[submodule "protobuf.js"]
+	path = protobuf.js
+	url = https://github.com/reebalazs/protobuf.js.git
+	branch = essential-fixes
