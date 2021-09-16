@@ -125,41 +125,62 @@ let methodWrapper = ${bsProtobufPackage}.MethodWrapper.methodWrapper
 `);
 }
 
+const typeMap = {
+  string: "string",
+  int32: "int",
+  uint32: "int",
+  sint32: "int",
+  fixed32: "int",
+  sfixed32: "int",
+  int64: "int64",
+  uint64: "int64",
+  sint64: "int64",
+  fixed64: "int64",
+  sfixed64: "int64",
+  bytes: "Js_typed_array.Uint8Array.t",
+  double: "float",
+  float: "float",
+};
+const mapClassMap = {
+  string: "Belt.Map.String",
+  int: "Belt.Map.Int",
+  int64: "ReprotoBsProtobuf.MapInt64",
+};
+const mapEmptyMap = {
+  string: ".empty",
+  int: ".empty",
+  int64: ".makeEmpty()",
+};
+
 function mapFieldType(
   field: Object,
   lookup: Function
 ): { type: string, name: string, fieldAccessor: string } {
   const fieldType = field["type"];
   const fieldRule = field["rule"];
+  const fieldKeyType = field["keyType"];
   let type;
   let name;
   let fieldAccessor;
+  let keyType;
   let isRepeated;
-  if (!fieldRule || fieldRule === "required") {
+  if (fieldKeyType) {
+    // map
+    keyType = typeMap[fieldKeyType];
+    fieldAccessor = `MapField.${capitalize(keyType)}Key`;
+    if (fieldRule) {
+      throw new Error(`Field rule not supported with map type [${fieldRule}]`);
+    }
+  } else if (!fieldRule || fieldRule === "required") {
     // nothing to do, handle the same for now
     fieldAccessor = "Field";
   } else if (fieldRule === "repeated") {
     isRepeated = true;
-    fieldAccessor = "MapField";
+    fieldAccessor = "MapFieldArray";
   } else {
     throw new Error(`Field rule not supported [${fieldRule}]`);
   }
-  const result = {
-    string: "string",
-    int32: "int",
-    uint32: "int",
-    sint32: "int",
-    fixed32: "int",
-    sfixed32: "int",
-    int64: "int64",
-    uint64: "int64",
-    sint64: "int64",
-    fixed64: "int64",
-    sfixed64: "int64",
-    bytes: "Js_typed_array.Uint8Array.t",
-    double: "float",
-    float: "float",
-  }[fieldType];
+  const result = typeMap[fieldType];
   if (result !== undefined) {
     type = fieldType;
     name = result;
@@ -191,6 +212,16 @@ function mapFieldType(
     // proto2: 'a
     name = `option<${name}>`;
   }
+  if (fieldKeyType) {
+    // map
+    const mapClass = mapClassMap[keyType];
+    if (!mapClass) {
+      throw new Error(
+        `Field keyType is not supported with map type [${fieldKeyType}]`
+      );
+    }
+    name = `${mapClass}.t<${name}>`;
+  }
   return { type, name, fieldAccessor };
 }
 
@@ -203,44 +234,58 @@ function defaultFieldValue(field: Object, lookup: Function) {
     // proto3: default for option
     return "=None";
   } else {
-    // Default values
-    // proto2: optionals
-    // proto2: required field, allow default in make.
-    // proto3: non-optionals
-    // XXX TBD handle proto2 defaults
     const fieldType = field["type"];
-    const result = {
-      string: '""',
-      int32: "0",
-      uint32: "0",
-      sint32: "0",
-      fixed32: "0",
-      sfixed32: "0",
-      int64: 'Int64.of_string("0")',
-      uint64: 'Int64.of_string("0")',
-      sint64: 'Int64.of_string("0")',
-      fixed64: 'Int64.of_string("0")',
-      sfixed64: 'Int64.of_string("0")',
-      bytes: "Js_typed_array.Uint8Array.make([])",
-      double: "0.0",
-      float: "0.0",
-    }[fieldType];
-    if (result !== undefined) {
-      return `=${result}`;
-    } else {
-      // enum or message type
-      const data = lookup(fieldType);
-      if (!data) {
-        throw new Error(`Field type not found [${fieldType}]`);
+    const fieldKeyType = field["keyType"];
+    if (fieldKeyType) {
+      // map: yield an empty map
+      const mapType = typeMap[fieldKeyType];
+      const mapClass = mapClassMap[mapType];
+      const mapEmpty = mapEmptyMap[mapType];
+      if (!mapClass) {
+        throw new Error(
+          `Field keyType is not supported with map type [${fieldKeyType}]`
+        );
       }
-      if (data.values) {
-        // enum
-        return `=${fieldType}.${Object.keys(data.values)[0]}`;
-      } else if (data.fields) {
-        // message
-        return `=${fieldType}.make()`;
+      return `=${mapClass}${mapEmpty}`;
+    } else {
+      // All other types
+      // proto2: optionals
+      // proto2: required field, allow default in make.
+      // proto3: non-optionals
+      // XXX TBD handle proto2 defaults
+      const result = {
+        string: '""',
+        int32: "0",
+        uint32: "0",
+        sint32: "0",
+        fixed32: "0",
+        sfixed32: "0",
+        int64: 'Int64.of_string("0")',
+        uint64: 'Int64.of_string("0")',
+        sint64: 'Int64.of_string("0")',
+        fixed64: 'Int64.of_string("0")',
+        sfixed64: 'Int64.of_string("0")',
+        bytes: "Js_typed_array.Uint8Array.make([])",
+        double: "0.0",
+        float: "0.0",
+      }[fieldType];
+      if (result !== undefined) {
+        return `=${result}`;
       } else {
-        throw new Error(`Unsupported field type [${fieldType}]`);
+        // enum or message type
+        const data = lookup(fieldType);
+        if (!data) {
+          throw new Error(`Field type not found [${fieldType}]`);
+        }
+        if (data.values) {
+          // enum
+          return `=${fieldType}.${Object.keys(data.values)[0]}`;
+        } else if (data.fields) {
+          // message
+          return `=${fieldType}.make()`;
+        } else {
+          throw new Error(`Unsupported field type [${fieldType}]`);
+        }
       }
     }
   }

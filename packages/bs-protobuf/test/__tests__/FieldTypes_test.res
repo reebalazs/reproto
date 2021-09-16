@@ -1,5 +1,6 @@
 open Jest
 open Expect
+open Belt
 
 describe("Protobuf field types support", () => {
   open Proto.TypeTest
@@ -204,18 +205,21 @@ describe("Protobuf field types support", () => {
       let v = makeValue(field)
       test("value", () => v |> getField |> expect |> toBe(field))
       test("value encode/decode", () =>
-        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBeCloseTo(field))
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBeCloseTo(field)
+      )
       let field = -3.14
       let v = makeValue(field)
       test("negative", () => v |> getField |> expect |> toBe(field))
       test("negative encode/decode", () =>
-        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBeCloseTo(field))
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBeCloseTo(field)
+      )
       let large = 21474836.0
       let field = large
       let v = makeValue(field)
       test("large", () => v |> getField |> expect |> toBe(field))
       test("large encode/decode", () =>
-        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(field))
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(field)
+      )
       let empty = Typeful.make()
       test("empty", () => empty |> getField |> expect |> toBe(0.0))
       test("empty encode/decode", () =>
@@ -236,13 +240,15 @@ describe("Protobuf field types support", () => {
       let v = makeValue(field)
       test("large 32", () => v |> getField |> expect |> toBe(field))
       test("large 32 encode/decode", () =>
-        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(field))
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(field)
+      )
       let large64 = 9007199254740992.0
       let field = large64
       let v = makeValue(field)
       test("large 64", () => v |> getField |> expect |> toBe(field))
       test("large 64 encode/decode", () =>
-        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(field))
+        v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toBe(field)
+      )
     })
 
     describe("bytes", () => {
@@ -371,6 +377,83 @@ describe("Protobuf field types support", () => {
       let v = Typeful.make()
       test("empty", () => v.repeatedStringField |> expect |> toEqual([]))
       test("empty encode/decode", testMessage(v, []))
+    })
+
+    describe("map", () => {
+      describe("string key", () => {
+        let mapStringStringField = Map.String.fromArray([("f", "foo"), ("b", "bar")])
+        let v = Typeful.make(~mapStringStringField, ())
+        test("value", () => v.mapStringStringField |> expect |> toBe(mapStringStringField))
+        test("encode/decode", () =>
+          v
+          |> Typeful.encode
+          |> Typeful.decode
+          |> (v => v.mapStringStringField)
+          |> expect
+          |> toEqual(mapStringStringField)
+        )
+        let empty = Typeful.make()
+        test("empty", () => empty.mapStringStringField |> expect |> toEqual(Map.String.empty))
+        test("empty encode/decode", () =>
+          empty
+          |> Typeful.encode
+          |> Typeful.decode
+          |> (v => v.mapStringStringField)
+          |> expect
+          |> toEqual(Map.String.empty)
+        )
+      })
+
+      describe("int key", () => {
+        let mapInt32StringField = Map.Int.fromArray([(1, "foo"), (2, "bar")])
+        let v = Typeful.make(~mapInt32StringField, ())
+        test("value", () => v.mapInt32StringField |> expect |> toBe(mapInt32StringField))
+        test("encode/decode", () =>
+          v
+          |> Typeful.encode
+          |> Typeful.decode
+          |> (v => v.mapInt32StringField)
+          |> expect
+          |> toEqual(mapInt32StringField)
+        )
+        let empty = Typeful.make()
+        test("empty", () => empty.mapInt32StringField |> expect |> toEqual(Map.Int.empty))
+        test("empty encode/decode", () =>
+          empty
+          |> Typeful.encode
+          |> Typeful.decode
+          |> (v => v.mapInt32StringField)
+          |> expect
+          |> toEqual(Map.Int.empty)
+        )
+      })
+
+      describe("int64 key", () => {
+        let mapInt64StringField = MapInt64.fromArray([
+          (Int64.of_string("1"), "foo"),
+          (Int64.of_string("2"), "bar"),
+        ])
+        let v = Typeful.make(~mapInt64StringField, ())
+        test("value", () => v.mapInt64StringField |> expect |> toBe(mapInt64StringField))
+        test("encode/decode", () =>
+          v
+          |> Typeful.encode
+          |> Typeful.decode
+          |> (v => v.mapInt64StringField)
+          |> expect
+          |> toEqual(mapInt64StringField)
+        )
+        let empty = Typeful.make()
+        test("empty", () => empty.mapInt64StringField |> expect |> toEqual(MapInt64.makeEmpty()))
+        test("empty encode/decode", () =>
+          empty
+          |> Typeful.encode
+          |> Typeful.decode
+          |> (v => v.mapInt64StringField)
+          |> expect
+          |> toEqual(MapInt64.makeEmpty())
+        )
+      })
     })
   })
 })

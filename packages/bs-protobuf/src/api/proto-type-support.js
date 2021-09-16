@@ -134,7 +134,7 @@ export const field = {
   },
 };
 
-export const mapField = {
+export const mapFieldArray = {
   fromR(message, key, f, record) {
     const r = record[key];
     if (r != null) {
@@ -166,6 +166,100 @@ export const mapField = {
       }
     }
     return record;
+  },
+};
+
+export const mapFieldTupleArray = {
+  stringKey: {
+    mFromA(f, array) {
+      const m = {};
+      for (const [k, v] of array) {
+        const result = f.fromR(v);
+        if (result !== undefined) {
+          if (result.key) {
+            throw new Error(`Oneof cannot be mapped or repeated`);
+          }
+          m[k] = v;
+        }
+      }
+      return m;
+    },
+
+    mToA(f, message) {
+      const array = [];
+      for (const k in message) {
+        if (message.hasOwnProperty(k)) {
+          const v = message[k];
+          const result = f.toR({ has: true, m: v });
+          if (result !== undefined) {
+            array.push([k, result.v]);
+          }
+        }
+      }
+      return array;
+    },
+  },
+
+  intKey: {
+    mFromA(f, array) {
+      const m = {};
+      for (const [k, v] of array) {
+        const result = f.fromR(v);
+        if (result !== undefined) {
+          if (result.key) {
+            throw new Error(`Oneof cannot be mapped or repeated`);
+          }
+          m[k] = v;
+        }
+      }
+      return m;
+    },
+
+    mToA(f, message) {
+      const array = [];
+      for (const k in message) {
+        if (message.hasOwnProperty(k)) {
+          const v = message[k];
+          const result = f.toR({ has: true, m: v });
+          if (result !== undefined) {
+            array.push([parseInt(k, 10), result.v]);
+          }
+        }
+      }
+      return array;
+    },
+  },
+
+  int64Key: {
+    mFromA(f, array) {
+      const m = {};
+      for (const [k, v] of array) {
+        const result = f.fromR(v);
+        if (result !== undefined) {
+          if (result.key) {
+            throw new Error(`Oneof cannot be mapped or repeated`);
+          }
+          const hash = util.longToHash(new util.Long(k[1], k[0], false));
+          m[hash] = v;
+        }
+      }
+      return m;
+    },
+
+    mToA(f, message) {
+      const array = [];
+      for (const hash in message) {
+        if (message.hasOwnProperty(hash)) {
+          const v = message[hash];
+          const result = f.toR({ has: true, m: v });
+          if (result !== undefined) {
+            const k = util.longFromHash(hash, false);
+            array.push([[k.high, k.low >>> 0], result.v]);
+          }
+        }
+      }
+      return array;
+    },
   },
 };
 
