@@ -140,6 +140,7 @@ const typeMap = {
   bytes: "Js_typed_array.Uint8Array.t",
   double: "float",
   float: "float",
+  bool: "bool",
 };
 const mapClassMap = {
   string: "Belt.Map.String",
@@ -268,6 +269,7 @@ function defaultFieldValue(field: Object, lookup: Function) {
         bytes: "Js_typed_array.Uint8Array.make([])",
         double: "0.0",
         float: "0.0",
+        bool: "false",
       }[fieldType];
       if (result !== undefined) {
         return `=${result}`;

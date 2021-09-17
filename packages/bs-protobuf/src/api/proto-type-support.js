@@ -20,6 +20,20 @@ export function d(b, messageClass) {
 
 // Conversion helpers
 
+const identity = {
+  fromR(v) {
+    if (v != null) {
+      return { m: v };
+    }
+  },
+
+  toR({ has, m }) {
+    if (has && m != null) {
+      return { v: m };
+    }
+  },
+};
+
 const maxSafe32 = 2147483647;
 
 const int32 = {
@@ -280,6 +294,8 @@ export const Convert = {
     },
   },
 
+  bool: identity,
+
   int32,
 
   uint32: int32,
@@ -320,19 +336,7 @@ export const Convert = {
 
   enum: int32,
 
-  message: {
-    fromR(v) {
-      if (v != null) {
-        return { m: v };
-      }
-    },
-
-    toR({ has, m }) {
-      if (has && m != null) {
-        return { v: m };
-      }
-    },
-  },
+  message: identity,
 
   oneof(choices) {
     return new OneofConverter(choices);

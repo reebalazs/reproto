@@ -46,6 +46,8 @@ module Convert = {
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external string: _ = "string"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
+  external bool: _ = "bool"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external int32: _ = "int32"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external uint32: _ = "uint32"

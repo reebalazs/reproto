@@ -84,6 +84,24 @@ describe("Protobuf field types support", () => {
       )
     })
 
+    describe("bool", () => {
+      let v = Typeful.make(~boolField=Some(true), ())
+      test("value", () => v.boolField |> expect |> toBe(Some(true)))
+      test("encode/decode", () =>
+        v
+        |> Typeful.encode
+        |> Typeful.decode
+        |> (v => v.boolField)
+        |> expect
+        |> toBe(Some(true))
+      )
+      let empty = Typeful.make()
+      test("empty", () => empty.boolField |> expect |> toBe(None))
+      test("empty encode/decode", () =>
+        empty |> Typeful.encode |> Typeful.decode |> (v => v.boolField) |> expect |> toBe(None)
+      )
+    })
+
     let testInt32 = (makeValue, getField) => {
       let v = makeValue(Some(4))
       test("value", () => v |> getField |> expect |> toBe(Some(4)))
