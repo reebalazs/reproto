@@ -11498,7 +11498,7 @@ fsevents@^1.2.7:
 
 "protobufjs@file:protobuf.js::locator=%40reproto%40workspace%3A.":
   version: 6.10.2
-  resolution: "protobufjs@file:protobuf.js#protobuf.js::hash=b5d9ba&locator=%40reproto%40workspace%3A."
+  resolution: "protobufjs@file:protobuf.js#protobuf.js::hash=561ccd&locator=%40reproto%40workspace%3A."
   dependencies:
     "@protobufjs/aspromise": ^1.1.2
     "@protobufjs/base64": ^1.1.2
@@ -11513,7 +11513,7 @@ fsevents@^1.2.7:
     "@types/long": ^4.0.1
     "@types/node": ">=13.7.0"
     long: ^4.0.0
-  checksum: ca0bdee18e351ef20e2998e26829e298427cdd90e9f4eb39fd172a8a9e058d16ed9dbff292961ec46837cc0b314a4db3d1395276b170a61d7598cfcaeac32506
+  checksum: 1d2b14635d30814ac8da9452dbecaa5d0757989747034c0d210ff6b09122c0027550b995364a4ad42036e1b9b3d2b74673b5b66eaf5530d28ca5107dd6edf30d
   languageName: node
   linkType: hard
 

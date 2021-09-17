@@ -20,6 +20,20 @@ export function d(b, messageClass) {
 
 // Conversion helpers
 
+const identity = {
+  fromR(v) {
+    if (v != null) {
+      return { m: v };
+    }
+  },
+
+  toR({ has, m }) {
+    if (has && m != null) {
+      return { v: m };
+    }
+  },
+};
+
 const maxSafe32 = 2147483647;
 
 const int32 = {
@@ -261,6 +275,36 @@ export const mapFieldTupleArray = {
       return array;
     },
   },
+
+  boolKey: {
+    mFromA(f, array) {
+      const m = {};
+      for (const [k, v] of array) {
+        const result = f.fromR(v);
+        if (result !== undefined) {
+          if (result.key) {
+            throw new Error(`Oneof cannot be mapped or repeated`);
+          }
+          m[k] = v;
+        }
+      }
+      return m;
+    },
+
+    mToA(f, message) {
+      const array = [];
+      for (const k in message) {
+        if (message.hasOwnProperty(k)) {
+          const v = message[k];
+          const result = f.toR({ has: true, m: v });
+          if (result !== undefined) {
+            array.push([k === "true", result.v]);
+          }
+        }
+      }
+      return array;
+    },
+  },
 };
 
 // Type mapping
@@ -279,6 +323,8 @@ export const Convert = {
       }
     },
   },
+
+  bool: identity,
 
   int32,
 
@@ -320,19 +366,7 @@ export const Convert = {
 
   enum: int32,
 
-  message: {
-    fromR(v) {
-      if (v != null) {
-        return { m: v };
-      }
-    },
-
-    toR({ has, m }) {
-      if (has && m != null) {
-        return { v: m };
-      }
-    },
-  },
+  message: identity,
 
   oneof(choices) {
     return new OneofConverter(choices);

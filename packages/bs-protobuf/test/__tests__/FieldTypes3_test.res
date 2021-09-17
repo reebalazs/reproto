@@ -84,6 +84,19 @@ describe("Protobuf field types support", () => {
       )
     })
 
+    describe("bool", () => {
+      let v = Typeful.make(~boolField=Some(true), ())
+      test("value", () => v.boolField |> expect |> toBe(Some(true)))
+      test("encode/decode", () =>
+        v |> Typeful.encode |> Typeful.decode |> (v => v.boolField) |> expect |> toBe(Some(true))
+      )
+      let empty = Typeful.make()
+      test("empty", () => empty.boolField |> expect |> toBe(None))
+      test("empty encode/decode", () =>
+        empty |> Typeful.encode |> Typeful.decode |> (v => v.boolField) |> expect |> toBe(None)
+      )
+    })
+
     let testInt32 = (makeValue, getField) => {
       let v = makeValue(Some(4))
       test("value", () => v |> getField |> expect |> toBe(Some(4)))
@@ -405,6 +418,30 @@ describe("Protobuf field types support", () => {
           |> (v => v.mapInt64StringField)
           |> expect
           |> toEqual(MapInt64.makeEmpty())
+        )
+      })
+
+      describe("bool key", () => {
+        let mapBoolStringField = MapBool.fromArray([(false, "foo"), (true, "bar")])
+        let v = Typeful.make(~mapBoolStringField, ())
+        test("value", () => v.mapBoolStringField |> expect |> toBe(mapBoolStringField))
+        test("encode/decode", () =>
+          v
+          |> Typeful.encode
+          |> Typeful.decode
+          |> (v => v.mapBoolStringField)
+          |> expect
+          |> toEqual(mapBoolStringField)
+        )
+        let empty = Typeful.make()
+        test("empty", () => empty.mapBoolStringField |> expect |> toEqual(MapBool.makeEmpty()))
+        test("empty encode/decode", () =>
+          empty
+          |> Typeful.encode
+          |> Typeful.decode
+          |> (v => v.mapBoolStringField)
+          |> expect
+          |> toEqual(MapBool.makeEmpty())
         )
       })
     })

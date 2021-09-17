@@ -21,23 +21,38 @@ module MapFieldArray = {
 
 module MapFieldTupleArray = {
   module StringKey = {
-    @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope(("mapFieldTupleArray", "stringKey"))
+    @module("@reproto/bs-protobuf/src/api/proto-type-support")
+    @scope(("mapFieldTupleArray", "stringKey"))
     external mFromA: (_, _) => _ = "mFromA"
-    @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope(("mapFieldTupleArray", "stringKey"))
+    @module("@reproto/bs-protobuf/src/api/proto-type-support")
+    @scope(("mapFieldTupleArray", "stringKey"))
     external mToA: (_, _) => _ = "mToA"
   }
 
   module IntKey = {
-    @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope(("mapFieldTupleArray", "intKey"))
+    @module("@reproto/bs-protobuf/src/api/proto-type-support")
+    @scope(("mapFieldTupleArray", "intKey"))
     external mFromA: (_, _) => _ = "mFromA"
-    @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope(("mapFieldTupleArray", "intKey"))
+    @module("@reproto/bs-protobuf/src/api/proto-type-support")
+    @scope(("mapFieldTupleArray", "intKey"))
     external mToA: (_, _) => _ = "mToA"
   }
 
   module Int64Key = {
-    @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope(("mapFieldTupleArray", "int64Key"))
+    @module("@reproto/bs-protobuf/src/api/proto-type-support")
+    @scope(("mapFieldTupleArray", "int64Key"))
     external mFromA: (_, _) => _ = "mFromA"
-    @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope(("mapFieldTupleArray", "int64Key"))
+    @module("@reproto/bs-protobuf/src/api/proto-type-support")
+    @scope(("mapFieldTupleArray", "int64Key"))
+    external mToA: (_, _) => _ = "mToA"
+  }
+
+  module BoolKey = {
+    @module("@reproto/bs-protobuf/src/api/proto-type-support")
+    @scope(("mapFieldTupleArray", "boolKey"))
+    external mFromA: (_, _) => _ = "mFromA"
+    @module("@reproto/bs-protobuf/src/api/proto-type-support")
+    @scope(("mapFieldTupleArray", "boolKey"))
     external mToA: (_, _) => _ = "mToA"
   }
 }
@@ -45,6 +60,8 @@ module MapFieldTupleArray = {
 module Convert = {
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external string: _ = "string"
+  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
+  external bool: _ = "bool"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
   external int32: _ = "int32"
   @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("Convert") @val
@@ -128,6 +145,21 @@ module MapField = {
       let m = _getKey(message, key)
       let array = MapFieldTupleArray.Int64Key.mToA(f, m)
       let v = MapInt64.fromArray(array)
+      _setKey(record, key, v)
+    }
+  }
+
+  module BoolKey = {
+    let fromR = (message, key, f, record) => {
+      let v = _getKey(record, key)
+      let array = MapBool.toArray(v)
+      let m = MapFieldTupleArray.BoolKey.mFromA(f, array)
+      _setKey(message, key, m)
+    }
+    let toR = (record, key, f, message) => {
+      let m = _getKey(message, key)
+      let array = MapFieldTupleArray.BoolKey.mToA(f, m)
+      let v = MapBool.fromArray(array)
       _setKey(record, key, v)
     }
   }
