@@ -12,13 +12,6 @@ module Field = {
   external toR: ('a, string, _, _) => 'a = "toR"
 }
 
-module MapFieldArray = {
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("mapFieldArray")
-  external fromR: ('a, string, _, _) => 'a = "fromR"
-  @module("@reproto/bs-protobuf/src/api/proto-type-support") @scope("mapFieldArray")
-  external toR: ('a, string, _, _) => 'a = "toR"
-}
-
 module MapFieldTupleArray = {
   module StringKey = {
     @module("@reproto/bs-protobuf/src/api/proto-type-support")
@@ -53,6 +46,15 @@ module MapFieldTupleArray = {
     external mFromA: (_, _) => _ = "mFromA"
     @module("@reproto/bs-protobuf/src/api/proto-type-support")
     @scope(("mapFieldTupleArray", "boolKey"))
+    external mToA: (_, _) => _ = "mToA"
+  }
+
+  module Repeated = {
+    @module("@reproto/bs-protobuf/src/api/proto-type-support")
+    @scope(("mapFieldTupleArray", "repeated"))
+    external mFromA: (_, _) => _ = "mFromA"
+    @module("@reproto/bs-protobuf/src/api/proto-type-support")
+    @scope(("mapFieldTupleArray", "repeated"))
     external mToA: (_, _) => _ = "mToA"
   }
 }
@@ -163,4 +165,20 @@ module MapField = {
       _setKey(record, key, v)
     }
   }
+
+  module Repeated = {
+    let fromR = (message, key, f, record) => {
+      let v = _getKey(record, key)
+      let array = Belt.Map.Int.toArray(v)
+      let m = MapFieldTupleArray.Repeated.mFromA(f, array)
+      _setKey(message, key, m)
+    }
+    let toR = (record, key, f, message) => {
+      let m = _getKey(message, key)
+      let array = MapFieldTupleArray.Repeated.mToA(f, m)
+      let v = Belt.Map.Int.fromArray(array)
+      _setKey(record, key, v)
+    }
+  }
+
 }

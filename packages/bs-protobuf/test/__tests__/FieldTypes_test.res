@@ -383,13 +383,14 @@ describe("Protobuf field types support", () => {
         |> (v => v.repeatedStringField)
         |> expect
         |> toEqual(f)
-      let repeatedStringField = ["a", "b", "c"]
+      let repeatedStringField =
+        ["a", "b", "c"]->Array.mapWithIndex((i, v) => (i, v))->Map.Int.fromArray
       let v = Typeful.make(~repeatedStringField, ())
       test("value", () => v.repeatedStringField |> expect |> toEqual(repeatedStringField))
       test("encode/decode ", testMessage(v, repeatedStringField))
       let v = Typeful.make()
-      test("empty", () => v.repeatedStringField |> expect |> toEqual([]))
-      test("empty encode/decode", testMessage(v, []))
+      test("empty", () => v.repeatedStringField |> expect |> toEqual(Map.Int.empty))
+      test("empty encode/decode", testMessage(v, Map.Int.empty))
     })
 
     describe("map", () => {
