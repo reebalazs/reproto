@@ -51,4 +51,5 @@ message Typeful {
   map<int32, string> mapInt32StringField=22;
   map<int64, string> mapInt64StringField=23;
   optional bool boolField=24;
+  map<bool, string> mapBoolStringField=25;
 }

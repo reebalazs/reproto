@@ -146,11 +146,13 @@ const mapClassMap = {
   string: "Belt.Map.String",
   int: "Belt.Map.Int",
   int64: "ReprotoBsProtobuf.MapInt64",
+  bool: "ReprotoBsProtobuf.MapBool",
 };
 const mapEmptyMap = {
   string: ".empty",
   int: ".empty",
   int64: ".makeEmpty()",
+  bool: ".makeEmpty()",
 };
 
 function mapFieldType(
