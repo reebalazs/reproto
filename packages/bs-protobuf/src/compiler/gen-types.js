@@ -179,7 +179,7 @@ function mapFieldType(
     fieldAccessor = "Field";
   } else if (fieldRule === "repeated") {
     isRepeated = true;
-    fieldAccessor = "MapFieldArray";
+    fieldAccessor = "MapField.Repeated";
   } else {
     throw new Error(`Field rule not supported [${fieldRule}]`);
   }
@@ -203,7 +203,7 @@ function mapFieldType(
     name = `${fieldType}.t`;
   }
   if (isRepeated) {
-    name = `array<${name}>`;
+    name = `Belt.Map.Int.t<${name}>`;
     if (isProto3Optional(field)) {
       throw new Error(
         `Field cannot be repeated and optional [${(field, name)}]`
@@ -231,7 +231,7 @@ function mapFieldType(
 function defaultFieldValue(field: Object, lookup: Function) {
   if (field["rule"] === "repeated") {
     // repeated field
-    return "=[]";
+    return "=Belt.Map.Int.empty";
   }
   if (isProto3Optional(field)) {
     // proto3: default for option

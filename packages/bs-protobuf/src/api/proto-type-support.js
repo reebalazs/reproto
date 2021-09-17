@@ -148,38 +148,34 @@ export const field = {
   },
 };
 
-export const mapFieldArray = {
-  fromR(message, key, f, record) {
-    const r = record[key];
-    if (r != null) {
-      const m = (message[key] = []);
-      for (const i in r) {
-        const result = f.fromR(r[i]);
-        if (result !== undefined) {
-          if (result.key) {
-            throw new Error(`Oneof cannot be repeated [${key}]`);
-          }
-          m[i] = result.m;
+// helper for mapFieldTupleArray
+const intKey = {
+  mFromA(f, array) {
+    const m = {};
+    for (const [k, v] of array) {
+      const result = f.fromR(v);
+      if (result !== undefined) {
+        if (result.key) {
+          throw new Error(`Oneof cannot be mapped or repeated`);
         }
+        m[k] = v;
       }
     }
-    return message;
+    return m;
   },
 
-  toR(record, key, f, message) {
-    const r = (record[key] = []);
-    if (message.hasOwnProperty(key)) {
-      const m = message[key];
-      if (m != null) {
-        for (const i in m) {
-          const result = f.toR({ has: true, m: m[i] });
-          if (result !== undefined) {
-            r[i] = result.v;
-          }
+  mToA(f, message) {
+    const array = [];
+    for (const k in message) {
+      if (message.hasOwnProperty(k)) {
+        const v = message[k];
+        const result = f.toR({ has: true, m: v });
+        if (result !== undefined) {
+          array.push([parseInt(k, 10), result.v]);
         }
       }
     }
-    return record;
+    return array;
   },
 };
 
@@ -214,35 +210,7 @@ export const mapFieldTupleArray = {
     },
   },
 
-  intKey: {
-    mFromA(f, array) {
-      const m = {};
-      for (const [k, v] of array) {
-        const result = f.fromR(v);
-        if (result !== undefined) {
-          if (result.key) {
-            throw new Error(`Oneof cannot be mapped or repeated`);
-          }
-          m[k] = v;
-        }
-      }
-      return m;
-    },
-
-    mToA(f, message) {
-      const array = [];
-      for (const k in message) {
-        if (message.hasOwnProperty(k)) {
-          const v = message[k];
-          const result = f.toR({ has: true, m: v });
-          if (result !== undefined) {
-            array.push([parseInt(k, 10), result.v]);
-          }
-        }
-      }
-      return array;
-    },
-  },
+  intKey,
 
   int64Key: {
     mFromA(f, array) {
@@ -304,6 +272,24 @@ export const mapFieldTupleArray = {
       }
       return array;
     },
+  },
+
+  repeated: {
+    mFromA(f, array) {
+      const m = [];
+      for (const [k, v] of array) {
+        const result = f.fromR(v);
+        if (result !== undefined) {
+          if (result.key) {
+            throw new Error(`Oneof cannot be mapped or repeated`);
+          }
+          m[k] = v;
+        }
+      }
+      return m;
+    },
+
+    mToA: intKey.mToA,
   },
 };
 
