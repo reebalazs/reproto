@@ -27,7 +27,7 @@ export function genProto(
       ].concat(
         // commonjs:
         // ["-t", "static-module", "-w", "commonjs", "--no-convert", "--no-comments", "-o", output].concat(
-        includes.map((path) => ["-p", path]),
+        includes.reduce((a, path) => a.concat("-p", path), []),
         filenames
       ),
       function (err, txt) {
@@ -48,7 +48,7 @@ export function genProtoData(
   return new Promise((resolve, reject) => {
     pbjs.main(
       ["-t", "json"].concat(
-        includes.map((path) => ["-p", path]),
+        includes.reduce((a, path) => a.concat("-p", path), []),
         filenames
       ),
       function (err, json) {
