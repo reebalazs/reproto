@@ -65,12 +65,16 @@ export async function genTypes(filenames, includes, protoJsPath, output) {
   const data = await genProtoData(filenames, includes);
   const resolver = new Resolver(data, protoJsPath);
   const stream = fs.createWriteStream(output);
-  await new Promise((resolve) => {
+  await new Promise((resolve, reject) => {
     stream.once("open", function (fd) {
-      emitPrologue(stream, resolver);
-      emitPackage(stream, resolver);
-      emitEpilogue(stream, resolver);
-      resolve();
+      try {
+        emitPrologue(stream, resolver);
+        emitPackage(stream, resolver);
+        emitEpilogue(stream, resolver);
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
     });
   });
   stream.close();
