@@ -13,3 +13,15 @@ message HelloWorldResponse {
 service HelloService {
     rpc World (HelloWorldRequest) returns (HelloWorldResponse);
 }
+
+message Alpha {
+    optional Beta beta = 1;
+    enum Beta {
+       ZERO = 0;
+       ONE = 1;
+    }
+}
+
+service LookupTestService {
+    rpc Alpha (Alpha) returns (HelloWorldResponse);
+}
