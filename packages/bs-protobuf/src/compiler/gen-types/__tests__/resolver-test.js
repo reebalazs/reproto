@@ -1,6 +1,6 @@
 /* global test, describe, expect */
 
-import { Resolver, couldNotResolve } from "../../gen-types";
+import { Resolver, couldNotResolve } from "../resolver";
 
 function expectCouldNotResolve(resolver) {
   expect(resolver).toBe(couldNotResolve);
