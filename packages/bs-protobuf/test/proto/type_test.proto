@@ -1,6 +1,8 @@
 
 syntax = "proto2";
 
+import "google/protobuf/any.proto";
+
 package typeTest;
 
 message Basic {
@@ -52,4 +54,5 @@ message Typeful {
   map<int64, string> mapInt64StringField=23;
   optional bool boolField=24;
   map<bool, string> mapBoolStringField=25;
+  optional google.protobuf.Any anyField=26;
 }

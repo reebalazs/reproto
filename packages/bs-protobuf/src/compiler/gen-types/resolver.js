@@ -1,5 +1,7 @@
 import { capitalize } from "./capitalize";
 
+export const specialModuleTypes = "PROTORES__Types__";
+
 export class Resolver {
   constructor(data, protoJsPath, chain = null, prefix = [], baseLevel = null) {
     this.data = data;
@@ -67,6 +69,29 @@ export class Resolver {
     // then the base level is alpha, and the relative path
     // is Beta.Gamma.
     return this.prefix.slice(this.baseLevel).map(capitalize).join(".");
+  }
+
+  get flattenedName() {
+    return capitalize(
+      this.prefix.map((segment) => segment.replace(/_/g, "_X")).join("__")
+    );
+  }
+
+  get moduleName() {
+    // The full module name of the referenced symbol
+    return `${specialModuleTypes}.${this.flattenedName}`;
+  }
+
+  get name() {
+    if (this.prefix) {
+      return this.prefix[this.prefix.length - 1];
+    }
+  }
+
+  get packageName() {
+    if (this.prefix) {
+      return this.prefix.join(".");
+    }
   }
 }
 

@@ -1,6 +1,6 @@
 /* global test, describe, expect */
 
-import { Resolver, couldNotResolve } from "../resolver";
+import { Resolver, couldNotResolve, specialModuleTypes } from "../resolver";
 
 function expectCouldNotResolve(resolver) {
   expect(resolver).toBe(couldNotResolve);
@@ -180,6 +180,71 @@ describe("gen-types Resolver", () => {
         expect(resolver3.chain.chain.chain).toBe(resolver);
         expect(resolver3.relativePath).toEqual("Delta.Epsilon");
       });
+    });
+  });
+
+  const makeWithPrefix = (prefix) => new Resolver(null, null, null, prefix);
+
+  describe("flattenedName", () => {
+    test("path conversion", () => {
+      expect(makeWithPrefix(["alpha"]).flattenedName).toBe("Alpha");
+      expect(makeWithPrefix(["Alpha"]).flattenedName).toBe("Alpha");
+      expect(makeWithPrefix(["ALPHA"]).flattenedName).toBe("ALPHA");
+      expect(makeWithPrefix(["alpha", "beta", "gamma"]).flattenedName).toBe(
+        "Alpha__beta__gamma"
+      );
+    });
+    test("underscore conversion", () => {
+      expect(makeWithPrefix(["a_b_c_d"]).flattenedName).toBe("A_Xb_Xc_Xd");
+      expect(makeWithPrefix(["alpha", "beta_", "gamma__"]).flattenedName).toBe(
+        "Alpha__beta_X__gamma_X_X"
+      );
+    });
+  });
+
+  describe("moduleName", () => {
+    const moduleName = (name) => `${specialModuleTypes}.${name}`;
+    test("path conversion", () => {
+      expect(makeWithPrefix(["alpha"]).moduleName).toBe(moduleName("Alpha"));
+      expect(makeWithPrefix(["Alpha"]).moduleName).toBe(moduleName("Alpha"));
+      expect(makeWithPrefix(["ALPHA"]).moduleName).toBe(moduleName("ALPHA"));
+      expect(makeWithPrefix(["alpha", "beta", "gamma"]).moduleName).toBe(
+        moduleName("Alpha__beta__gamma")
+      );
+    });
+    test("underscore conversion", () => {
+      expect(makeWithPrefix(["a_b_c_d"]).moduleName).toBe(
+        moduleName("A_Xb_Xc_Xd")
+      );
+      expect(makeWithPrefix(["alpha", "beta_", "gamma__"]).moduleName).toBe(
+        moduleName("Alpha__beta_X__gamma_X_X")
+      );
+    });
+  });
+
+  describe("name", () => {
+    test("works", () => {
+      expect(makeWithPrefix([]).name).toBe(undefined);
+      expect(makeWithPrefix(["alpha"]).name).toBe("alpha");
+      expect(makeWithPrefix(["alpha", "beta"]).name).toBe("beta");
+      expect(makeWithPrefix(["alpha", "beta", "gamma"]).name).toBe("gamma");
+    });
+    test("with no prefix", () => {
+      expect(makeWithPrefix(undefined).name).toBe(undefined);
+    });
+  });
+
+  describe("packageName", () => {
+    test("works", () => {
+      expect(makeWithPrefix([]).packageName).toBe("");
+      expect(makeWithPrefix(["alpha"]).packageName).toBe("alpha");
+      expect(makeWithPrefix(["alpha", "beta"]).packageName).toBe("alpha.beta");
+      expect(makeWithPrefix(["alpha", "beta", "gamma"]).packageName).toBe(
+        "alpha.beta.gamma"
+      );
+    });
+    test("with no prefix", () => {
+      expect(makeWithPrefix(undefined).packageName).toBe("");
     });
   });
 });
