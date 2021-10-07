@@ -93,7 +93,7 @@ function mapFieldType(field, resolver) {
     name = result;
   } else {
     // enum or message type
-    const data = resolver.lookup(fieldType).data;
+    const { data, relativePath } = resolver.lookup(fieldType);
     if (!data) {
       throw new Error(`Field type not found [${fieldType}]`);
     }
@@ -104,7 +104,7 @@ function mapFieldType(field, resolver) {
     } else {
       throw new Error(`Field type not supported [${fieldType}]`);
     }
-    name = `${fieldType}.t`;
+    name = `${relativePath}.t`;
   }
   if (isRepeated) {
     name = `Belt.Map.Int.t<${name}>`;
@@ -516,7 +516,7 @@ function emitPackage(stream, resolver, prefix = "", indent = 0) {
       emitService(stream, name, nextResolver, packageName, indent);
     } else if (nextData.nested) {
       stream.write(`\
-${" ".repeat(indent)}module ${capitalize(packageName)} = {
+${" ".repeat(indent)}module ${capitalize(name)} = {
 `);
       emitPackage(stream, nextResolver, packageName, indent + 2);
       stream.write(`${" ".repeat(indent)}}
