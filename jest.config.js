@@ -9,6 +9,7 @@ const config = {
     "/node_modules/",
     "/bs-rpc-axios/test/proto-res/",
     "/proto-demo/proto-res/",
+    "/bs-protobuf/test/proto-res/Proto.proto.js",
   ],
   coverageThreshold: {
     global: {
