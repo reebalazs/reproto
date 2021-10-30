@@ -127,16 +127,17 @@ ${" ".repeat(indent)}}
   data.__processed = 2;
 }
 
-export function emitEnumPackage(stream, parentResolver, indent) {
+export function emitNestedReferences(stream, parentResolver, indent) {
   for (const name in parentResolver.data.nested) {
     const resolver = parentResolver.next(name);
     const { data } = resolver;
-    if (data.values) {
+    if (data.values || data.fields) {
+      // Enum or message references
       stream.write(`\
-    ${" ".repeat(indent)}module ${resolver.name} = ${resolver.flattenedName}
-    `);
+${" ".repeat(indent)}  module ${resolver.name} = ${resolver.flattenedName}
+`);
     } else if (data.nested) {
-      emitEnumPackage(stream, resolver, indent + 2);
+      emitNestedReferences(stream, resolver, indent + 2);
     }
   }
 }
@@ -222,8 +223,8 @@ function emitMessageClassPass1(stream, resolver, indent) {
 ${" ".repeat(indent)}module ${resolver.flattenedName} = {
 `);
   if (data.nested) {
-    // Nested enum reference generation
-    emitEnumPackage(stream, resolver, indent);
+    // Nested reference generation
+    emitNestedReferences(stream, resolver, indent);
   }
   // annotation to cache the structural field names in this class
   data._oneofStructuralFieldNames = {};
