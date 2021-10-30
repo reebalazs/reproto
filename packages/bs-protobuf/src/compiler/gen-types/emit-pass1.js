@@ -230,63 +230,87 @@ ${" ".repeat(indent)}module ${resolver.flattenedName} = {
   if (data.oneofs) {
     emitOneofModule(stream, resolver, indent + 2);
   }
-  stream.write(`\
+  const isEmpty = Object.keys(resolver.data.fields).length === 0;
+  if (isEmpty) {
+    // Empty type special case, as an empty record is
+    // not typeable in rescript
+    stream.write(`\
+${" ".repeat(indent)}  type t = unit
+${" ".repeat(indent)}  let make = (()) => ()`);
+  } else {
+    stream.write(`\
 ${" ".repeat(indent)}  type t = {
 `);
-  for (const fieldName of iterRealFieldNames(resolver)) {
-    const field = data.fields[fieldName];
-    stream.write(`\
+    for (const fieldName of iterRealFieldNames(resolver)) {
+      const field = data.fields[fieldName];
+      stream.write(`\
 ${" ".repeat(indent)}    @as("${decapitalize(fieldName)}") ${fieldName}: ${
-      mapFieldType(field, resolver).name
-    },
+        mapFieldType(field, resolver).name
+      },
 `);
-  }
-  for (const fieldName of iterOneofFieldNames(resolver)) {
-    stream.write(`\
+    }
+    for (const fieldName of iterOneofFieldNames(resolver)) {
+      stream.write(`\
 ${" ".repeat(indent)}    @as("${decapitalize(
-      fieldName
-    )}") ${fieldName}: Oneof.${capitalize(fieldName)}.t,
+        fieldName
+      )}") ${fieldName}: Oneof.${capitalize(fieldName)}.t,
 `);
-  }
-  stream.write(`\
+    }
+    stream.write(`\
 ${" ".repeat(indent)}  }
 ${" ".repeat(indent)}  let make = (`);
-  emitFieldParameters(stream, resolver, indent, false);
-  stream.write(`) => `);
-  emitFieldRecord(stream, resolver, indent);
+    emitFieldParameters(stream, resolver, indent, false);
+    stream.write(`) => `);
+    emitFieldRecord(stream, resolver, indent);
+  }
   stream.write(`
 ${" ".repeat(indent)}  `);
   emitProtoModuleDirective(stream, resolver);
   stream.write(`@val `);
   emitScopeDirective(stream, resolver);
   stream.write(`external messageClass: _ = "${resolver.name}"
+`);
+  if (isEmpty) {
+    // Empty type special case
+    stream.write(`\
+${" ".repeat(indent)}  let encode = _ => {
+${" ".repeat(indent)}    Js.Obj.empty()
+${" ".repeat(
+  indent
+)}    ->ReprotoBsProtobuf.ProtoTypeSupport.encode(messageClass)
+${" ".repeat(indent)}  }
+${" ".repeat(indent)}  let decode = (_): t => {
+${" ".repeat(indent)}    make()
+`);
+  } else {
+    stream.write(`\
 ${" ".repeat(indent)}  let encode = v => {
 ${" ".repeat(indent)}    Js.Obj.empty()
 `);
-  for (const fieldName of iterRealFieldNames(resolver)) {
-    const field = data.fields[fieldName];
-    const mapper = mapFieldType(field, resolver);
-    stream.write(`\
+    for (const fieldName of iterRealFieldNames(resolver)) {
+      const field = data.fields[fieldName];
+      const mapper = mapFieldType(field, resolver);
+      stream.write(`\
 ${" ".repeat(indent)}    ->${bsProtobufPackage}.ProtoTypeSupport.${
-      mapper.fieldAccessor
-    }.fromR("${decapitalize(
-      fieldName
-    )}", ${bsProtobufPackage}.ProtoTypeSupport.Convert.${mapper.type}, v)
+        mapper.fieldAccessor
+      }.fromR("${decapitalize(
+        fieldName
+      )}", ${bsProtobufPackage}.ProtoTypeSupport.Convert.${mapper.type}, v)
 `);
-  }
-  for (const fieldName of iterOneofFieldNames(resolver)) {
-    stream.write(`\
+    }
+    for (const fieldName of iterOneofFieldNames(resolver)) {
+      stream.write(`\
 ${" ".repeat(
   indent
 )}    ->${bsProtobufPackage}.ProtoTypeSupport.Field.fromR("${decapitalize(
-      fieldName
-    )}", Oneof.${capitalize(fieldName)}.convert, v)
+        fieldName
+      )}", Oneof.${capitalize(fieldName)}.convert, v)
 `);
-  }
-  // ${" ".repeat(
-  //  indent
-  // )}  let verify = (v: t) => ${bsProtobufPackage}.ProtoTypeSupport.verify(v, messageClass)
-  stream.write(`\
+    }
+    // ${" ".repeat(
+    //  indent
+    // )}  let verify = (v: t) => ${bsProtobufPackage}.ProtoTypeSupport.verify(v, messageClass)
+    stream.write(`\
 ${" ".repeat(
   indent
 )}    ->${bsProtobufPackage}.ProtoTypeSupport.encode(messageClass)
@@ -297,25 +321,26 @@ ${" ".repeat(
 )}    let m = ${bsProtobufPackage}.ProtoTypeSupport.decode(b, messageClass)
 ${" ".repeat(indent)}    make()
 `);
-  for (const fieldName of iterRealFieldNames(resolver)) {
-    const field = data.fields[fieldName];
-    const mapper = mapFieldType(field, resolver);
-    stream.write(`\
+    for (const fieldName of iterRealFieldNames(resolver)) {
+      const field = data.fields[fieldName];
+      const mapper = mapFieldType(field, resolver);
+      stream.write(`\
 ${" ".repeat(indent)}    ->${bsProtobufPackage}.ProtoTypeSupport.${
-      mapper.fieldAccessor
-    }.toR("${decapitalize(
-      fieldName
-    )}", ${bsProtobufPackage}.ProtoTypeSupport.Convert.${mapper.type}, m)
+        mapper.fieldAccessor
+      }.toR("${decapitalize(
+        fieldName
+      )}", ${bsProtobufPackage}.ProtoTypeSupport.Convert.${mapper.type}, m)
 `);
-  }
-  for (const fieldName of iterOneofFieldNames(resolver)) {
-    stream.write(`\
+    }
+    for (const fieldName of iterOneofFieldNames(resolver)) {
+      stream.write(`\
 ${" ".repeat(
   indent
 )}    ->${bsProtobufPackage}.ProtoTypeSupport.Field.toR("${decapitalize(
-      fieldName
-    )}", Oneof.${capitalize(fieldName)}.convert, m)
+        fieldName
+      )}", Oneof.${capitalize(fieldName)}.convert, m)
 `);
+    }
   }
   stream.write(`\
 ${" ".repeat(indent)}  }
