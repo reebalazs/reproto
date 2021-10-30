@@ -463,4 +463,42 @@ describe("Protobuf field types support", () => {
       test("encode/decode", () => v |> Empty.encode |> Empty.decode |> expect |> toEqual(v))
     })
   })
+
+  describe("nested", () => {
+    let testTypeSupport = (v: Nested.Message.t) => {
+      test("string", () => v.stringField |> expect |> toBe(Some("The answer")))
+      test("int32", () => v.int32Field |> expect |> toBe(Some(42)))
+      // test("verify", () => v |> Nested.Message.verify |> expect |> toBe(None))
+      test("encode/decode", () =>
+        v |> Nested.Message.encode |> Nested.Message.decode |> expect |> toEqual(v)
+      )
+    }
+
+    describe("make", () =>
+      Nested.Message.make(
+        ~stringField=Some("The answer"),
+        ~int32Field=Some(42),
+        (),
+      )->testTypeSupport
+    )
+
+    describe("as record", () =>
+      {
+        stringField: Some("The answer"),
+        int32Field: Some(42),
+      }->testTypeSupport
+    )
+
+    describe("defaults", () => {
+      let v = Nested.Message.make()
+      test("string", () => v.stringField |> expect |> toBe(None))
+      test("int32", () => v.int32Field |> expect |> toBe(None))
+      test("encode empty", () =>
+        v |> Nested.Message.encode |> Js_typed_array.ArrayBuffer.byteLength |> expect |> toBe(0)
+      )
+      test("encode/decode", () =>
+        v |> Nested.Message.encode |> Nested.Message.decode |> expect |> toEqual(v)
+      )
+    })
+  })
 })

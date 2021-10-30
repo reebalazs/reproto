@@ -57,3 +57,10 @@ message Typeful {
 
 message Empty {
 }
+
+message Nested {
+  message Message {
+    optional string stringField = 1;
+    optional int32 int32Field = 2;
+  }
+}
