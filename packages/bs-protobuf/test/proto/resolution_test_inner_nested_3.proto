@@ -1,0 +1,13 @@
+
+syntax = "proto3";
+
+package resolutionTest3.Inner.Nested;
+
+message Type1 {
+  optional string innerNested=1;
+}
+
+enum Enum1 {
+  VInnerNested6 = 6;
+  VInnerNested7 = 7;
+}

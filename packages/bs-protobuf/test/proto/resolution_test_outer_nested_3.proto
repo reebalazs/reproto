@@ -1,0 +1,13 @@
+
+syntax = "proto3";
+
+package resolutionTest3.Nested;
+
+message Type1 {
+  optional string outerNested=1;
+}
+
+enum Enum1 {
+  VOuterNested2 = 2;
+  VOuterNested3 = 3;
+}

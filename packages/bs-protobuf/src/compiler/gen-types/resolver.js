@@ -51,16 +51,34 @@ export class Resolver {
     return couldNotResolve;
   }
 
-  lookupPath(path) {
+  lookupPathInner(path) {
+    // Start to resolve from the inside on the chain
     let resolver = this.forwardLookupPath(path, true);
     if (!resolver.data && this.chain) {
-      resolver = this.chain.lookupPath(path);
+      resolver = this.chain.lookupPathInner(path);
+    }
+    return resolver;
+  }
+
+  lookupPathOuter(path) {
+    // Start to resolve from the root of the chain
+    let resolver = couldNotResolve;
+    if (this.chain) {
+      resolver = this.chain.lookupPathOuter(path);
+    }
+    if (!resolver.data) {
+      resolver = this.forwardLookupPath(path, true);
     }
     return resolver;
   }
 
   lookup(name) {
-    return this.lookupPath(name.split("."));
+    const path = name.split(".");
+    if (path[0] === "") {
+      return this.lookupPathOuter(path.slice(1));
+    } else {
+      return this.lookupPathInner(path);
+    }
   }
 
   get relativePath() {

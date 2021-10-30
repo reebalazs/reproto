@@ -539,4 +539,80 @@ describe("Protobuf field types support", () => {
       )
     })
   })
+
+  describe("resolution", () => {
+    describe("in message", () => {
+      let v = ResolutionTest.Message.make(
+        ~inner=ResolutionTest.Message.Enum1.VInner3,
+        ~outer=ResolutionTest.Enum1.VOuter1,
+        ~nestedInner=ResolutionTest.Message.Nested.Enum1.VOuter7,
+        ~typeInner=ResolutionTest.Message.Type1.make(~inner=Some("INNER"), ()),
+        ~typeOuter=ResolutionTest.Type1.make(~outer=Some("OUTER"), ()),
+        ~nestedTypeInner=ResolutionTest.Message.Nested.Type1.make(
+          ~nestedInner=Some("NESTED-INNER"),
+          (),
+        ),
+        (),
+      )
+      test("inner", () => v.inner |> expect |> toBe(ResolutionTest.Message.Enum1.VInner3))
+      test("outer", () => v.outer |> expect |> toBe(ResolutionTest.Enum1.VOuter1))
+      test("nestedInner", () =>
+        v.nestedInner |> expect |> toBe(ResolutionTest.Message.Nested.Enum1.VOuter7)
+      )
+      // Note: nestedOuter resolution in messages is not supported by protobufjs.
+      test("typeInner", () => v.typeInner.inner |> expect |> toBe(Some("INNER")))
+      test("typeOuter", () => v.typeOuter.outer |> expect |> toBe(Some("OUTER")))
+      test("nestedTypeInner", () =>
+        v.nestedTypeInner.nestedInner |> expect |> toBe(Some("NESTED-INNER"))
+      )
+      test("encode/decode", () =>
+        v |> ResolutionTest.Message.encode |> ResolutionTest.Message.decode |> expect |> toEqual(v)
+      )
+    })
+
+    describe("in module", () => {
+      let v = Proto.ResolutionTest3.Inner.Message.make(
+        ~enumInner=Proto.ResolutionTest3.Inner.Enum1.VInner4,
+        ~enumOuter=Proto.ResolutionTest3.Enum1.VOuter1,
+        ~enumNestedInner=Proto.ResolutionTest3.Inner.Nested.Enum1.VInnerNested7,
+        ~enumNestedOuter=Proto.ResolutionTest3.Nested.Enum1.VOuterNested3,
+        ~typeInner=Proto.ResolutionTest3.Inner.Type1.make(~inner=Some("INNER"), ()),
+        ~typeOuter=Proto.ResolutionTest3.Type1.make(~outer=Some("OUTER"), ()),
+        ~typeNestedInner=Proto.ResolutionTest3.Inner.Nested.Type1.make(
+          ~innerNested=Some("INNER-NESTED"),
+          (),
+        ),
+        ~typeNestedOuter=Proto.ResolutionTest3.Nested.Type1.make(
+          ~outerNested=Some("OUTER-NESTED"),
+          (),
+        ),
+        (),
+      )
+      test("enumInner", () =>
+        v.enumInner |> expect |> toBe(Proto.ResolutionTest3.Inner.Enum1.VInner4)
+      )
+      test("enumOuter", () => v.enumOuter |> expect |> toBe(Proto.ResolutionTest3.Enum1.VOuter1))
+      test("enumNestedInner", () =>
+        v.enumNestedInner |> expect |> toBe(Proto.ResolutionTest3.Inner.Nested.Enum1.VInnerNested7)
+      )
+      test("enumNestedOuter", () =>
+        v.enumNestedOuter |> expect |> toBe(Proto.ResolutionTest3.Nested.Enum1.VOuterNested3)
+      )
+      test("typeInner", () => v.typeInner.inner |> expect |> toBe(Some("INNER")))
+      test("typeOuter", () => v.typeOuter.outer |> expect |> toBe(Some("OUTER")))
+      test("typeNestedInner", () =>
+        v.typeNestedInner.innerNested |> expect |> toBe(Some("INNER-NESTED"))
+      )
+      test("typeNestedOuter", () =>
+        v.typeNestedOuter.outerNested |> expect |> toBe(Some("OUTER-NESTED"))
+      )
+      test("encode/decode", () =>
+        v
+        |> Proto.ResolutionTest3.Inner.Message.encode
+        |> Proto.ResolutionTest3.Inner.Message.decode
+        |> expect
+        |> toEqual(v)
+      )
+    })
+  })
 })

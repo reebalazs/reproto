@@ -180,6 +180,56 @@ describe("gen-types Resolver", () => {
         expect(resolver3.chain.chain.chain).toBe(resolver);
         expect(resolver3.relativePath).toEqual("Delta.Epsilon");
       });
+
+      test("inner", () => {
+        const resolver = new Resolver(
+          {
+            nested: {
+              alpha: {
+                nested: {
+                  beta: { nested: { gamma: "{GAMMA}" } },
+                  delta: { nested: { epsilon: "{EPSILON-INNER}" } },
+                },
+              },
+              delta: { nested: { epsilon: "{EPSILON-OUTER}" } },
+            },
+          },
+          "PROTO_JS_PATH"
+        );
+        const resolver1 = resolver.next("alpha").next("beta").next("gamma");
+        const resolver2 = resolver1.lookup("delta");
+        expect(resolver2.data).toEqual({
+          nested: { epsilon: "{EPSILON-INNER}" },
+        });
+        const resolver3 = resolver1.lookup("delta.epsilon");
+        expect(resolver3.data).toBe("{EPSILON-INNER}");
+      });
+
+      test("outer", () => {
+        const resolver = new Resolver(
+          {
+            nested: {
+              alpha: {
+                nested: {
+                  beta: { nested: { gamma: "{GAMMA}" } },
+                  delta: { nested: { epsilon: "{EPSILON-INNER}" } },
+                },
+              },
+              delta: { nested: { epsilon: "{EPSILON-OUTER}" } },
+            },
+          },
+          "PROTO_JS_PATH"
+        );
+        const resolver1 = resolver.next("alpha").next("beta").next("gamma");
+        // dot prefix looks up from the root
+        const resolver2 = resolver1.lookup(".delta");
+        expect(resolver2.data).toEqual({
+          nested: { epsilon: "{EPSILON-OUTER}" },
+        });
+        // dot prefix looks up from the root
+        const resolver3 = resolver1.lookup(".delta.epsilon");
+        expect(resolver3.data).toBe("{EPSILON-OUTER}");
+      });
     });
   });
 
