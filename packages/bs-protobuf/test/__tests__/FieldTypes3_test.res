@@ -447,4 +447,20 @@ describe("Protobuf field types support", () => {
       })
     })
   })
+
+  describe("empty", () => {
+    let testTypeSupport = (v: Empty.t) => {
+      test("encode/decode", () => v |> Empty.encode |> Empty.decode |> expect |> toEqual(v))
+    }
+    describe("make", () => Empty.make()->testTypeSupport)
+    describe("as unit", () => ()->testTypeSupport)
+
+    describe("defaults", () => {
+      let v = Empty.make()
+      test("encode empty", () =>
+        v |> Empty.encode |> Js_typed_array.ArrayBuffer.byteLength |> expect |> toBe(0)
+      )
+      test("encode/decode", () => v |> Empty.encode |> Empty.decode |> expect |> toEqual(v))
+    })
+  })
 })

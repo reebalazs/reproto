@@ -56,3 +56,6 @@ message Typeful {
   map<bool, string> mapBoolStringField=25;
   optional google.protobuf.Any anyField=26;
 }
+
+message Empty {
+}
