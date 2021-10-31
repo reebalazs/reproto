@@ -69,3 +69,39 @@ message Nested {
     optional int32 int32Field = 2;
   }
 }
+
+message ResolutionTest {
+  enum Enum1 {
+    VOuter0 = 0;
+    VOuter1 = 1;
+  }
+  message Type1 {
+    optional string outer=1;
+  }
+  // Note: Nested outer enum and message fail to compile with protobufjs.
+  // So, these are missing from this test proto.
+  message Message {
+    enum Enum1 {
+      VInner2 = 2;
+      VInner3 = 3;
+    }
+    message Type1 {
+      optional string inner=1;
+    }
+    message Nested {
+      enum Enum1 {
+        VOuter6 = 6;
+        VOuter7 = 7;
+      }
+      message Type1 {
+        optional string nestedInner=1;
+      }
+    }
+    Enum1 inner=1;
+    .Enum1 outer=2;
+    Nested.Enum1 nestedInner=3;
+    Type1 typeInner=4;
+    .Type1 typeOuter=5;
+    Nested.Type1 nestedTypeInner=6;
+  }
+}

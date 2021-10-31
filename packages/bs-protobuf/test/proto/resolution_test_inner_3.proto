@@ -1,0 +1,24 @@
+
+syntax = "proto3";
+
+package resolutionTest3.Inner;
+
+message Type1 {
+  optional string inner=1;
+}
+
+enum Enum1 {
+  VInner4 = 4;
+  VInner5 = 5;
+}
+
+message Message {
+  Enum1 enumInner=1;
+  .Enum1 enumOuter=2;
+  Nested.Enum1 enumNestedInner=3;
+  .Nested.Enum1 enumNestedOuter=4;
+  Type1 typeInner=5;
+  .Type1 typeOuter=6;
+  Nested.Type1 typeNestedInner=7;
+  .Nested.Type1 typeNestedOuter=8;
+}

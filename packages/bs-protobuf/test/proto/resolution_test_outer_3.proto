@@ -1,0 +1,13 @@
+
+syntax = "proto3";
+
+package resolutionTest3;
+
+message Type1 {
+  optional string outer=1;
+}
+
+enum Enum1 {
+  VOuter0 = 0;
+  VOuter1 = 1;
+}
