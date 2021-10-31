@@ -6,5 +6,5 @@ import "module_test_b1_3.proto";
 
 message TestMessageA2 {
   optional moduleTestB.TestMessageB1 messageField = 1;
+  optional moduleTestB.TestEnumB1 enumField = 2;
 }
-

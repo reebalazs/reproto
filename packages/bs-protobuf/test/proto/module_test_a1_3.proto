@@ -2,6 +2,10 @@ syntax = "proto3";
 
 package moduleTestA;
 
+enum TestEnumA1 {
+  enumV0 = 0;
+}
+
 message TestMessageA1 {
   optional string stringField = 1;
 }
