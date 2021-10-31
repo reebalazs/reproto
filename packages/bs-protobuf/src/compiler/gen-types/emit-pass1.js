@@ -214,9 +214,8 @@ function emitMessageClassPass1(stream, resolver, indent) {
     const field = data.fields[fieldName];
     const { resolver: fieldResolver } = mapFieldType(field, resolver);
     if (fieldResolver) {
-      // Enums should all be processed at this point, so we can assume
-      // that this is a message class. (Sanity check will be done in function body.)
-      emitMessageClassPass1(stream, fieldResolver, indent);
+      // This can be a message class or an enum.
+      emitEntityPass1(stream, fieldResolver, indent);
     }
   }
   stream.write(`\
@@ -355,16 +354,21 @@ function emitProtoModuleDirective(stream, resolver) {
   stream.write(`@module("${resolver.protoJsPath}") `);
 }
 
+function emitEntityPass1(stream, resolver, indent) {
+  // Emit the message class, enum, or package, of the current resolver
+  const { data } = resolver;
+  if (data.values) {
+    emitEnumPass1(stream, resolver, indent);
+  } else if (data.fields) {
+    emitMessageClassPass1(stream, resolver, indent);
+  } else if (data.nested) {
+    emitPackagePass1(stream, resolver, indent);
+  }
+}
+
 export function emitPackagePass1(stream, parentResolver, indent = 2) {
   for (const name in parentResolver.data.nested) {
     const resolver = parentResolver.next(name);
-    const { data } = resolver;
-    if (data.values) {
-      emitEnumPass1(stream, resolver, indent);
-    } else if (data.fields) {
-      emitMessageClassPass1(stream, resolver, indent);
-    } else if (data.nested) {
-      emitPackagePass1(stream, resolver, indent);
-    }
+    emitEntityPass1(stream, resolver, indent);
   }
 }

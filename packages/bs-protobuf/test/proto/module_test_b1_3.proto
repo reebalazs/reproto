@@ -4,7 +4,12 @@ package moduleTestB;
 
 import "module_test_a1_3.proto";
 
+enum TestEnumB1 {
+  enumV0 = 0;
+}
+
 message TestMessageB1 {
   optional moduleTestA.TestMessageA1 messageField = 1;
+  optional moduleTestA.TestEnumA1 enumField = 2;
 }
 
