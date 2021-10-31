@@ -244,16 +244,16 @@ ${" ".repeat(indent)}  type t = {
     for (const fieldName of iterRealFieldNames(resolver)) {
       const field = data.fields[fieldName];
       stream.write(`\
-${" ".repeat(indent)}    @as("${decapitalize(fieldName)}") ${fieldName}: ${
+${" ".repeat(indent)}    @as("${fieldName}") ${decapitalize(fieldName)}: ${
         mapFieldType(field, resolver).name
       },
 `);
     }
     for (const fieldName of iterOneofFieldNames(resolver)) {
       stream.write(`\
-${" ".repeat(indent)}    @as("${decapitalize(
+${" ".repeat(indent)}    @as("${fieldName}") ${decapitalize(
         fieldName
-      )}") ${fieldName}: Oneof.${capitalize(fieldName)}.t,
+      )}: Oneof.${capitalize(fieldName)}.t,
 `);
     }
     stream.write(`\
@@ -293,18 +293,18 @@ ${" ".repeat(indent)}    Js.Obj.empty()
       stream.write(`\
 ${" ".repeat(indent)}    ->${bsProtobufPackage}.ProtoTypeSupport.${
         mapper.fieldAccessor
-      }.fromR("${decapitalize(
-        fieldName
-      )}", ${bsProtobufPackage}.ProtoTypeSupport.Convert.${mapper.type}, v)
+      }.fromR("${fieldName}", ${bsProtobufPackage}.ProtoTypeSupport.Convert.${
+        mapper.type
+      }, v)
 `);
     }
     for (const fieldName of iterOneofFieldNames(resolver)) {
       stream.write(`\
 ${" ".repeat(
   indent
-)}    ->${bsProtobufPackage}.ProtoTypeSupport.Field.fromR("${decapitalize(
+)}    ->${bsProtobufPackage}.ProtoTypeSupport.Field.fromR("${fieldName}", Oneof.${capitalize(
         fieldName
-      )}", Oneof.${capitalize(fieldName)}.convert, v)
+      )}.convert, v)
 `);
     }
     // ${" ".repeat(
@@ -327,18 +327,18 @@ ${" ".repeat(indent)}    make()
       stream.write(`\
 ${" ".repeat(indent)}    ->${bsProtobufPackage}.ProtoTypeSupport.${
         mapper.fieldAccessor
-      }.toR("${decapitalize(
-        fieldName
-      )}", ${bsProtobufPackage}.ProtoTypeSupport.Convert.${mapper.type}, m)
+      }.toR("${fieldName}", ${bsProtobufPackage}.ProtoTypeSupport.Convert.${
+        mapper.type
+      }, m)
 `);
     }
     for (const fieldName of iterOneofFieldNames(resolver)) {
       stream.write(`\
 ${" ".repeat(
   indent
-)}    ->${bsProtobufPackage}.ProtoTypeSupport.Field.toR("${decapitalize(
+)}    ->${bsProtobufPackage}.ProtoTypeSupport.Field.toR("${fieldName}", Oneof.${capitalize(
         fieldName
-      )}", Oneof.${capitalize(fieldName)}.convert, m)
+      )}.convert, m)
 `);
     }
   }

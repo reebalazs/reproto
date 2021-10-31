@@ -15,6 +15,11 @@ message Required {
   required int32 int32Field = 2;
 }
 
+message Capitalization {
+  optional string StringField = 1;
+  optional int32 Int32Field = 2;
+}
+
 enum EnumType {
   EnumV0 = 0;
   EnumV1 = 1;
