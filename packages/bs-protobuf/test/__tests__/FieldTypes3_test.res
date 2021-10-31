@@ -75,7 +75,7 @@ describe("Protobuf field types support", () => {
       )
     }
 
-    Only.describe("make", () =>
+    describe("make", () =>
       Capitalization.make(
         ~stringField=Some("The answer"),
         ~int32Field=Some(42),
