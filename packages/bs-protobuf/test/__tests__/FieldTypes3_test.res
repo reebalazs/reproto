@@ -409,54 +409,109 @@ describe("Protobuf field types support", () => {
         )
       })
 
-      describe("int key", () => {
-        let mapInt32StringField = Map.Int.fromArray([(1, "foo"), (2, "bar")])
-        let v = Typeful.make(~mapInt32StringField, ())
-        test("value", () => v.mapInt32StringField |> expect |> toBe(mapInt32StringField))
+      let testMapInt32 = (makeValue, getField) => {
+        let field = Map.Int.fromArray([(1, "foo"), (2, "bar")])
+        let v = makeValue(field)
+        test("value", () => v |> getField |> expect |> toBe(field))
         test("encode/decode", () =>
-          v
-          |> Typeful.encode
-          |> Typeful.decode
-          |> (v => v.mapInt32StringField)
-          |> expect
-          |> toEqual(mapInt32StringField)
+          v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toEqual(field)
         )
         let empty = Typeful.make()
-        test("empty", () => empty.mapInt32StringField |> expect |> toEqual(Map.Int.empty))
+        test("empty", () => empty |> getField |> expect |> toEqual(Map.Int.empty))
         test("empty encode/decode", () =>
-          empty
-          |> Typeful.encode
-          |> Typeful.decode
-          |> (v => v.mapInt32StringField)
-          |> expect
-          |> toEqual(Map.Int.empty)
+          empty |> Typeful.encode |> Typeful.decode |> getField |> expect |> toEqual(Map.Int.empty)
+        )
+      }
+
+      describe("int32 key", () => {
+        testMapInt32(
+          mapInt32StringField => Typeful.make(~mapInt32StringField, ()),
+          v => v.mapInt32StringField,
         )
       })
 
-      describe("int64 key", () => {
-        let mapInt64StringField = MapInt64.fromArray([
+      describe("uint32 key", () => {
+        testMapInt32(
+          mapUint32StringField => Typeful.make(~mapUint32StringField, ()),
+          v => v.mapUint32StringField,
+        )
+      })
+
+      describe("sint32 key", () => {
+        testMapInt32(
+          mapSint32StringField => Typeful.make(~mapSint32StringField, ()),
+          v => v.mapSint32StringField,
+        )
+      })
+
+      describe("fixed32 key", () => {
+        testMapInt32(
+          mapFixed32StringField => Typeful.make(~mapFixed32StringField, ()),
+          v => v.mapFixed32StringField,
+        )
+      })
+
+      describe("sfixed32 key", () => {
+        testMapInt32(
+          mapSfixed32StringField => Typeful.make(~mapSfixed32StringField, ()),
+          v => v.mapSfixed32StringField,
+        )
+      })
+
+      let testMapInt64 = (makeValue, getField) => {
+        let field = MapInt64.fromArray([
           (Int64.of_string("1"), "foo"),
           (Int64.of_string("2"), "bar"),
         ])
-        let v = Typeful.make(~mapInt64StringField, ())
-        test("value", () => v.mapInt64StringField |> expect |> toBe(mapInt64StringField))
+        let v = makeValue(field)
+        test("value", () => v |> getField |> expect |> toBe(field))
         test("encode/decode", () =>
-          v
-          |> Typeful.encode
-          |> Typeful.decode
-          |> (v => v.mapInt64StringField)
-          |> expect
-          |> toEqual(mapInt64StringField)
+          v |> Typeful.encode |> Typeful.decode |> getField |> expect |> toEqual(field)
         )
         let empty = Typeful.make()
-        test("empty", () => empty.mapInt64StringField |> expect |> toEqual(MapInt64.makeEmpty()))
+        test("empty", () => empty |> getField |> expect |> toEqual(MapInt64.makeEmpty()))
         test("empty encode/decode", () =>
           empty
           |> Typeful.encode
           |> Typeful.decode
-          |> (v => v.mapInt64StringField)
+          |> getField
           |> expect
           |> toEqual(MapInt64.makeEmpty())
+        )
+      }
+
+      describe("int64 key", () => {
+        testMapInt64(
+          mapInt64StringField => Typeful.make(~mapInt64StringField, ()),
+          v => v.mapInt64StringField,
+        )
+      })
+
+      describe("uint64 key", () => {
+        testMapInt64(
+          mapUint64StringField => Typeful.make(~mapUint64StringField, ()),
+          v => v.mapUint64StringField,
+        )
+      })
+
+      describe("sint64 key", () => {
+        testMapInt64(
+          mapSint64StringField => Typeful.make(~mapSint64StringField, ()),
+          v => v.mapSint64StringField,
+        )
+      })
+
+      describe("fixed64 key", () => {
+        testMapInt64(
+          mapFixed64StringField => Typeful.make(~mapFixed64StringField, ()),
+          v => v.mapFixed64StringField,
+        )
+      })
+
+      describe("sfixed64 key", () => {
+        testMapInt64(
+          mapSfixed64StringField => Typeful.make(~mapSfixed64StringField, ()),
+          v => v.mapSfixed64StringField,
         )
       })
 
