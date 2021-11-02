@@ -58,6 +58,14 @@ message Typeful {
   optional bool boolField=24;
   map<bool, string> mapBoolStringField=25;
   google.protobuf.Any anyField=26;
+  map<uint64, string> mapUint64StringField=27;
+  map<sint64, string> mapSint64StringField=28;
+  map<fixed64, string> mapFixed64StringField=29;
+  map<sfixed64, string> mapSfixed64StringField=30;
+  map<uint32, string> mapUint32StringField=31;
+  map<sint32, string> mapSint32StringField=32;
+  map<fixed32, string> mapFixed32StringField=33;
+  map<sfixed32, string> mapSfixed32StringField=34;
 }
 
 message Empty {
