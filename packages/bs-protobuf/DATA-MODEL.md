@@ -156,6 +156,25 @@ let message = Basic.make(())
 // => Compilation error, stringField and intField are missing
 ```
 
+##### Enforcing required fields in make
+
+Note that `make` does not enforce required fields to be present. This is a design decision, for which the
+explanation is as follows.
+
+- The optionality of a field does not affect data integrity. The field is always present in the data. If
+  it's not specified with `make`, the field-specific default value will be automatically applied. This is
+  in accordance to the Protocol Buffer specifications and the encoding applied.
+
+- An exception is the `optional` rule that is re-introduced in newer proto3 versions. If this is provided
+  for a field in proto3, then `Some(value)` and `None` will be used in the data. This means that in this case
+  (and only in this case) the existence or non-existence of a field in the payload can be checked.
+
+- If a field is non-optional in proto3, we still allow it to be missing in `make` and the default value will
+  be specified. This is in accordance to the older version of proto3 that do not allow the `optional` rule.
+
+- If a field is `required` in proto2, then `make` does not define a default value for this field. Thus, not
+  specifying a required field in proto2 will result in a syntax error.
+
 #### encode
 
 TBD
@@ -169,6 +188,8 @@ TBD
 Optionality works differently in proto3 and proto2.
 
 #### proto3
+
+Newer versions of proto3 re-intoduce the `optional` rule which is supported.
 
 In Proto3 an optional field is compiled into an option type. This means that the field
 values will be `Some(v)` or `None`, when the field is not present. Note that if the
@@ -206,6 +227,12 @@ Js.log(message.stringField) // => undefined
 Js.log(message.int32Field) // => undefined
 
 ```
+
+However, you are free to not use optional at all in proto3. One reason for this can be if your proto
+definitions are designed for the older version of proto3. In this case, the original rule applies:
+`make` will fill out the field specific default values in each case.
+
+Simply put: `make` will never enforce the mandatoriness of fields for proto3.
 
 #### proto2
 
