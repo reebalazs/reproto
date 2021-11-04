@@ -18,3 +18,11 @@ Note: I have no interest in implementing grpc-web, but it could be done as a
 separate package.
 
 GRPC stream support ready.
+
+## Data model
+
+The implementation uses the `protobufjs` library, which
+is a pure JavaScript implementation, for encoding the messages. On the top of this
+JavaScript implementation, Rescript data types are generated from the proto definitions.
+
+[Read more about the data model...](DATA-MODEL.md)

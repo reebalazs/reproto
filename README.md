@@ -34,6 +34,8 @@ GRPC stream support ready.
 
 [Read more...](packages/bs-protobuf/README.md)
 
+[Data model](packages/bs-protobuf/DATA-MODEL.md)
+
 ### @reproto/bs-rpc-axios
 
 An example RPC implementation that uses Axios for networking.
