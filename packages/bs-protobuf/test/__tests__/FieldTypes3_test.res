@@ -17,6 +17,10 @@ describe("Protobuf field types support", () => {
       Basic.make(~stringField=Some("The answer"), ~int32Field=Some(42), ())->testTypeSupport
     )
 
+    describe("make2", () =>
+      Basic.make2(~stringField=Some("The answer"), ~int32Field=Some(42), ())->testTypeSupport
+    )
+
     describe("as record", () =>
       {
         stringField: Some("The answer"),
@@ -24,14 +28,21 @@ describe("Protobuf field types support", () => {
       }->testTypeSupport
     )
 
-    describe("defaults", () => {
-      let v = Basic.make()
+    let testTypeSupportEmpty = (v: Basic.t) => {
       test("string", () => v.stringField |> expect |> toBe(None))
       test("int32", () => v.int32Field |> expect |> toBe(None))
       test("encode empty", () =>
         v |> Basic.encode |> Js_typed_array.ArrayBuffer.byteLength |> expect |> toBe(0)
       )
       test("encode/decode", () => v |> Basic.encode |> Basic.decode |> expect |> toEqual(v))
+    }
+
+    describe("defaults make", () => {
+      Basic.make()->testTypeSupportEmpty
+    })
+
+    describe("defaults make2", () => {
+      Basic.make2()->testTypeSupportEmpty
     })
   })
 
@@ -47,6 +58,10 @@ describe("Protobuf field types support", () => {
       Required.make(~stringField="The answer", ~int32Field=42, ())->testTypeSupport
     )
 
+    describe("make2", () =>
+      Required.make2(~stringField="The answer", ~int32Field=42, ())->testTypeSupport
+    )
+
     describe("as record", () =>
       {
         stringField: "The answer",
@@ -54,14 +69,21 @@ describe("Protobuf field types support", () => {
       }->testTypeSupport
     )
 
-    describe("defaults", () => {
-      let v = Required.make()
+    let testTypeSupportEmpty = (v: Required.t) => {
       test("string", () => v.stringField |> expect |> toBe(""))
       test("int32", () => v.int32Field |> expect |> toBe(0))
       test("encode empty", () =>
         v |> Required.encode |> Js_typed_array.ArrayBuffer.byteLength |> expect |> toBe(4)
       )
       test("encode/decode", () => v |> Required.encode |> Required.decode |> expect |> toEqual(v))
+    }
+
+    describe("defaults make", () => {
+      Required.make()->testTypeSupportEmpty
+    })
+
+    describe("defaults make2", () => {
+      Required.make2()->testTypeSupportEmpty
     })
   })
 
@@ -83,6 +105,14 @@ describe("Protobuf field types support", () => {
       )->testTypeSupport
     )
 
+    describe("make2", () =>
+      Capitalization.make2(
+        ~stringField=Some("The answer"),
+        ~int32Field=Some(42),
+        (),
+      )->testTypeSupport
+    )
+
     describe("as record", () =>
       {
         stringField: Some("The answer"),
@@ -90,8 +120,7 @@ describe("Protobuf field types support", () => {
       }->testTypeSupport
     )
 
-    describe("defaults", () => {
-      let v = Capitalization.make()
+    let testTypeSupportEmpty = (v: Capitalization.t) => {
       test("string", () => v.stringField |> expect |> toBe(None))
       test("int32", () => v.int32Field |> expect |> toBe(None))
       test("encode empty", () =>
@@ -100,6 +129,14 @@ describe("Protobuf field types support", () => {
       test("encode/decode", () =>
         v |> Capitalization.encode |> Capitalization.decode |> expect |> toEqual(v)
       )
+    }
+
+    describe("defaults make", () => {
+      Capitalization.make()->testTypeSupportEmpty
+    })
+
+    describe("defaults make2", () => {
+      Capitalization.make2()->testTypeSupportEmpty
     })
   })
 
@@ -546,6 +583,7 @@ describe("Protobuf field types support", () => {
       test("encode/decode", () => v |> Empty.encode |> Empty.decode |> expect |> toEqual(v))
     }
     describe("make", () => Empty.make()->testTypeSupport)
+    describe("make2", () => Empty.make2()->testTypeSupport)
     describe("as unit", () => ()->testTypeSupport)
 
     describe("defaults", () => {
@@ -569,6 +607,14 @@ describe("Protobuf field types support", () => {
 
     describe("make", () =>
       Nested.Message.make(
+        ~stringField=Some("The answer"),
+        ~int32Field=Some(42),
+        (),
+      )->testTypeSupport
+    )
+
+    describe("make2", () =>
+      Nested.Message.make2(
         ~stringField=Some("The answer"),
         ~int32Field=Some(42),
         (),

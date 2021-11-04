@@ -236,7 +236,8 @@ ${" ".repeat(indent)}module ${resolver.flattenedName} = {
     // not typeable in rescript
     stream.write(`\
 ${" ".repeat(indent)}  type t = unit
-${" ".repeat(indent)}  let make = (()) => ()`);
+${" ".repeat(indent)}  let make = (()) => ()
+${" ".repeat(indent)}  let make2 = (()) => ()`);
   } else {
     stream.write(`\
 ${" ".repeat(indent)}  type t = {
@@ -259,7 +260,12 @@ ${" ".repeat(indent)}    @as("${fieldName}") ${decapitalize(
     stream.write(`\
 ${" ".repeat(indent)}  }
 ${" ".repeat(indent)}  let make = (`);
-    emitFieldParameters(stream, resolver, indent, false);
+    emitFieldParameters(stream, resolver, indent, false, false);
+    stream.write(`) => `);
+    emitFieldRecord(stream, resolver, indent);
+    stream.write(`
+${" ".repeat(indent)}  let make2 = (`);
+    emitFieldParameters(stream, resolver, indent, false, true);
     stream.write(`) => `);
     emitFieldRecord(stream, resolver, indent);
   }

@@ -9,13 +9,13 @@ const config = {
     "/node_modules/",
     "/bs-rpc-axios/test/proto-res/",
     "/proto-demo/proto-res/",
-    "/bs-protobuf/test/proto-res/Proto.proto.js",
+    "/bs-protobuf/test/proto-res/",
   ],
   coverageThreshold: {
     global: {
-      branches: 60,
-      functions: 60,
-      lines: 70,
+      branches: 75,
+      functions: 95,
+      lines: 95,
       statements: -1000,
     },
   },

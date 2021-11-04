@@ -9,6 +9,10 @@ export function isProto3Optional(field) {
   return field.options && field.options["proto3_optional"] === true;
 }
 
+function isProto2Required(field) {
+  return field.rule === "required";
+}
+
 export const typeMap = {
   string: "string",
   int32: "int",
@@ -39,7 +43,7 @@ const mapEmptyMap = {
   bool: ".makeEmpty()",
 };
 
-function defaultFieldValue(field, resolver, pass2) {
+function defaultFieldValue(field, resolver, pass2, make2) {
   if (field["rule"] === "repeated") {
     // repeated field
     return "=Belt.Map.Int.empty";
@@ -61,10 +65,13 @@ function defaultFieldValue(field, resolver, pass2) {
         );
       }
       return `=${mapClass}${mapEmpty}`;
+    } else if (make2 && isProto2Required(field)) {
+      // proto2: required field, do not generate default in make2.
+      return "";
     } else {
       // All other types
       // proto2: optionals
-      // proto2: required field, allow default in make.
+      // proto2: required field, generate default in make.
       // proto3: non-optionals
       // XXX TBD handle proto2 defaults
       const result = {
@@ -133,14 +140,15 @@ function* iterOneofFieldNames(resolver) {
   }
 }
 
-export function emitFieldParameters(stream, resolver, indent, pass2) {
+export function emitFieldParameters(stream, resolver, indent, pass2, make2) {
   for (const fieldName of iterRealFieldNames(resolver)) {
     const field = resolver.data.fields[fieldName];
     stream.write(
       `~${decapitalize(fieldName)}${defaultFieldValue(
         field,
         resolver,
-        pass2
+        pass2,
+        make2
       )}, `
     );
   }
