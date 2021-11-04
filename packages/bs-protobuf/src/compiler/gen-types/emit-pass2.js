@@ -40,7 +40,12 @@ ${" ".repeat(
   indent
 )}    let call = (serviceRoot, request) => methodWrapper(wrapped, serviceRoot, request)
 ${" ".repeat(indent)}    let make = (serviceRoot, `);
-    emitFieldParameters(stream, requestResolver, indent, true);
+    emitFieldParameters(stream, requestResolver, indent, true, false);
+    stream.write(`) => methodWrapper(wrapped, serviceRoot, `);
+    emitFieldRecord(stream, requestResolver, indent);
+    stream.write(`)
+${" ".repeat(indent)}    let make2 = (serviceRoot, `);
+    emitFieldParameters(stream, requestResolver, indent, true, true);
     stream.write(`) => methodWrapper(wrapped, serviceRoot, `);
     emitFieldRecord(stream, requestResolver, indent);
     stream.write(`)
