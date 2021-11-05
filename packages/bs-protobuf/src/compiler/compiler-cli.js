@@ -44,6 +44,12 @@ export async function protoRes() {
       description: "Verbose logging",
       default: false,
     })
+    .option("withMake2", {
+      alias: "m",
+      type: "boolean",
+      description: "Generate make2 helper function",
+      default: false,
+    })
     .strictOptions()
     .check(function (argv) {
       if (argv._.length === 0) {
@@ -81,6 +87,7 @@ export async function genCli({
   watch,
   skipInitial,
   verbose,
+  withMake2,
 }) {
   const doIt = async () => {
     await genAll({
@@ -88,6 +95,7 @@ export async function genCli({
       includes,
       output,
       verbose,
+      withMake2,
     });
   };
   const doItProtected = async () => {
@@ -115,11 +123,11 @@ export async function genCli({
   }
 }
 
-async function genAll({ filenames, includes, output, verbose }) {
+async function genAll({ filenames, includes, output, verbose, withMake2 }) {
   const jsOutput = makeJsOutput(output);
   const jsOutputRelative = "./" + path.basename(jsOutput);
   await genProto(filenames, includes, jsOutput);
-  await genTypes(filenames, includes, jsOutputRelative, output);
+  await genTypes(filenames, includes, jsOutputRelative, output, withMake2);
   if (verbose) {
     console.log(
       `Protores generated outputs ${emphasized(output)} and ${emphasized(

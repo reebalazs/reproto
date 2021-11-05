@@ -22,8 +22,8 @@
     "protores": "src/script/protores.js"
   },
   "scripts": {
-    "protores:build": "mkdir -p test/proto-res && yarn protores -v test/proto/*.proto -o test/proto-res/Proto.res",
-    "protores:dev": "mkdir -p test/proto-res && yarn protores -w -s -v test/proto/*.proto -o test/proto-res/Proto.res",
+    "protores:build": "mkdir -p test/proto-res && yarn protores -m -v test/proto/*.proto -o test/proto-res/Proto.res && yarn protores -v test/proto/*.proto -o test/proto-res/ProtoWithoutMake2.res ",
+    "protores:dev": "mkdir -p test/proto-res && yarn protores -w -s -m -v test/proto/*.proto -o test/proto-res/Proto.res & yarn protores -w -s -v test/proto/*.proto -o test/proto-res/ProtoWithoutMake2.res",
     "build": "yarn protores:build",
     "dev": "yarn protores:dev"
   },

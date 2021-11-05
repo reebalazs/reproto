@@ -3,9 +3,9 @@ import { capitalize } from "./capitalize";
 export const specialModuleTypes = "PROTORES__Types__";
 
 export class Resolver {
-  constructor(data, protoJsPath, chain = null, prefix = [], baseLevel = null) {
+  constructor(data, options, chain = null, prefix = [], baseLevel = null) {
     this.data = data;
-    this.protoJsPath = protoJsPath;
+    this.options = options;
     this.chain = chain;
     this.prefix = prefix;
     // Base level is the length of prefix
@@ -29,7 +29,7 @@ export class Resolver {
       }
       return new Resolver(
         data,
-        this.protoJsPath,
+        this.options,
         this,
         this.prefix.concat(segment),
         baseLevel

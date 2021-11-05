@@ -5,7 +5,7 @@ import { Resolver, couldNotResolve, specialModuleTypes } from "../resolver";
 function expectCouldNotResolve(resolver) {
   expect(resolver).toBe(couldNotResolve);
   expect(resolver.data).toBe(undefined);
-  expect(resolver.protoJsPath).toBe(undefined);
+  expect(resolver.options).toBe(undefined);
   expect(resolver.chain).toBe(null);
   expect(resolver.prefix).toEqual([]);
   expect(resolver.baseLevel).toEqual(null);
@@ -13,9 +13,9 @@ function expectCouldNotResolve(resolver) {
 
 describe("gen-types Resolver", () => {
   test("constructor", () => {
-    const resolver = new Resolver("{DATA}", "PROTO_JS_PATH");
+    const resolver = new Resolver("{DATA}", "<OPTIONS>");
     expect(resolver.data).toBe("{DATA}");
-    expect(resolver.protoJsPath).toBe("PROTO_JS_PATH");
+    expect(resolver.options).toBe("<OPTIONS>");
     expect(resolver.chain).toBe(null);
     expect(resolver.prefix).toEqual([]);
     expect(resolver.baseLevel).toEqual(null);
@@ -25,17 +25,17 @@ describe("gen-types Resolver", () => {
     test("hit", () => {
       const resolver = new Resolver(
         { nested: { alpha: { nested: { beta: "{BETA}" } } } },
-        "PROTO_JS_PATH"
+        "<OPTIONS>"
       );
       const resolver1 = resolver.next("alpha");
       expect(resolver1.data).toEqual({ nested: { beta: "{BETA}" } });
-      expect(resolver1.protoJsPath).toBe("PROTO_JS_PATH");
+      expect(resolver1.options).toBe("<OPTIONS>");
       expect(resolver1.chain).toBe(resolver);
       expect(resolver1.prefix).toEqual(["alpha"]);
       expect(resolver1.baseLevel).toEqual(null);
       const resolver2 = resolver1.next("beta");
       expect(resolver2.data).toEqual("{BETA}");
-      expect(resolver2.protoJsPath).toBe("PROTO_JS_PATH");
+      expect(resolver2.options).toBe("<OPTIONS>");
       expect(resolver2.chain).toBe(resolver1);
       expect(resolver2.prefix).toEqual(["alpha", "beta"]);
       expect(resolver2.baseLevel).toEqual(null);
@@ -44,7 +44,7 @@ describe("gen-types Resolver", () => {
     test("miss", () => {
       const resolver = new Resolver(
         { nested: { alpha: { nested: { beta: "{BETA}" } } } },
-        "PROTO_JS_PATH"
+        "<OPTIONS>"
       );
       const resolver1 = resolver.next("NOSUCH");
       expectCouldNotResolve(resolver1);
@@ -58,11 +58,11 @@ describe("gen-types Resolver", () => {
     test("hit", () => {
       const resolver = new Resolver(
         { nested: { alpha: { nested: { beta: "{BETA}" } } } },
-        "PROTO_JS_PATH"
+        "<OPTIONS>"
       );
       const resolver1 = resolver.lookup("alpha.beta");
       expect(resolver1.data).toEqual("{BETA}");
-      expect(resolver1.protoJsPath).toBe("PROTO_JS_PATH");
+      expect(resolver1.options).toBe("<OPTIONS>");
       expect(resolver1.chain.chain).toBe(resolver);
       expect(resolver1.relativePath).toEqual("Alpha.Beta");
     });
@@ -74,15 +74,15 @@ describe("gen-types Resolver", () => {
             alpha: { nested: { beta: { nested: { gamma: "{GAMMA}" } } } },
           },
         },
-        "PROTO_JS_PATH"
+        "<OPTIONS>"
       );
       const resolver1 = resolver.lookup("alpha");
-      expect(resolver1.protoJsPath).toBe("PROTO_JS_PATH");
+      expect(resolver1.options).toBe("<OPTIONS>");
       expect(resolver1.chain).toBe(resolver);
       expect(resolver1.relativePath).toEqual("Alpha");
       const resolver2 = resolver1.lookup("beta.gamma");
       expect(resolver2.data).toEqual("{GAMMA}");
-      expect(resolver2.protoJsPath).toBe("PROTO_JS_PATH");
+      expect(resolver2.options).toBe("<OPTIONS>");
       expect(resolver2.chain.chain).toBe(resolver1);
       expect(resolver2.relativePath).toEqual("Alpha.Beta.Gamma");
     });
@@ -90,7 +90,7 @@ describe("gen-types Resolver", () => {
     test("miss", () => {
       const resolver = new Resolver(
         { nested: { alpha: { nested: { beta: "{BETA}" } } } },
-        "PROTO_JS_PATH"
+        "<OPTIONS>"
       );
       const resolver1 = resolver.lookup("alpha.gamma");
       expectCouldNotResolve(resolver1);
@@ -109,18 +109,18 @@ describe("gen-types Resolver", () => {
               },
             },
           },
-          "PROTO_JS_PATH"
+          "<OPTIONS>"
         );
         const resolver1 = resolver.lookup("alpha.beta.gamma");
-        expect(resolver1.protoJsPath).toBe("PROTO_JS_PATH");
+        expect(resolver1.options).toBe("<OPTIONS>");
         expect(resolver1.chain.chain.chain).toBe(resolver);
         expect(resolver1.relativePath).toEqual("Alpha.Beta.Gamma");
         const resolver2 = resolver1.lookup("delta");
-        expect(resolver2.protoJsPath).toBe("PROTO_JS_PATH");
+        expect(resolver2.options).toBe("<OPTIONS>");
         expect(resolver2.chain.chain).toBe(resolver);
         expect(resolver2.relativePath).toEqual("Alpha.Delta");
         const resolver3 = resolver1.lookup("delta.epsilon");
-        expect(resolver3.protoJsPath).toBe("PROTO_JS_PATH");
+        expect(resolver3.options).toBe("<OPTIONS>");
         expect(resolver3.chain.chain.chain).toBe(resolver);
         expect(resolver3.relativePath).toEqual("Alpha.Delta.Epsilon");
       });
@@ -137,18 +137,18 @@ describe("gen-types Resolver", () => {
               },
             },
           },
-          "PROTO_JS_PATH"
+          "<OPTIONS>"
         );
         const resolver1 = resolver.next("alpha").next("beta").next("gamma");
-        expect(resolver1.protoJsPath).toBe("PROTO_JS_PATH");
+        expect(resolver1.options).toBe("<OPTIONS>");
         expect(resolver1.chain.chain.chain).toBe(resolver);
         expect(resolver1.relativePath).toEqual("Alpha.Beta.Gamma");
         const resolver2 = resolver1.lookup("delta");
-        expect(resolver2.protoJsPath).toBe("PROTO_JS_PATH");
+        expect(resolver2.options).toBe("<OPTIONS>");
         expect(resolver2.chain.chain).toBe(resolver);
         expect(resolver2.relativePath).toEqual("Delta");
         const resolver3 = resolver1.lookup("delta.epsilon");
-        expect(resolver3.protoJsPath).toBe("PROTO_JS_PATH");
+        expect(resolver3.options).toBe("<OPTIONS>");
         expect(resolver3.chain.chain.chain).toBe(resolver);
         expect(resolver3.relativePath).toEqual("Delta.Epsilon");
       });
@@ -165,18 +165,18 @@ describe("gen-types Resolver", () => {
               },
             },
           },
-          "PROTO_JS_PATH"
+          "<OPTIONS>"
         );
         const resolver1 = resolver.next("alpha").next("beta").next("gamma");
-        expect(resolver1.protoJsPath).toBe("PROTO_JS_PATH");
+        expect(resolver1.options).toBe("<OPTIONS>");
         expect(resolver1.chain.chain.chain).toBe(resolver);
         expect(resolver1.relativePath).toEqual("Alpha.Beta.Gamma");
         const resolver2 = resolver1.lookup("beta");
-        expect(resolver2.protoJsPath).toBe("PROTO_JS_PATH");
+        expect(resolver2.options).toBe("<OPTIONS>");
         expect(resolver2.chain.chain).toBe(resolver);
         expect(resolver2.relativePath).toEqual("Beta");
         const resolver3 = resolver2.lookup("delta.epsilon");
-        expect(resolver3.protoJsPath).toBe("PROTO_JS_PATH");
+        expect(resolver3.options).toBe("<OPTIONS>");
         expect(resolver3.chain.chain.chain).toBe(resolver);
         expect(resolver3.relativePath).toEqual("Delta.Epsilon");
       });
@@ -194,7 +194,7 @@ describe("gen-types Resolver", () => {
               delta: { nested: { epsilon: "{EPSILON-OUTER}" } },
             },
           },
-          "PROTO_JS_PATH"
+          "<OPTIONS>"
         );
         const resolver1 = resolver.next("alpha").next("beta").next("gamma");
         const resolver2 = resolver1.lookup("delta");
@@ -218,7 +218,7 @@ describe("gen-types Resolver", () => {
               delta: { nested: { epsilon: "{EPSILON-OUTER}" } },
             },
           },
-          "PROTO_JS_PATH"
+          "<OPTIONS>"
         );
         const resolver1 = resolver.next("alpha").next("beta").next("gamma");
         // dot prefix looks up from the root

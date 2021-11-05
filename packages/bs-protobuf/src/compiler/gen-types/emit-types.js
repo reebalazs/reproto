@@ -34,7 +34,7 @@ function emitBetweenPasses(stream, resolver) {
 }
 
 function emitProtoModuleDirective(stream, resolver) {
-  stream.write(`@module("${resolver.protoJsPath}") `);
+  stream.write(`@module("${resolver.options.protoJsPath}") `);
 }
 
 function emitEpilogue(stream, resolver) {}

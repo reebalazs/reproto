@@ -18,8 +18,8 @@
   },
   "main": "src/index",
   "scripts": {
-    "protores:build": "mkdir -p test/proto-res && yarn protores -v test/proto/*.proto -o test/proto-res/ProtoRpcAxios.res",
-    "protores:dev": "mkdir -p test/proto-res && yarn protores -w -s -v test/proto/*.proto -o test/proto-res/ProtoRpcAxios.res",
+    "protores:build": "mkdir -p test/proto-res && yarn protores -m -v test/proto/*.proto -o test/proto-res/ProtoRpcAxios.res",
+    "protores:dev": "mkdir -p test/proto-res && yarn protores -w -s -m -v test/proto/*.proto -o test/proto-res/ProtoRpcAxios.res",
     "build": "yarn protores:build",
     "dev": "yarn protores:dev"
   },

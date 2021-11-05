@@ -17,8 +17,8 @@
     "yarn": ">=3.0.1"
   },
   "scripts": {
-    "protores:build": "mkdir -p src/proto-res; yarn protores -v src/proto/*.proto -o src/proto-res/ProtoDemo.res",
-    "protores:dev": "mkdir -p src/proto-res; yarn protores -w -s -w src/proto/*.proto -o src/proto-res/ProtoDemo.res",
+    "protores:build": "mkdir -p src/proto-res; yarn protores -m -v src/proto/*.proto -o src/proto-res/ProtoDemo.res",
+    "protores:dev": "mkdir -p src/proto-res; yarn protores -w -s -m -v src/proto/*.proto -o src/proto-res/ProtoDemo.res",
     "webpack:build": "yarn webpack build",
     "webpack:dev": "yarn webpack serve",
     "build": "yarn protores:build && yarn webpack:build",
