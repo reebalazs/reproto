@@ -44,11 +44,17 @@ ${" ".repeat(indent)}    let make = (serviceRoot, `);
     stream.write(`) => methodWrapper(wrapped, serviceRoot, `);
     emitFieldRecord(stream, requestResolver, indent);
     stream.write(`)
+`);
+    if (requestResolver.options.withMake2) {
+      stream.write(`\
 ${" ".repeat(indent)}    let make2 = (serviceRoot, `);
-    emitFieldParameters(stream, requestResolver, indent, true, true);
-    stream.write(`) => methodWrapper(wrapped, serviceRoot, `);
-    emitFieldRecord(stream, requestResolver, indent);
-    stream.write(`)
+      emitFieldParameters(stream, requestResolver, indent, true, true);
+      stream.write(`) => methodWrapper(wrapped, serviceRoot, `);
+      emitFieldRecord(stream, requestResolver, indent);
+      stream.write(`)
+`);
+    }
+    stream.write(`\
 ${" ".repeat(indent)}  }
 `);
   }
@@ -72,7 +78,7 @@ ${" ".repeat(indent)}}
 }
 
 function emitProtoModuleDirective(stream, resolver) {
-  stream.write(`@module("${resolver.protoJsPath}") `);
+  stream.write(`@module("${resolver.options.protoJsPath}") `);
 }
 
 export function emitPackagePass2(stream, parentResolver, indent = 0) {
