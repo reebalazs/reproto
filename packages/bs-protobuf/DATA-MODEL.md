@@ -134,29 +134,12 @@ Js.log(message.int32Field) // => 0
 let message = OptionalBasic.make(())
 Js.log(message.stringField) // =>
 Js.log(message.int32Field) // => 0
-
 ```
 
 Note that because of optionality of fields, the unit `()` must always be present at the end of the
 parameter list.
 
-With proto3 non-optional fields, or with proto2 required fields, the default values are not
-provided, and must be specified with make for each non-optional field, in the same way
-as with the record creation.
-
-```
-let message = Basic.make(~stringField="How many items", ~int32Field=42, ())
-Js.log(message.stringField) // => How many items
-Js.log(message.int32Field) // => 42
-
-let message = Basic.make(~stringField="How many items", ())
-// => Compilation error, intField is missing
-
-let message = Basic.make(())
-// => Compilation error, stringField and intField are missing
-```
-
-##### Enforcing required fields in make
+##### Not enforcing required fields in make
 
 Note that `make` does not enforce required fields to be present. This is a design decision, for which the
 explanation is as follows.
@@ -165,15 +148,110 @@ explanation is as follows.
   it's not specified with `make`, the field-specific default value will be automatically applied. This is
   in accordance to the Protocol Buffer specifications and the encoding applied.
 
-- An exception is the `optional` rule that is re-introduced in newer proto3 versions. If this is provided
+- An exception is the `optional` rule with proto3 (not proto2) syntax, that is re-introduced in newer
+  proto3 versions. If this is provided
   for a field in proto3, then `Some(value)` and `None` will be used in the data. This means that in this case
   (and only in this case) the existence or non-existence of a field in the payload can be checked.
 
-- If a field is non-optional in proto3, we still allow it to be missing in `make` and the default value will
-  be specified. This is in accordance to the older version of proto3 that do not allow the `optional` rule.
+- If a field is non-optional in proto3, or field is `required` in proto2, we still allow it to be missing
+  in `make` and the default value will be implicitly applied. This is in accordance to the older version of
+  proto3 that do not allow the `optional` rule.
 
-- If a field is `required` in proto2, then `make` does not define a default value for this field. Thus, not
-  specifying a required field in proto2 will result in a syntax error.
+- There is an additional helper function `make2` provided, with the only difference from `make` that non-optional
+  (and in proto2, `required`) fields do not have a default value, and thus needed to be present
+  as parameters in the `make2` call.
+
+The following example shows that even with non-optional fields, the default values are provided.
+
+```
+let message = Basic.make(~stringField="How many items", ~int32Field=42, ())
+Js.log(message.stringField) // => How many items
+Js.log(message.int32Field) // => 42
+
+let message = Basic.make(~stringField="How many items", ())
+Js.log(message.stringField) // => How many items
+Js.log(message.int32Field) // => 0
+
+let message = Basic.make(())
+Js.log(message.stringField) // =>
+Js.log(message.int32Field) // => 0
+```
+
+This works in the same way with required fields when using the proto2 syntax.
+
+```
+syntax = "proto2";
+
+package myGroup.myPackage;
+
+message Proto2Required {
+  required string stringField = 1;
+  required int32 int32Field = 2;
+}
+```
+
+```
+let message = Proto2Required.make(~stringField="How many items", ~int32Field=42, ())
+Js.log(message.stringField) // => How many items
+Js.log(message.int32Field) // => 42
+
+let message = Proto2Required.make(~stringField="How many items", ())
+Js.log(message.stringField) // => How many items
+Js.log(message.int32Field) // => 0
+
+let message = Proto2Required.make(())
+Js.log(message.stringField) // =>
+Js.log(message.int32Field) // => 0
+```
+
+##### Lack of support for proto2 default value specifiers
+
+The proto2 `[default = ...]` value specifiers are not implemented, they will be silently ignored even if present, and `make`
+(or `make2`) will apply the field specific defaults.
+
+#### make2
+
+Make is an alternative creation helper function. It is identical to `make`, except, it does
+not provide default values for non-optional (or proto2 `required`) fields. As a result, such
+fields must be specified in the `make2` call and forgetting them will result in a Rescript
+compilation error.
+
+It is up to personal taste to use `make2` or `make`. To be clear: `make` is perfectly sufficient
+in itself, and providing the defaults even for non-optional fields has its advantages. However,
+for some developers or use cases enforcing a strict presence check might have its advantages
+as well. This is the reason for providing `make2` in the library.
+
+The generation of `make2` is optional and by default false, as it increases the generated code
+size. If you need `make2` to be generated, you have to specify the `--with-make2`, or `-m`
+compilation options to the `protores` compiler.
+
+The following example shows some code that will not compile with make2:
+
+```
+let message = Basic.make2(~stringField="How many items", ~int32Field=42, ())
+Js.log(message.stringField) // => How many items
+Js.log(message.int32Field) // => 42
+
+let message = Basic.make2(~stringField="How many items", ())
+// => Compilation error, intField is missing
+
+let message = Basic.make2(())
+// => Compilation error, stringField and intField are missing
+```
+
+Similarly, required fields with the proto2 syntax will also not compile with make2:
+
+```
+let message = Proto2Required.make2(~stringField="How many items", ~int32Field=42, ())
+Js.log(message.stringField) // => How many items
+Js.log(message.int32Field) // => 42
+
+let message = Proto2Required.make2(~stringField="How many items", ())
+// => Compilation error, intField is missing
+
+let message = Proto2Required.make2(())
+// => Compilation error, stringField and intField are missing
+```
 
 #### encode
 
@@ -185,7 +263,7 @@ TBD
 
 ### Optionality
 
-Optionality works differently in proto3 and proto2.
+Optionality works differently in the proto3 and proto2 syntaxes.
 
 #### proto3
 
@@ -232,11 +310,12 @@ However, you are free to not use optional at all in proto3. One reason for this 
 definitions are designed for the older version of proto3. In this case, the original rule applies:
 `make` will fill out the field specific default values in each case.
 
-Simply put: `make` will never enforce the mandatoriness of fields for proto3.
+Simply put: `make` will never enforce the mandatoriness of fields for proto3 (or proto2).
 
 #### proto2
 
-In Proto2 the optional/required definitions make no difference in the data representation. An optional field will always be present in the payload and thus it will always be present in the
+In Proto2 the optional/required definitions make no difference in the data representation. An optional
+field will always be present in the payload and thus it will always be present in the
 record as well.
 
 The only difference that optional/required causes is in the difference of the `make` helper
