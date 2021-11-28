@@ -1,10 +1,7 @@
 import { capitalize, decapitalize } from "./capitalize";
 import { bsProtobufPackage } from "./emit-constants";
-import {
-  emitScopeDirective,
-  emitFieldParameters,
-  emitFieldRecord,
-} from "./emit-field";
+import { emitFieldParameters, emitFieldRecord } from "./emit-field";
+import { emitScopedModuleDirective } from "./emit-scoped-module-directive";
 
 function emitReference(stream, resolver, indent) {
   stream.write(`\
@@ -60,9 +57,7 @@ ${" ".repeat(indent)}  }
   }
   stream.write(`\
 ${" ".repeat(indent)}  `);
-  emitProtoModuleDirective(stream, resolver);
-  stream.write(`@val `);
-  emitScopeDirective(stream, resolver);
+  emitScopedModuleDirective(stream, resolver);
   stream.write(`external serviceClass: _ = "${capitalize(resolver.name)}"
 ${" ".repeat(
   indent
@@ -75,10 +70,6 @@ ${" ".repeat(
 )}    _create(serviceRoot, serviceClass, ${bsProtobufPackage}.RpcImpl.unwrap(wrappedRpcImpl), requestDelimited, responseDelimited)
 ${" ".repeat(indent)}}
 `);
-}
-
-function emitProtoModuleDirective(stream, resolver) {
-  stream.write(`@module("${resolver.options.protoJsPath}") `);
 }
 
 export function emitPackagePass2(stream, parentResolver, indent = 0) {
