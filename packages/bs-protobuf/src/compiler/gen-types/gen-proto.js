@@ -6,21 +6,24 @@ import { Resolver } from "./resolver";
 export function genProto(filenames, includes, output) {
   return new Promise((resolve, reject) => {
     pbjs.main(
-      // es6:
       [
         "-t",
         "static-module",
-        "--es6",
         "-w",
-        "es6",
+        "commonjs",
         "--no-verify",
         "--no-convert",
         "--no-comments",
         "-o",
         output,
       ].concat(
+        // We generate commonjs here because of more universal usage.
+        // Possible options that work would be:
+        //
+        // es6:
+        // ["-t", "static-module", "--es6", "-w",  "es6", ...]
         // commonjs:
-        // ["-t", "static-module", "-w", "commonjs", "--no-convert", "--no-comments", "-o", output].concat(
+        // ["-t", "static-module", "-w", "commonjs", ...]
         includes.reduce((a, path) => a.concat("-p", path), []),
         filenames
       ),

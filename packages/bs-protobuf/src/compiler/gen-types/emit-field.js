@@ -1,5 +1,4 @@
 import { capitalize, decapitalize } from "./capitalize";
-import { bsProtobufPackage } from "./emit-constants";
 
 // export function isProto2Required(field: Object): boolean {
 //   return field.rule && field.rule === "required";
@@ -171,31 +170,4 @@ export function emitFieldRecord(stream, resolver, indent) {
     stream.write(`${decapitalizedFieldName}: ${decapitalizedFieldName}, `);
   }
   stream.write(`}`);
-}
-
-function patchName(name) {
-  if (name === "public") {
-    // mangle "public" package id to work before the annotation has run
-    return "public_";
-  } else {
-    return name;
-  }
-}
-
-export function emitScopeDirective(stream, resolver) {
-  // take off the name from the end
-  const prefix = resolver.prefix.slice(0, -1);
-  if (prefix.length > 0) {
-    stream.write(`@scope(`);
-    if (prefix.length > 1) {
-      stream.write(`(`);
-      for (const segment of prefix) {
-        stream.write(`"${patchName(segment)}", `);
-      }
-      stream.write(`)`);
-    } else {
-      stream.write(`"${patchName(prefix[0])}"`);
-    }
-    stream.write(`) `);
-  }
 }

@@ -1,13 +1,13 @@
 import { capitalize, decapitalize } from "./capitalize";
 import { bsProtobufPackage } from "./emit-constants";
 import {
-  emitScopeDirective,
   emitFieldParameters,
   emitFieldRecord,
   typeMap,
   mapClassMap,
   isProto3Optional,
 } from "./emit-field";
+import { emitScopedModuleDirective } from "./emit-scoped-module-directive";
 
 function mapFieldType(field, parentResolver) {
   const fieldType = field["type"];
@@ -276,9 +276,7 @@ ${" ".repeat(indent)}  let make2 = (`);
   }
   stream.write(`
 ${" ".repeat(indent)}  `);
-  emitProtoModuleDirective(stream, resolver);
-  stream.write(`@val `);
-  emitScopeDirective(stream, resolver);
+  emitScopedModuleDirective(stream, resolver);
   stream.write(`external messageClass: _ = "${resolver.name}"
 `);
   if (isEmpty) {
@@ -359,10 +357,6 @@ ${" ".repeat(indent)}}
 `);
   // Mark "processed" state
   data.__processed = 2;
-}
-
-function emitProtoModuleDirective(stream, resolver) {
-  stream.write(`@module("${resolver.options.protoJsPath}") `);
 }
 
 function emitEntityPass1(stream, resolver, indent) {
