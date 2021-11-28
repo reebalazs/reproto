@@ -20,7 +20,7 @@ let createRpc = (~url="https://example.com", ()) => {
     ),
   )
 
-  let rpc: RpcImpl.t = (method, requestData, callback) => {
+  let rpc: ReprotoBsProtobuf.RpcImpl.t = (method, requestData, callback) => {
     open Promise
     let path = `/api/1.0/${method.__servicePath__}/${method.name}`
     inst

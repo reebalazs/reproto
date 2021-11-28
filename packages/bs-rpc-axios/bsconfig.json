@@ -21,11 +21,12 @@
   "suffix": ".bs.js",
   "namespace": true,
   "bs-dependencies": [
+    "@reproto/bs-protobuf",
     "@ryyppy/rescript-promise",
     "rescript-logger",
     "bs-axios"
   ],
-  "bs-dev-dependencies": ["@reproto/bs-protobuf", "@glennsl/bs-jest"],
+  "bs-dev-dependencies": ["@glennsl/bs-jest"],
   "ppx-flags": ["rescript-logger/ppx"],
   "reason": { "react-jsx": 3 },
   "warnings": {
