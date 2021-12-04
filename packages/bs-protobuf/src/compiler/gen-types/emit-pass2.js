@@ -56,18 +56,19 @@ ${" ".repeat(indent)}  }
 `);
   }
   stream.write(`\
+${" ".repeat(indent)}  let packageName = "${packageName}"
 ${" ".repeat(indent)}  `);
   emitScopedModuleDirective(stream, resolver);
   stream.write(`external serviceClass: _ = "${capitalize(resolver.name)}"
 ${" ".repeat(
   indent
-)}  @module("@reproto/bs-protobuf") external _create: (serviceRoot, _, _, bool, bool) => serviceRoot = "createService"
+)}  @module("@reproto/bs-protobuf") external _create: (serviceRoot, string, _, _, bool, bool) => serviceRoot = "createService"
 ${" ".repeat(
   indent
 )}  let create = (serviceRoot, wrappedRpcImpl, requestDelimited, responseDelimited) =>
 ${" ".repeat(
   indent
-)}    _create(serviceRoot, serviceClass, ${bsProtobufPackage}.RpcImpl.unwrap(wrappedRpcImpl), requestDelimited, responseDelimited)
+)}    _create(serviceRoot, packageName, serviceClass, ${bsProtobufPackage}.RpcImpl.unwrap(wrappedRpcImpl), requestDelimited, responseDelimited)
 ${" ".repeat(indent)}}
 `);
 }
