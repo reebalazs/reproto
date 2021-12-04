@@ -4,7 +4,7 @@ function emitProtoModuleDirective(stream, resolver) {
 
 function patchName(name) {
   if (name === "public") {
-    // mangle "public" package id to work before the annotation has run
+    // mangle "public" package id to work, this is stored as "public_"
     return "public_";
   } else {
     return name;
